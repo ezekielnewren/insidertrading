@@ -20,3 +20,12 @@ dependencies {
 
     compileOnly 'javax:javaee-api:7.0'
 }
+
+war {
+    // the archive name must be constant so that IntelliJ
+    // knows how to run/debug the servlet with tomcat
+    archiveName project.name+'.war'
+}
+
+
+

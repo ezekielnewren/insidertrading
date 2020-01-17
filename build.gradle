@@ -1,0 +1,22 @@
+plugins {
+    id 'com.palantir.git-version' version '0.11.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'war'
+
+group 'com.ezekielnewren'
+version gitVersion()
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compileOnly 'javax:javaee-api:7.0'
+}

@@ -11,3 +11,7 @@ build/
 run/
 *.class
 
+## generated files or temporary code
+src/main/resources/build.info
+src/main/java/ignore/
+

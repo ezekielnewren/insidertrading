@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.ezekielnewren.Build" %>
 <html>
 <head>
     <title>Title</title>
@@ -136,6 +137,9 @@
 
 </head>
 <body>
+    Version: <%= Build.get("version") %><br/>
+    build time: <%= Build.get("buildtime") %><br/>
+    fqdn: <%= Build.get("fqdn") %><br/>
     <input type="text" id="username"/>
     <button id="register" onclick="register()">Register</button>
 </body>

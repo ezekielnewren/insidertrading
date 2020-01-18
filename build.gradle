@@ -37,8 +37,9 @@ dependencies {
 
 task createProperties(dependsOn: processResources) {
     doLast {
-
-        new File("$projectDir/src/main/resources/build.info").withWriter { w ->
+        File resources = new File("$projectDir/src/main/resources");
+        resources.mkdir();
+        new File(resources, "build.info").withWriter { w ->
             Properties p = new Properties()
             p['version'] = version
             p['fqdn'] = "www.ezekielnewren.com"

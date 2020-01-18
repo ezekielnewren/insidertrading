@@ -4,34 +4,124 @@
     <title>Title</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="lib/base64js/base64js-1.3.0.min.js"></script>
+    <script src="js/base64url.js"></script>
+    <script src="js/webauthn.js"></script>
     <script>
-        function reqResp(payload, successCallback, errorCallback) {
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:8080/webauthn/index.jsp',
-                contentType: 'application/json',
-                dataType: 'json',
-                data: JSON.stringify(payload),
-                success: successCallback,
-                error: errorCallback
-            });
-        }
+        // function rr(payload, arg, successCallback, errorCallback) {
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '/webauthn/'+arg,
+        //         contentType: 'application/json',
+        //         dataType: 'json',
+        //         data: payload,
+        //         success: function(data) {
+        //             request = data;
+        //             webauthn.createCredential(request.publicKeyCredentialCreationOptions);
+        //         },
+        //         error: function(errMsg) {bad(errMsg);}
+        //     });
+        // }
 
-        function good() {
-            alert("success");
-        }
+        // function rr(payload, arg, callback) {
+        //     $.post("demo_test_post.asp",
+        //     payload,
+        //     function(data, status){
+        //         alert("Data: " + data + "\nStatus: " + status);
+        //     });
+        // }
 
-        function bad() {
-            alert("failure");
-        }
+        // function register() {
+        //     var username = $('#username').val();
+        //     var payload = JSON.stringify(username);
+        //
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '/webauthn/'+'register/start',
+        //         contentType: 'application/json',
+        //         dataType: 'json',
+        //         data: payload,
+        //     }).then((response) => {
+        //         request = data;
+        //         var credential = webauthn.createCredential(request.publicKeyCredentialCreationOptions);
+        //         var json = webauthn.responseToObject(credential);
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: '/webauthn/' + 'register/finish',
+        //             contentType: 'application/json',
+        //             dataType: 'json',
+        //             data: payload,
+        //         }).then((response) => {
+        //             if ("good" == response) {
+        //                 alert("registration successful");
+        //             }
+        //         });
+        //     });
+        //
+        // }
 
         function register() {
             var username = $('#username').val();
+            var payload = JSON.stringify(username);
 
-            reqResp(username,
-                function() {alert("success");},
-                function() {alert("failure");}
-            );
+            $.ajax({
+                type: 'POST',
+                url: '/webauthn/'+'register/start',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: payload,
+                success: function(data) {
+                    var request = data;
+                    console.log("got the request");
+                    var credential = webauthn.createCredential(request.publicKeyCredentialCreationOptions);
+                    credential.then(function (res) {
+                        // Send new credential info to server for verification and registration.
+                        var json = webauthn.responseToObject(res);
+                        console.log("client signature: "+json);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/webauthn/' + 'register/finish',
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            data: json,
+                            success: function(data) {
+                                var response = data;
+                                if ("good" == response) {
+                                    alert("registration successful");
+                                }
+                            },
+                            error: function(errMsg) {
+                                console.log(errMsg);
+                            }
+                        })
+                    }).catch(function (err) {
+                        // No acceptable authenticator or user refused consent. Handle appropriately.
+                        log(err)
+                    });
+                    console.log("got a signature");
+                    // var json = webauthn.responseToObject(credential);
+                    // console.log("sig to json");
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     url: '/webauthn/' + 'register/finish',
+                    //     contentType: 'application/json',
+                    //     dataType: 'json',
+                    //     data: payload,
+                    //     success: function(data) {
+                    //         var response = data;
+                    //         if ("good" == response) {
+                    //             alert("registration successful");
+                    //         }
+                    //     },
+                    //     error: function(errMsg) {
+                    //         console.log(errMsg);
+                    //     }
+                    // })
+                },
+                error: function(errMsg) {
+                    console.log(errMsg);
+                }
+            });
 
         }
 

@@ -22,6 +22,7 @@ dependencies {
 
     // webauthn server library
     // https://developers.yubico.com/java-webauthn-server/
+    // https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/1.6.0
     compile 'com.yubico:webauthn-server-core:1.6.0'
     // https://projectlombok.org/setup/gradle
     compileOnly 'org.projectlombok:lombok:1.18.8'

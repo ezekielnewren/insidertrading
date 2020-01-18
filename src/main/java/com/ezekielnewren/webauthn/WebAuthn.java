@@ -53,6 +53,8 @@ public class WebAuthn implements Closeable {
             rp = RelyingParty.builder()
                     .identity(rpi)
                     .credentialRepository(credStore)
+                    .allowOriginPort(true)
+                    .allowOriginSubdomain(false)
                     .build();
             om = new ObjectMapper()
                     .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
@@ -150,12 +152,12 @@ public class WebAuthn implements Closeable {
                 return false;
             }
 
-            RegisteredCredential.builder()
-                    .credentialId(null)
-                    .userHandle(null)
-                    .publicKeyCose(null)
-                    .signatureCount(0)
-                    .build();
+//            RegisteredCredential.builder()
+//                    .credentialId(null)
+//                    .userHandle(null)
+//                    .publicKeyCose(null)
+//                    .signatureCount(0)
+//                    .build();
 
 
             return true;

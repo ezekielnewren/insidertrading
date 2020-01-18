@@ -34,6 +34,6 @@ public class MemoryCredentialRepository implements CredentialRepository {
 
     @Override
     public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
-        return null;
+        return new HashSet<>();
     }
 }

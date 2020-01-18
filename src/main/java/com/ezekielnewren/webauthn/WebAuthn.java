@@ -2,7 +2,6 @@ package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
-import com.ezekielnewren.webauthn.data.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +12,6 @@ import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import java.io.Closeable;
 import java.io.IOException;
@@ -34,7 +32,7 @@ public class WebAuthn implements Closeable {
     RelyingPartyIdentity rpi;
     RelyingParty rp;
     ObjectMapper om;
-    RegistrationStorage credStore;
+    CredentialRepository credStore;
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
@@ -46,7 +44,8 @@ public class WebAuthn implements Closeable {
             }
             random = new SecureRandom();
             //credRepo = new MemoryCredentialRepository();
-            credStore = new InMemoryRegistrationStorage();
+            //credStore = new InMemoryRegistrationStorage();
+            credStore = new MemoryCredentialRepository();
             rpi = RelyingPartyIdentity.builder()
                     .id(fqdn)
                     .name(title)
@@ -85,39 +84,44 @@ public class WebAuthn implements Closeable {
 
     ) {
         synchronized (mutex) {
-            Optional<User> user = Optional.ofNullable((User) session.getAttribute(username));
-
-            UserIdentity userIdentity = UserIdentity.builder()
-                    .name(username)
-                    .displayName(displayName.orElse(username))
-                    .id(generateRandom())
-                    .build();
-
-            RegistrationRequest request = new RegistrationRequest(
-                    username,
-                    credentialNickname,
-                    generateRandom(),
-                    rp.startRegistration(
-                            StartRegistrationOptions.builder()
-                                    .user(userIdentity)
-                                    .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-                                            .requireResidentKey(requireResidentKey)
-                                            .build()
-                                    )
-                                    .build()
-                    )
-            );
-
-            requestMap.put(request.getRequestId(), request);
-
-            String json = null;
             try {
-                json = om.writeValueAsString(request);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+                //Optional<User> user = Optional.ofNullable((User) session.getAttribute(username));
 
-            return json;
+                UserIdentity userIdentity = UserIdentity.builder()
+                        .name(username)
+                        .displayName(displayName.orElse(username))
+                        .id(generateRandom())
+                        .build();
+
+                RegistrationRequest request = new RegistrationRequest(
+                        username,
+                        credentialNickname,
+                        generateRandom(),
+                        rp.startRegistration(
+                                StartRegistrationOptions.builder()
+                                        .user(userIdentity)
+                                        .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+                                                .requireResidentKey(requireResidentKey)
+                                                .build()
+                                        )
+                                        .build()
+                        )
+                );
+
+                requestMap.put(request.getRequestId(), request);
+
+                String json = null;
+                try {
+                    json = om.writeValueAsString(request);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return json;
+            } catch (Throwable t) {
+                t.printStackTrace();
+                throw new RuntimeException(t);
+            }
         }
     }
 

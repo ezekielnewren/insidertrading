@@ -72,11 +72,17 @@
                 data: payload,
                 success: function(data) {
                     var request = data;
+                    //var requestId = request.requestId;
                     console.log("got the request");
-                    var credential = webauthn.createCredential(request.publicKeyCredentialCreationOptions);
-                    credential.then(function (res) {
+                    webauthn.createCredential(request.publicKeyCredentialCreationOptions)
+                    .then(function (res) {
                         // Send new credential info to server for verification and registration.
-                        var json = webauthn.responseToObject(res);
+                        var credential = webauthn.responseToObject(res);
+                        const body = {
+                            requestId: request.requestId,
+                            credential,
+                        };
+                        var json = JSON.stringify(body);
                         console.log("client signature: "+json);
                         $.ajax({
                             type: 'POST',

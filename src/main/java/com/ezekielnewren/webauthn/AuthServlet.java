@@ -1,7 +1,6 @@
 package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.Build;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -15,11 +14,22 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AuthServlet extends HttpServlet {
-    WebAuthn wa;
+    AuthServletContext ctx;
 
     @Override
     public void init() throws ServletException {
-        wa = new WebAuthn(Build.get("fqdn"), Build.get("title"));
+        if (Util.DEBUG) {
+            getServletContext().log("DEBUG MODE");
+        }
+
+
+        ctx = new AuthServletContext(
+                JacksonHelper.newObjectMapper(),
+                "mongo://localhost",
+                null,
+                Build.get("fqdn"),
+                Build.get("title")
+        );
         getServletContext().log(AuthServlet.class.getSimpleName()+" loaded");
     }
 
@@ -32,7 +42,7 @@ public class AuthServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
-        ObjectMapper om = wa.getObjectMapper();
+        //ObjectMapper om = wa.getObjectMapper();
 
         URL url = new URL(request.getRequestURL().toString());
         String path = url.getPath().substring(1);
@@ -60,10 +70,10 @@ public class AuthServlet extends HttpServlet {
             if ("register".equals(args[0])) {
                 if ("start".equals(args[1])) {
                     String username = data;
-                    String json = wa.registerStart(request.getSession(), username, Optional.empty(), null, false);
+                    String json = ctx.getWebAuthn().registerStart(request.getSession(), username, Optional.empty(), Optional.empty(), false);
                     out.println(json);
                 } else if ("finish".equals(args[1])) {
-                    boolean result = wa.registerFinish(request.getSession(), data);
+                    boolean result = ctx.getWebAuthn().registerFinish(request.getSession(), data);
                     String json = result?"\"good\"":"\"bad\"";
                     out.println(json);
                 } else {

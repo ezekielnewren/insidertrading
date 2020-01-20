@@ -15,8 +15,6 @@ import lombok.NonNull;
 import javax.servlet.http.HttpSession;
 import java.io.Closeable;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,9 +24,13 @@ public class WebAuthn implements Closeable {
     // https://developers.yubico.com/WebAuthn/Libraries/Using_a_library.html
     // https://developers.yubico.com/java-webauthn-server/
 
-    final Object mutex = new Object();
-    SecureRandom random;
-    //MemoryCredentialRepository credRepo;
+    public static final int LENGTH_USER_HANDLE = 12;
+    public static final int LENGTH_REGISTRATION_REQUEST = 16;
+    public static final int LENGTH_CREDENTIAL_ID = 16;
+
+    final AuthServletContext ctx;
+    final @NonNull Object mutex;
+
     RelyingPartyIdentity rpi;
     RelyingParty rp;
     ObjectMapper om;
@@ -36,13 +38,10 @@ public class WebAuthn implements Closeable {
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
-    public WebAuthn(String fqdn, String title) {
+    public WebAuthn(final AuthServletContext _ctx, String fqdn, String title) {
+        this.ctx = _ctx;
+        this.mutex = ctx.getMutex();
         synchronized (mutex) {
-            try {
-                random = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-            }
-            random = new SecureRandom();
             //credRepo = new MemoryCredentialRepository();
             //credStore = new InMemoryRegistrationStorage();
             credStore = new MemoryCredentialRepository();
@@ -63,19 +62,32 @@ public class WebAuthn implements Closeable {
         }
     }
 
-    public ObjectMapper getObjectMapper() {
-        synchronized (mutex) {
-            return om;
-        }
+    public static ByteArray generateUserHandle() {
+        return Util.generateRandomByteArray(LENGTH_USER_HANDLE);
     }
 
-    public ByteArray generateRandom() {return generateRandom(32);}
-    public ByteArray generateRandom(int size) {
-        if (size <= 0) throw new IllegalArgumentException();
-        byte[] tmp = new byte[size];
-        random.nextBytes(tmp);
-        return new ByteArray(tmp);
+    public static ByteArray generateRegistrationRequestId() {
+        return Util.generateRandomByteArray(LENGTH_REGISTRATION_REQUEST);
     }
+
+    public static ByteArray generateCredentialId() {
+        return Util.generateRandomByteArray(LENGTH_CREDENTIAL_ID);
+    }
+
+
+//    public ObjectMapper getObjectMapper() {
+//        synchronized (mutex) {
+//            return om;
+//        }
+//    }
+
+//    public static ByteArray generateRandom() {return generateRandom(32);}
+//    public static ByteArray generateRandom(int size) {
+//        if (size <= 0) throw new IllegalArgumentException();
+//        byte[] tmp = new byte[size];
+//        new SecureRandom().nextBytes(tmp);
+//        return new ByteArray(tmp);
+//    }
 
     public String registerStart(
             @NonNull HttpSession session,
@@ -92,13 +104,13 @@ public class WebAuthn implements Closeable {
                 UserIdentity userIdentity = UserIdentity.builder()
                         .name(username)
                         .displayName(displayName.orElse(username))
-                        .id(generateRandom())
+                        .id(Util.generateRandomByteArray(LENGTH_USER_HANDLE))
                         .build();
 
                 RegistrationRequest request = new RegistrationRequest(
                         username,
                         credentialNickname,
-                        generateRandom(),
+                        Util.generateRandomByteArray(LENGTH_REGISTRATION_REQUEST),
                         rp.startRegistration(
                                 StartRegistrationOptions.builder()
                                         .user(userIdentity)
@@ -127,7 +139,7 @@ public class WebAuthn implements Closeable {
         }
     }
 
-    public boolean registerFinish(HttpSession session, String data) {
+    public boolean registerFinish(HttpSession session, String data) throws IOException {
         synchronized(mutex) {
             RegistrationResponse response;
             try {

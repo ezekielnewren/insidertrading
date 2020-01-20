@@ -24,25 +24,43 @@
 
 package com.ezekielnewren.webauthn.data;
 
-import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.attestation.Attestation;
+import com.yubico.webauthn.data.UserIdentity;
+import java.time.Instant;
 import java.util.Optional;
-
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.experimental.Wither;
 
 //@Value
-//@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(callSuper = false)
-public class RegistrationRequest {
+@Builder
+//@Wither
+public class CredentialRegistration {
 
-    public String username;
-    public Optional<String> credentialNickname;
-    public ByteArray requestId;
-    public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
-    //Optional<ByteArray> sessionToken;
+    long signatureCount;
 
+    UserIdentity userIdentity;
+    Optional<String> credentialNickname;
+
+    @JsonIgnore
+    Instant registrationTime;
+    RegisteredCredential credential;
+
+    Optional<Attestation> attestationMetadata;
+
+    @JsonProperty("registrationTime")
+    public String getRegistrationTimestamp() {
+        return registrationTime.toString();
+    }
+
+    public String getUsername() {
+        return userIdentity.getName();
+    }
+
+//    public void setSignatureCount(long signatureCount) {
+//        this.signatureCount = signatureCount;
+//    }
 }

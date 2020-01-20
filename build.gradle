@@ -33,6 +33,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1'
 
+    // https://mvnrepository.com/artifact/org.json/json
+    compile 'org.json:json:20190722'
+
+
     // DATA STRUCTURES
     compile 'com.google.collections:google-collections:1.0-rc2'
 

@@ -25,19 +25,16 @@
 package com.ezekielnewren.webauthn.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.data.UserIdentity;
-import java.time.Instant;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.Value;
-import lombok.experimental.Wither;
 
-//@Value
-@Builder
-//@Wither
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class CredentialRegistration {
 
     long signatureCount;
@@ -45,22 +42,17 @@ public class CredentialRegistration {
     UserIdentity userIdentity;
     Optional<String> credentialNickname;
 
-    @JsonIgnore
-    Instant registrationTime;
+    long registrationTime;
     RegisteredCredential credential;
 
     Optional<Attestation> attestationMetadata;
 
-    @JsonProperty("registrationTime")
-    public String getRegistrationTimestamp() {
-        return registrationTime.toString();
-    }
-
-    public String getUsername() {
+    @JsonIgnore public String getUsername() {
         return userIdentity.getName();
     }
 
-//    public void setSignatureCount(long signatureCount) {
-//        this.signatureCount = signatureCount;
-//    }
+    public void setSignatureCount(long signatureCount) {
+        this.signatureCount = signatureCount;
+    }
+
 }

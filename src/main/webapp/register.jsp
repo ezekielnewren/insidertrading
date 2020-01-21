@@ -63,7 +63,7 @@
 
         function register() {
             var username = $('#username').val();
-            var payload = JSON.stringify(username);
+            var payload = JSON.stringify({username, displayName: username, nickname: null, requireResidentKey: false});
 
             $.ajax({
                 type: 'POST',

@@ -1,6 +1,10 @@
 package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.Build;
+import com.ezekielnewren.webauthn.data.CredentialRegistration;
+import com.ezekielnewren.webauthn.data.RegistrationRequest;
+import com.ezekielnewren.webauthn.data.RegistrationResponse;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -25,7 +29,7 @@ public class AuthServlet extends HttpServlet {
 
         ctx = new AuthServletContext(
                 JacksonHelper.newObjectMapper(),
-                "mongo://localhost",
+                "mongodb://localhost",
                 null,
                 Build.get("fqdn"),
                 Build.get("title")
@@ -41,55 +45,79 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter out = response.getWriter();
-        //ObjectMapper om = wa.getObjectMapper();
-
-        URL url = new URL(request.getRequestURL().toString());
-        String path = url.getPath().substring(1);
-        List<String> tmp = Arrays.asList(path.split("/"));
-        String[] args = tmp.subList(1, tmp.size()).toArray(new String[0]);
-
-        byte[] raw = request.getInputStream().readAllBytes();
-        String data;
         try {
-            data = new String(raw, request.getCharacterEncoding());
-        } catch (NullPointerException|UnsupportedEncodingException e) {
-            data = new String(raw, "UTF-8");
-        }
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
 
-        Supplier<String> errMsg = ()-> {
+            URL url = new URL(request.getRequestURL().toString());
+            String path = url.getPath().substring(1);
+            List<String> tmp = Arrays.asList(path.split("/"));
+            String[] args = tmp.subList(1, tmp.size()).toArray(new String[0]);
+
+            byte[] raw = request.getInputStream().readAllBytes();
+            String data;
             try {
-                response.sendError(400, "bad arguments must be /webauthn/<action>/<state> e.g. /webauthn/register/start");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                data = new String(raw, request.getCharacterEncoding());
+            } catch (NullPointerException | UnsupportedEncodingException e) {
+                data = new String(raw, "UTF-8");
             }
-            return null;
-        };
 
-        if (args.length == 2) {
-            if ("register".equals(args[0])) {
-                if ("start".equals(args[1])) {
-                    String username = data;
-                    String json = ctx.getWebAuthn().registerStart(request.getSession(), username, Optional.empty(), Optional.empty(), false);
-                    out.println(json);
-                } else if ("finish".equals(args[1])) {
-                    boolean result = ctx.getWebAuthn().registerFinish(request.getSession(), data);
-                    String json = result?"\"good\"":"\"bad\"";
-                    out.println(json);
-                } else {
-                    errMsg.get();
+            Supplier<String> errMsg = () -> {
+                try {
+                    response.sendError(400, "bad arguments must be /webauthn/<action>/<state> e.g. /webauthn/register/start");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } else if ("login".equals(args[0])) {
-                if ("start".equals(args[1])) {
+                return null;
+            };
 
-                } else if ("finish".equals(args[1])) {
+            if (args.length == 2) {
+                if ("register".equals(args[0])) {
+                    if ("start".equals(args[1])) {
+                        // decode arguments
+                        JSONObject jsonTmp = new JSONObject(data);
+                        String username = jsonTmp.getString("username");
+                        String displayName = jsonTmp.getString("displayName");
+                        String nickname = jsonTmp.isNull("nickname") ? null : jsonTmp.getString("nickname");
+                        boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
 
-                } else {
-                    errMsg.get();
+                        // webauthn registration start
+                        RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, Optional.ofNullable(displayName), Optional.ofNullable(nickname), requireResidentKey);
+
+                        // encode registration request and send it to the client
+                        String json = ctx.getObjectMapper().writeValueAsString(regRequest);
+                        out.println(json);
+                    } else if ("finish".equals(args[1])) {
+                        // decode arguments
+                        RegistrationResponse regResponse = ctx.getObjectMapper().readValue(data, RegistrationResponse.class);
+
+                        // finish webauthn registration
+                        CredentialRegistration result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
+
+                        // respond to client
+                        String json = result != null ? "\"good\"" : "\"bad\"";
+                        out.println(json);
+                    } else {
+                        errMsg.get();
+                    }
+                } else if ("login".equals(args[0])) {
+                    if ("start".equals(args[1])) {
+
+                    } else if ("finish".equals(args[1])) {
+
+                    } else {
+                        errMsg.get();
+                    }
                 }
+            } else {
+                errMsg.get();
             }
-        } else {
-            errMsg.get();
+        } catch (IOException e) {
+            throw e;
+        } catch (RuntimeException|Error e) {
+            throw e;
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 

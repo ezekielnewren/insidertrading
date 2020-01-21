@@ -1,12 +1,8 @@
 package com.ezekielnewren.webauthn;
 
+import com.ezekielnewren.webauthn.data.CredentialRegistration;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.RegistrationFailedException;
@@ -33,7 +29,7 @@ public class WebAuthn implements Closeable {
 
     RelyingPartyIdentity rpi;
     RelyingParty rp;
-    ObjectMapper om;
+    //ObjectMapper om;
     CredentialRepository credStore;
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
@@ -55,10 +51,10 @@ public class WebAuthn implements Closeable {
                     .allowOriginPort(true)
                     .allowOriginSubdomain(false)
                     .build();
-            om = new ObjectMapper()
-                    .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-                    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-                    .registerModule(new Jdk8Module());
+//            om = new ObjectMapper()
+//                    .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+//                    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+//                    .registerModule(new Jdk8Module());
         }
     }
 
@@ -89,7 +85,7 @@ public class WebAuthn implements Closeable {
 //        return new ByteArray(tmp);
 //    }
 
-    public String registerStart(
+    public RegistrationRequest registerStart(
             @NonNull HttpSession session,
             @NonNull String username,
             Optional<String> displayName,
@@ -124,14 +120,7 @@ public class WebAuthn implements Closeable {
 
                 requestMap.put(request.getRequestId(), request);
 
-                String json = null;
-                try {
-                    json = om.writeValueAsString(request);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-
-                return json;
+                return request;
             } catch (Throwable t) {
                 t.printStackTrace();
                 throw new RuntimeException(t);
@@ -139,40 +128,43 @@ public class WebAuthn implements Closeable {
         }
     }
 
-    public boolean registerFinish(HttpSession session, String data) throws IOException {
+    public CredentialRegistration registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
-            RegistrationResponse response;
-            try {
-                response = om.readValue(data, RegistrationResponse.class);
-            } catch (IOException e) {
-                return false;
-            }
-
             ByteArray reqId = response.getRequestId();
-            RegistrationRequest request = requestMap.get(reqId);
+            RegistrationRequest request = requestMap.remove(reqId);
             PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkcid = response.getCredential();
-            requestMap.remove(reqId);
+            UserIdentity userIdentity = request.getPublicKeyCredentialCreationOptions().getUser();
 
+            RegistrationResult registration;
             try {
-                RegistrationResult registration = rp.finishRegistration(
+                registration = rp.finishRegistration(
                         FinishRegistrationOptions.builder()
                         .request(request.getPublicKeyCredentialCreationOptions())
                         .response(response.getCredential())
                         .build()
                 );
             } catch (RegistrationFailedException e) {
-                return false;
+                return null;
             }
 
-//            RegisteredCredential.builder()
-//                    .credentialId(null)
-//                    .userHandle(null)
-//                    .publicKeyCose(null)
-//                    .signatureCount(0)
-//                    .build();
+            RegisteredCredential registeredCredential = null;
+            registeredCredential = RegisteredCredential.builder()
+                    .credentialId(registration.getKeyId().getId())
+                    .userHandle(request.getPublicKeyCredentialCreationOptions().getUser().getId())
+                    .publicKeyCose(registration.getPublicKeyCose())
+                    .signatureCount(0)
+                    .build();
 
+            CredentialRegistration cr = new CredentialRegistration(
+                    0,
+                    userIdentity,
+                    request.credentialNickname,
+                    System.currentTimeMillis(),
+                    registeredCredential,
+                    registration.getAttestationMetadata()
+            );
 
-            return true;
+            return cr;
         }
     }
 

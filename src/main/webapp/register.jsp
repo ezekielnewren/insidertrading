@@ -103,7 +103,8 @@
                         })
                     }).catch(function (err) {
                         // No acceptable authenticator or user refused consent. Handle appropriately.
-                        log(err)
+                        console.log(err);
+                        alert("Failed to add Authenticator");
                     });
                     console.log("got a signature");
                     // var json = webauthn.responseToObject(credential);

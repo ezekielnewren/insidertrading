@@ -9,12 +9,25 @@
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
     <script>
+        var urlprefix = <%= Build.get("urlprefix") %>;
+
+        function talk(service, payload) {
+            return $.ajax({
+                type: 'POST',
+                url: urlprefix + service,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: payload,
+            })
+        }
+
+
         function register(username, displayName, nickname, requireResidentKey) {
             var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
 
             $.ajax({
                 type: 'POST',
-                url: '/webauthn/'+'register/start',
+                url: urlprefix+'register/start',
                 contentType: 'application/json',
                 dataType: 'json',
                 data: payload,
@@ -33,7 +46,7 @@
                         // console.log("client signature: "+json);
                         $.ajax({
                             type: 'POST',
-                            url: '/webauthn/' + 'register/finish',
+                            url: urlprefix + 'register/finish',
                             contentType: 'application/json',
                             dataType: 'json',
                             data: json,
@@ -61,9 +74,33 @@
 
         }
 
+        function login(username, requireResidentKey) {
+            var payload = JSON.stringify({username, requireResidentKey});
+
+            talk('login/start', payload)
+            .done(function(data) {
+                console.log(data);
+                talk('login/finish', payload)
+                .done(function(data) {
+                    console.log(data);
+                }).catch(function(err) {
+                    alert("uh oh, check the log");
+                    console.log(err);
+                })
+            }).catch(function(err) {
+                console.log(err);
+            })
+
+        }
+
         function onRegister() {
             var username = $('#username').val();
             register(username, username, null, false);
+        }
+
+        function onLogin() {
+            var username = $('#username').val();
+            login(username, false);
         }
     </script>
 
@@ -73,7 +110,10 @@
     Version: <%= Build.get("version") %><br/>
     build time: <%= Build.get("buildtime") %><br/>
     fqdn: <%= Build.get("fqdn") %><br/>
-    <input type="text" id="username"/>
-    <button id="register" onclick="onRegister()">Register</button>
+    <div>
+        <input type="text" id="username"/>
+        <button onclick="onRegister()">Register</button>
+        <button onclick="onLogin()">Login</button>
+    </div>
 </body>
 </html>

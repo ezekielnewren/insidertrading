@@ -107,9 +107,9 @@ public class AuthServlet extends HttpServlet {
                     }
                 } else if ("login".equals(args[0])) {
                     if ("start".equals(args[1])) {
-
+                        out.println("\"login start\"");
                     } else if ("finish".equals(args[1])) {
-
+                        out.println("\"login finish\"");
                     } else {
                         errMsg.get();
                     }

@@ -8,11 +8,15 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.yubico.internal.util.json.JsonStringSerializable;
+import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import org.bson.types.ObjectId;
 
@@ -67,12 +71,31 @@ public class JacksonHelper {
         module.addSerializer(new ObjectIdSerializer());
         module.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
 
-        return new ObjectMapper()
-        .registerModule(new Jdk8Module())
-        .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-        .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-        //.addMixIn(ObjectId.class, MixinObjectId.class)
-        .registerModule(module);
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new Jdk8Module());
+        om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        om.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+        om.registerModule(module);
+
+        om.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+            @Override
+            public Class<?> findPOJOBuilder(AnnotatedClass ac) {
+                if (RegisteredCredential.class.equals(ac.getRawType())) {
+                    return RegisteredCredential.RegisteredCredentialBuilder.class;
+                }
+                return super.findPOJOBuilder(ac);
+            }
+
+            @Override
+            public JsonPOJOBuilder.Value findPOJOBuilderConfig(AnnotatedClass ac) {
+                if (ac.hasAnnotation(JsonPOJOBuilder.class)) {
+                    return super.findPOJOBuilderConfig(ac);
+                }
+                return new JsonPOJOBuilder.Value("build", "");
+            }
+        });
+
+        return om;
     }
 
 

@@ -10,6 +10,10 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.json.Converter;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
+import org.bson.json.StrictJsonWriter;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
@@ -31,6 +35,10 @@ public class JacksonCodecProvider implements CodecProvider {
         private final ObjectMapper objectMapper;
         private final CodecRegistry codecRegistry;
         private final Class<T> type;
+        private final JsonWriterSettings plainJson = JsonWriterSettings.builder()
+                .objectIdConverter((value, writer)->writer.writeString(value.toHexString()))
+                .int64Converter((value, writer)->writer.writeNumber(value.toString()))
+                .build();
 
         public JacksonCodec(ObjectMapper objectMapper,
                             CodecRegistry codecRegistry,
@@ -45,13 +53,7 @@ public class JacksonCodecProvider implements CodecProvider {
             try {
                 BsonDocument document = codecRegistry.get(BsonDocument.class).decode(reader, decoderContext);
 
-                // treat _id specially
-                BsonValue _id = document.get("_id");
-                if (_id != null && _id.getBsonType()==BsonType.OBJECT_ID) {
-                    document.put("_id", new BsonString(_id.asObjectId().getValue().toHexString()));
-                }
-
-                String json = document.toJson();
+                String json = document.toJson(plainJson);
                 return objectMapper.readValue(json, type);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);

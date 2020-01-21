@@ -4,6 +4,7 @@ import com.ezekielnewren.Build;
 import com.ezekielnewren.webauthn.data.CredentialRegistration;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
+import com.ezekielnewren.webauthn.data.UserStore;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -93,6 +94,13 @@ public class AuthServlet extends HttpServlet {
 
                         // finish webauthn registration
                         CredentialRegistration result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
+                        String username = result.getUsername();
+
+                        UserStore store = ctx.getUserStore();
+                        RegistrationStorage regStore = store.getRegistrationStorage();
+                        if (result != null) {
+                            regStore.addRegistrationByUsername(username, result);
+                        }
 
                         // respond to client
                         String json = result != null ? "\"good\"" : "\"bad\"";

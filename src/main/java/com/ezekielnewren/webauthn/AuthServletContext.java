@@ -2,6 +2,7 @@ package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.webauthn.data.JacksonCodecProvider;
 import com.ezekielnewren.webauthn.data.User;
+import com.ezekielnewren.webauthn.data.UserStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -10,7 +11,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import lombok.Getter;
 import lombok.Value;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -28,6 +28,7 @@ public class AuthServletContext {
     MongoCollection<Document> collectionData;
 
     WebAuthn webAuthn;
+    UserStore userStore;
 
     public AuthServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;
@@ -47,6 +48,8 @@ public class AuthServletContext {
         this.collectionData = database.getCollection("data");
 
         this.webAuthn = new WebAuthn(this, fqdn, title);
+
+        this.userStore = new UserStore(this);
     }
 
 

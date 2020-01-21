@@ -20,6 +20,7 @@ import lombok.Setter;
 public class Authenticator {
 
     final long registrationTime;
+    final ByteArray credentialId;
     final ByteArray publicKeyCose;
     long signatureCount;
 

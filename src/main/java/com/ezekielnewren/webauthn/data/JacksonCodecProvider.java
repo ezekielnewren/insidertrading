@@ -68,8 +68,8 @@ public class JacksonCodecProvider implements CodecProvider {
 
                 // treat _id specially
                 BsonValue _id = raw.get("_id");
-                String tmp = _id.asString().getValue();
-                if (_id != null && ObjectId.isValid(tmp)) {
+                String tmp = null;
+                if (_id != null && ObjectId.isValid(tmp = _id.asString().getValue())) {
                     raw.put("_id", new BsonObjectId(new ObjectId(tmp)));
                 }
 

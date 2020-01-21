@@ -24,23 +24,6 @@ import java.io.IOException;
 
 public class JacksonHelper {
 
-//    @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE,
-//            isGetterVisibility = JsonAutoDetect.Visibility.NONE,
-//            setterVisibility = JsonAutoDetect.Visibility.NONE,
-//            creatorVisibility = JsonAutoDetect.Visibility.NONE,
-//            fieldVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY
-//    )
-//    public static abstract class MixinObjectId implements JsonStringSerializable {
-//        @JsonCreator
-//        public MixinObjectId(@JsonProperty("_id") String _id) {}
-//        @JsonProperty("_id") public abstract String toString();
-//
-//        @Override
-//        public String toJsonString() {
-//            return null;
-//        }
-//    }
-
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {
         protected ObjectIdSerializer() {
             super(ObjectId.class);
@@ -63,9 +46,6 @@ public class JacksonHelper {
         }
     }
 
-
-
-
     public static ObjectMapper newObjectMapper() {
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ObjectIdSerializer());
@@ -76,24 +56,6 @@ public class JacksonHelper {
         om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         om.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
         om.registerModule(module);
-
-        om.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
-            @Override
-            public Class<?> findPOJOBuilder(AnnotatedClass ac) {
-                if (RegisteredCredential.class.equals(ac.getRawType())) {
-                    return RegisteredCredential.RegisteredCredentialBuilder.class;
-                }
-                return super.findPOJOBuilder(ac);
-            }
-
-            @Override
-            public JsonPOJOBuilder.Value findPOJOBuilderConfig(AnnotatedClass ac) {
-                if (ac.hasAnnotation(JsonPOJOBuilder.class)) {
-                    return super.findPOJOBuilderConfig(ac);
-                }
-                return new JsonPOJOBuilder.Value("build", "");
-            }
-        });
 
         return om;
     }

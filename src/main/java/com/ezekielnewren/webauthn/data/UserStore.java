@@ -25,8 +25,8 @@ public class UserStore {
                 if (user == null) return new HashSet<>();
 
                 Set<PublicKeyCredentialDescriptor> tmp = new HashSet<>();
-                user.getAuthenticator().keySet().forEach((item)->{
-                    tmp.add(PublicKeyCredentialDescriptor.builder().id(item).build());
+                user.getAuthenticator().forEach((item)->{
+                    tmp.add(PublicKeyCredentialDescriptor.builder().id(item.getCredentialId()).build());
                 });
                 return tmp;
             }
@@ -67,15 +67,15 @@ public class UserStore {
         };
     }
 
-    public void addAuthenticator(String username, String displayName, ByteArray credentialId, Authenticator auth) {
+    public void addAuthenticator(String username, String displayName, Authenticator auth) {
         User user = null;
         boolean insert = !exists(username);
         if (insert) {
-            user = new User(username, displayName, new ArrayList<>(), new HashMap<>());
+            user = new User(username, displayName, new ArrayList<>(), new ArrayList<>());
         } else {
             user = getByUsername(username);
         }
-        user.authenticator.put(credentialId, auth);
+        user.authenticator.add(auth);
         if (insert) {
             ctx.getCollectionUser().insertOne(user);
         } else {
@@ -90,7 +90,7 @@ public class UserStore {
         User user = getByUsername(username);
         if (user == null) throw new RuntimeException("could not find user associated with the AssertionResult");
 
-        Authenticator auth = user.getAuthenticator().get(credentialId);
+        Authenticator auth = user.getAuthenticator(credentialId);
 
         if (auth != null) {
             auth.setSignatureCount(result.getSignatureCount());

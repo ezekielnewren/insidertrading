@@ -104,10 +104,6 @@ public class WebAuthn implements Closeable {
                         .id(Util.generateRandomByteArray(LENGTH_USER_HANDLE))
                         .build();
 
-                StartRegistrationOptions.builder()
-                        .user(null)
-                        .extensions(RegistrationExtensionInputs.builder().build());
-
                 RegistrationRequest request = new RegistrationRequest(
                         username,
                         Optional.ofNullable(nickname),
@@ -152,6 +148,7 @@ public class WebAuthn implements Closeable {
 
             Authenticator auth = new Authenticator(
                     System.currentTimeMillis(),
+                    result.getKeyId().getId(),
                     result.getPublicKeyCose(),
                     0,
                     request.getNickname(),
@@ -161,9 +158,8 @@ public class WebAuthn implements Closeable {
 
             String username = request.getUsername();
             String displayName = request.getPublicKeyCredentialCreationOptions().getUser().getDisplayName();
-            ByteArray authId = result.getKeyId().getId();
 
-            ctx.getUserStore().addAuthenticator(username, displayName, authId, auth);
+            ctx.getUserStore().addAuthenticator(username, displayName, auth);
 
             return true;
         }

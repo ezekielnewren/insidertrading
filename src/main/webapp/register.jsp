@@ -61,9 +61,8 @@
         //
         // }
 
-        function register() {
-            var username = $('#username').val();
-            var payload = JSON.stringify({username, displayName: username, nickname: null, requireResidentKey: false});
+        function register(username, displayName, nickname, requireResidentKey) {
+            var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
 
             $.ajax({
                 type: 'POST',
@@ -133,6 +132,10 @@
 
         }
 
+        function onRegister() {
+            var username = $('#username').val();
+            register(username, username, null, false);
+        }
     </script>
 
 
@@ -142,6 +145,6 @@
     build time: <%= Build.get("buildtime") %><br/>
     fqdn: <%= Build.get("fqdn") %><br/>
     <input type="text" id="username"/>
-    <button id="register" onclick="register()">Register</button>
+    <button id="register" onclick="onRegister()">Register</button>
 </body>
 </html>

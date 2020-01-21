@@ -30,7 +30,7 @@ public class WebAuthn implements Closeable {
     RelyingPartyIdentity rpi;
     RelyingParty rp;
     //ObjectMapper om;
-    CredentialRepository credStore;
+    //CredentialRepository credStore;
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
@@ -40,14 +40,14 @@ public class WebAuthn implements Closeable {
         synchronized (mutex) {
             //credRepo = new MemoryCredentialRepository();
             //credStore = new InMemoryRegistrationStorage();
-            credStore = new MemoryCredentialRepository();
+            //credStore = new MemoryCredentialRepository();
             rpi = RelyingPartyIdentity.builder()
                     .id(fqdn)
                     .name(title)
                     .build();
             rp = RelyingParty.builder()
                     .identity(rpi)
-                    .credentialRepository(credStore)
+                    .credentialRepository(ctx.getUserStore().getCredentialRepository())
                     .allowOriginPort(true)
                     .allowOriginSubdomain(false)
                     .build();

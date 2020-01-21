@@ -47,9 +47,8 @@ public class AuthServletContext {
         this.collectionUser = database.getCollection("user", User.class);
         this.collectionData = database.getCollection("data");
 
-        this.webAuthn = new WebAuthn(this, fqdn, title);
-
         this.userStore = new UserStore(this);
+        this.webAuthn = new WebAuthn(this, fqdn, title);
     }
 
 

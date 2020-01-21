@@ -1,10 +1,8 @@
 package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.Build;
-import com.ezekielnewren.webauthn.data.Authenticator;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
-import com.ezekielnewren.webauthn.data.UserStore;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -15,7 +13,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AuthServlet extends HttpServlet {

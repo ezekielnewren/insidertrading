@@ -4,7 +4,6 @@ import com.ezekielnewren.webauthn.data.Authenticator;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
 import com.yubico.webauthn.*;
-import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;

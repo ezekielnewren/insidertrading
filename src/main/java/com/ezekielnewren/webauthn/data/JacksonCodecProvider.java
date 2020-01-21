@@ -10,10 +10,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.json.Converter;
-import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
-import org.bson.json.StrictJsonWriter;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;

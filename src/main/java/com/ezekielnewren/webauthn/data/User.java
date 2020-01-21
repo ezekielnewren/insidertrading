@@ -1,25 +1,15 @@
 package com.ezekielnewren.webauthn.data;
 
-import com.ezekielnewren.webauthn.JacksonHelper;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.UserIdentity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -28,7 +18,6 @@ import java.util.Optional;
         creatorVisibility = JsonAutoDetect.Visibility.NONE,
         fieldVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY
 )
-//@AllArgsConstructor(onConstructor_={@JsonCreator})
 @Getter
 public class User {
 

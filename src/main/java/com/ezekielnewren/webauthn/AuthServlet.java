@@ -1,7 +1,7 @@
 package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.Build;
-import com.ezekielnewren.webauthn.data.CredentialRegistration;
+import com.ezekielnewren.webauthn.data.Authenticator;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
 import com.ezekielnewren.webauthn.data.UserStore;
@@ -83,7 +83,7 @@ public class AuthServlet extends HttpServlet {
                         boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
 
                         // webauthn registration start
-                        RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, Optional.ofNullable(displayName), Optional.ofNullable(nickname), requireResidentKey);
+                        RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, displayName, nickname, requireResidentKey);
 
                         // encode registration request and send it to the client
                         String json = ctx.getObjectMapper().writeValueAsString(regRequest);
@@ -93,17 +93,17 @@ public class AuthServlet extends HttpServlet {
                         RegistrationResponse regResponse = ctx.getObjectMapper().readValue(data, RegistrationResponse.class);
 
                         // finish webauthn registration
-                        CredentialRegistration result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
-                        String username = result.getUsername();
-
-                        UserStore store = ctx.getUserStore();
-                        RegistrationStorage regStore = store.getRegistrationStorage();
-                        if (result != null) {
-                            regStore.addRegistrationByUsername(username, result);
-                        }
+                        boolean result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
+//                        String username = result.getUsername();
+//
+//                        UserStore store = ctx.getUserStore();
+//                        RegistrationStorage regStore = store.getRegistrationStorage();
+//                        if (result != null) {
+//                            regStore.addRegistrationByUsername(username, result);
+//                        }
 
                         // respond to client
-                        String json = result != null ? "\"good\"" : "\"bad\"";
+                        String json = result?"\"good\"":"\"bad\"";
                         out.println(json);
                     } else {
                         errMsg.get();

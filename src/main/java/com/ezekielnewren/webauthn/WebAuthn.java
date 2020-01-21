@@ -1,9 +1,10 @@
 package com.ezekielnewren.webauthn;
 
-import com.ezekielnewren.webauthn.data.CredentialRegistration;
+import com.ezekielnewren.webauthn.data.Authenticator;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
 import com.yubico.webauthn.*;
+import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
@@ -88,8 +89,8 @@ public class WebAuthn implements Closeable {
     public RegistrationRequest registerStart(
             @NonNull HttpSession session,
             @NonNull String username,
-            Optional<String> displayName,
-            Optional<String> credentialNickname,
+            String displayName,
+            String nickname,
             boolean requireResidentKey
 
     ) {
@@ -99,13 +100,17 @@ public class WebAuthn implements Closeable {
 
                 UserIdentity userIdentity = UserIdentity.builder()
                         .name(username)
-                        .displayName(displayName.orElse(username))
+                        .displayName(displayName)
                         .id(Util.generateRandomByteArray(LENGTH_USER_HANDLE))
                         .build();
 
+                StartRegistrationOptions.builder()
+                        .user(null)
+                        .extensions(RegistrationExtensionInputs.builder().build());
+
                 RegistrationRequest request = new RegistrationRequest(
                         username,
-                        credentialNickname,
+                        Optional.ofNullable(nickname),
                         Util.generateRandomByteArray(LENGTH_REGISTRATION_REQUEST),
                         rp.startRegistration(
                                 StartRegistrationOptions.builder()
@@ -128,43 +133,39 @@ public class WebAuthn implements Closeable {
         }
     }
 
-    public CredentialRegistration registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
+    public boolean registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
             ByteArray reqId = response.getRequestId();
             RegistrationRequest request = requestMap.remove(reqId);
-            PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkcid = response.getCredential();
-            UserIdentity userIdentity = request.getPublicKeyCredentialCreationOptions().getUser();
 
-            RegistrationResult registration;
+            RegistrationResult result;
             try {
-                registration = rp.finishRegistration(
+                result = rp.finishRegistration(
                         FinishRegistrationOptions.builder()
                         .request(request.getPublicKeyCredentialCreationOptions())
                         .response(response.getCredential())
                         .build()
                 );
             } catch (RegistrationFailedException e) {
-                return null;
+                return false;
             }
 
-            RegisteredCredential registeredCredential = null;
-            registeredCredential = RegisteredCredential.builder()
-                    .credentialId(registration.getKeyId().getId())
-                    .userHandle(request.getPublicKeyCredentialCreationOptions().getUser().getId())
-                    .publicKeyCose(registration.getPublicKeyCose())
-                    .signatureCount(0)
-                    .build();
-
-            CredentialRegistration cr = new CredentialRegistration(
-                    0,
-                    userIdentity,
-                    request.credentialNickname,
+            Authenticator auth = new Authenticator(
                     System.currentTimeMillis(),
-                    registeredCredential,
-                    registration.getAttestationMetadata()
+                    result.getPublicKeyCose(),
+                    0,
+                    request.getNickname(),
+                    result.getAttestationMetadata(),
+                    result.getAttestationType()
             );
 
-            return cr;
+            String username = request.getUsername();
+            String displayName = request.getPublicKeyCredentialCreationOptions().getUser().getDisplayName();
+            ByteArray authId = result.getKeyId().getId();
+
+            ctx.getUserStore().addAuthenticator(username, displayName, authId, auth);
+
+            return true;
         }
     }
 

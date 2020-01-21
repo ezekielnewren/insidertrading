@@ -24,25 +24,22 @@
 
 package com.ezekielnewren.webauthn.data;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import java.util.Optional;
 
 import lombok.*;
 
-//@Value
-//@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_={@JsonCreator})
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
 public class RegistrationRequest {
 
     public String username;
-    public Optional<String> credentialNickname;
+    public Optional<String> nickname;
     public ByteArray requestId;
     public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
-    //Optional<ByteArray> sessionToken;
 
 }

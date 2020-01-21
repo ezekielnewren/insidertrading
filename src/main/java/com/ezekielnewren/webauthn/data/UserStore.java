@@ -1,6 +1,6 @@
 package com.ezekielnewren.webauthn.data;
 
-import com.ezekielnewren.webauthn.AuthServletContext;
+import com.ezekielnewren.webauthn.WebauthnServletContext;
 import com.mongodb.client.model.Filters;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.CredentialRepository;
@@ -13,10 +13,10 @@ import java.util.*;
 
 public class UserStore {
 
-    AuthServletContext ctx;
+    WebauthnServletContext ctx;
     CredentialRepository repo;
 
-    public UserStore(AuthServletContext _ctx) {
+    public UserStore(WebauthnServletContext _ctx) {
         this.ctx = _ctx;
         repo = new CredentialRepository() {
             @Override

@@ -17,7 +17,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
 @Value
-public class AuthServletContext {
+public class WebauthnServletContext {
     final Object mutex = new Object();
 
     ObjectMapper objectMapper;
@@ -30,7 +30,7 @@ public class AuthServletContext {
     WebAuthn webAuthn;
     UserStore userStore;
 
-    public AuthServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
+    public WebauthnServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;
 
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),

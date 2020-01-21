@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class AuthServlet extends HttpServlet {
-    AuthServletContext ctx;
+public class WebauthnServlet extends HttpServlet {
+    WebauthnServletContext ctx;
 
     @Override
     public void init() throws ServletException {
@@ -25,14 +25,14 @@ public class AuthServlet extends HttpServlet {
         }
 
 
-        ctx = new AuthServletContext(
+        ctx = new WebauthnServletContext(
                 JacksonHelper.newObjectMapper(),
                 "mongodb://localhost",
                 null,
                 Build.get("fqdn"),
                 Build.get("title")
         );
-        getServletContext().log(AuthServlet.class.getSimpleName()+" loaded");
+        getServletContext().log(WebauthnServlet.class.getSimpleName()+" loaded");
     }
 
     @Override

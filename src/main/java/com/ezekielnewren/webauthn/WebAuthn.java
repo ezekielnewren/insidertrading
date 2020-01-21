@@ -24,7 +24,7 @@ public class WebAuthn implements Closeable {
     public static final int LENGTH_REGISTRATION_REQUEST = 16;
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
-    final AuthServletContext ctx;
+    final WebauthnServletContext ctx;
     final @NonNull Object mutex;
 
     RelyingPartyIdentity rpi;
@@ -34,7 +34,7 @@ public class WebAuthn implements Closeable {
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
-    public WebAuthn(final AuthServletContext _ctx, String fqdn, String title) {
+    public WebAuthn(final WebauthnServletContext _ctx, String fqdn, String title) {
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
         synchronized (mutex) {

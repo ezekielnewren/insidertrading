@@ -10,18 +10,16 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.UserIdentity;
 import java.util.Optional;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@AllArgsConstructor(onConstructor_={@JsonCreator})
+@AllArgsConstructor //(onConstructor_={@JsonCreator})
+@NoArgsConstructor
 @Getter
 public class Authenticator {
 
-    final long registrationTime;
-    final ByteArray credentialId;
-    final ByteArray publicKeyCose;
+    long registrationTime;
+    ByteArray credentialId;
+    ByteArray publicKeyCose;
     long signatureCount;
 
     Optional<String> nickname;

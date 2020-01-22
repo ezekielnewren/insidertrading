@@ -1,6 +1,8 @@
 package com.ezekielnewren.webauthn;
 
 import com.ezekielnewren.Build;
+import com.ezekielnewren.webauthn.data.AssertionRequestWrapper;
+import com.ezekielnewren.webauthn.data.AssertionResponse;
 import com.ezekielnewren.webauthn.data.RegistrationRequest;
 import com.ezekielnewren.webauthn.data.RegistrationResponse;
 import org.json.JSONObject;
@@ -107,9 +109,21 @@ public class WebauthnServlet extends HttpServlet {
                     }
                 } else if ("login".equals(args[0])) {
                     if ("start".equals(args[1])) {
-                        out.println("\"login start\"");
+                        JSONObject jsonTmp = new JSONObject(data);
+                        String username = jsonTmp.getString("username");
+                        boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
+
+                        AssertionRequestWrapper arw = ctx.getWebAuthn().assertionStart(username);
+
+                        String json = ctx.getObjectMapper().writeValueAsString(arw);
+                        out.println(json);
                     } else if ("finish".equals(args[1])) {
-                        out.println("\"login finish\"");
+                        AssertionResponse ar = ctx.getObjectMapper().readValue(data, AssertionResponse.class);
+
+                        boolean result = ctx.getWebAuthn().assertionFinish(ar);
+
+                        String json = result?"\"good\"":"\"bad\"";
+                        out.println(json);
                     } else {
                         errMsg.get();
                     }

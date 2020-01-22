@@ -1,10 +1,9 @@
 package com.ezekielnewren.webauthn;
 
-import com.ezekielnewren.webauthn.data.Authenticator;
-import com.ezekielnewren.webauthn.data.RegistrationRequest;
-import com.ezekielnewren.webauthn.data.RegistrationResponse;
+import com.ezekielnewren.webauthn.data.*;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
+import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
 
@@ -21,7 +20,7 @@ public class WebAuthn implements Closeable {
     // https://developers.yubico.com/java-webauthn-server/
 
     public static final int LENGTH_USER_HANDLE = 12;
-    public static final int LENGTH_REGISTRATION_REQUEST = 16;
+    public static final int LENGTH_REQUEST_ID = 16;
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
     final WebauthnServletContext ctx;
@@ -33,6 +32,7 @@ public class WebAuthn implements Closeable {
     //CredentialRepository credStore;
 
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
+    Map<ByteArray, AssertionRequestWrapper> assertMap = new HashMap<>();
 
     public WebAuthn(final WebauthnServletContext _ctx, String fqdn, String title) {
         this.ctx = _ctx;
@@ -62,8 +62,8 @@ public class WebAuthn implements Closeable {
         return Util.generateRandomByteArray(LENGTH_USER_HANDLE);
     }
 
-    public static ByteArray generateRegistrationRequestId() {
-        return Util.generateRandomByteArray(LENGTH_REGISTRATION_REQUEST);
+    public static ByteArray generateRequestId() {
+        return Util.generateRandomByteArray(LENGTH_REQUEST_ID);
     }
 
     public static ByteArray generateCredentialId() {
@@ -106,7 +106,7 @@ public class WebAuthn implements Closeable {
                 RegistrationRequest request = new RegistrationRequest(
                         username,
                         Optional.ofNullable(nickname),
-                        Util.generateRandomByteArray(LENGTH_REGISTRATION_REQUEST),
+                        Util.generateRandomByteArray(LENGTH_REQUEST_ID),
                         rp.startRegistration(
                                 StartRegistrationOptions.builder()
                                         .user(userIdentity)
@@ -137,9 +137,9 @@ public class WebAuthn implements Closeable {
             try {
                 result = rp.finishRegistration(
                         FinishRegistrationOptions.builder()
-                        .request(request.getPublicKeyCredentialCreationOptions())
-                        .response(response.getCredential())
-                        .build()
+                                .request(request.getPublicKeyCredentialCreationOptions())
+                                .response(response.getCredential())
+                                .build()
                 );
             } catch (RegistrationFailedException e) {
                 return false;
@@ -163,6 +163,46 @@ public class WebAuthn implements Closeable {
             return true;
         }
     }
+
+    public AssertionRequestWrapper assertionStart(String username) {
+
+        ByteArray requestId = generateRequestId();
+        AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
+                rp.startAssertion(StartAssertionOptions.builder()
+                        .username(username)
+                        .build())
+        );
+
+        assertMap.put(requestId, request);
+
+        return request;
+    }
+
+    public boolean assertionFinish(AssertionResponse response) {
+
+        AssertionRequestWrapper request = assertMap.remove(response.getRequestId());
+
+        AssertionResult result = null;
+        try {
+             result = rp.finishAssertion(
+                    FinishAssertionOptions.builder()
+                    .request(request.getAssertionRequest())
+                    .response(response.getPublicKeyCredential())
+                    .build()
+            );
+
+            if (!(result.isSuccess() && result.isSignatureCounterValid())) {
+                return false;
+            }
+
+            ctx.getUserStore().updateSignatureCount(result);
+        } catch (AssertionFailedException e) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     @Override
     public void close() throws IOException {

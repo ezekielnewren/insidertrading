@@ -80,11 +80,29 @@
             talk('login/start', payload)
             .done(function(data) {
                 console.log(data);
-                talk('login/finish', payload)
-                .done(function(data) {
-                    console.log(data);
+                // console.log('executeAuthenticateRequest', request);
+                var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
+
+                return webauthn.getAssertion(pkcro).then(function(assertion) {
+                    var requestId = data.requestId;
+                    var publicKeyCredential = webauthn.responseToObject(assertion);
+
+                    var payload = JSON.stringify({
+                        requestId,
+                        publicKeyCredential
+                    });
+
+                    talk('login/finish', payload)
+                        .done(function(data) {
+                            console.log(data);
+                            if ("good" === data) {
+                                alert("good assertion");
+                            }
+                        }).catch(function(err) {
+                        alert("uh oh, check the log");
+                        console.log(err);
+                    })
                 }).catch(function(err) {
-                    alert("uh oh, check the log");
                     console.log(err);
                 })
             }).catch(function(err) {

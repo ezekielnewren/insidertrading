@@ -1,6 +1,7 @@
 package com.ezekielnewren.webauthn.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.data.AttestationType;
 import com.yubico.webauthn.data.ByteArray;
@@ -13,14 +14,14 @@ import lombok.*;
 @Getter
 public class Authenticator {
 
-    long registrationTime;
-    ByteArray credentialId;
-    ByteArray publicKeyCose;
-    long signatureCount;
+    @JsonProperty long registrationTime;
+    @JsonProperty ByteArray credentialId;
+    @JsonProperty ByteArray publicKeyCose;
+    @JsonProperty long signatureCount;
 
-    Optional<String> nickname;
-    Optional<Attestation> attestation;
-    AttestationType attestationType;
+    @JsonProperty Optional<String> nickname;
+    @JsonProperty Optional<Attestation> attestation;
+    @JsonProperty AttestationType attestationType;
 
     @JsonIgnore
     public void setSignatureCount(long signatureCount) {

@@ -14,4 +14,5 @@ run/
 ## generated files or temporary code
 src/main/resources/build.info
 src/main/java/ignore/
+src/test/java/ignore/
 

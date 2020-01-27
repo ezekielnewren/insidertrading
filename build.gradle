@@ -61,14 +61,6 @@ task createProperties(dependsOn: processResources) {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            exclude 'ignore/**'
-        }
-    }
-}
-
 classes {
     dependsOn createProperties
 }

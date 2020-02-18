@@ -29,8 +29,8 @@ public class User {
     @JsonProperty @NonNull String firstName;
     @JsonProperty @NonNull String lastName;
     @JsonProperty @NonNull int ssn;
-    @JsonProperty @NonNull int savingAccount;
-    @JsonProperty @NonNull int checkingAccount;
+    @JsonProperty @NonNull long savingAccount;
+    @JsonProperty @NonNull long checkingAccount;
 
     @JsonCreator
     public User(@JsonProperty("_id") final ObjectId _id,
@@ -41,8 +41,8 @@ public class User {
                 @JsonProperty("firstName") String _firstName,
                 @JsonProperty("lastName") String _lastName,
                 @JsonProperty("ssn") int _ssn,
-                @JsonProperty("savingAccount") int _savingAccount,
-                @JsonProperty("checkingAccount") int _checkingAccount
+                @JsonProperty("savingAccount") long _savingAccount,
+                @JsonProperty("checkingAccount") long _checkingAccount
 
     ) {
         this._id = _id;
@@ -58,7 +58,7 @@ public class User {
     }
 
     public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
-                int _savingAccount, int _checkingAccount) {
+                long _savingAccount, long _checkingAccount) {
         this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _savingAccount, _checkingAccount);
     }
 

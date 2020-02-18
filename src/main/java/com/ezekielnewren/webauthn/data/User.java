@@ -26,23 +26,40 @@ public class User {
     @JsonProperty @NonNull Optional<String> displayName;
     @JsonProperty @NonNull List<String> email;
     @JsonProperty @NonNull List<Authenticator> authenticator;
+    @JsonProperty @NonNull String firstName;
+    @JsonProperty @NonNull String lastName;
+    @JsonProperty @NonNull int ssn;
+    @JsonProperty @NonNull int savingAccount;
+    @JsonProperty @NonNull int checkingAccount;
 
     @JsonCreator
     public User(@JsonProperty("_id") final ObjectId _id,
                 @JsonProperty("username") String _username,
                 @JsonProperty("displayName") String _displayName,
                 @JsonProperty("email") List<String> _email,
-                @JsonProperty("authenticator") List<Authenticator> _authenticator
+                @JsonProperty("authenticator") List<Authenticator> _authenticator,
+                @JsonProperty("firstName") String _firstName,
+                @JsonProperty("lastName") String _lastName,
+                @JsonProperty("ssn") int _ssn,
+                @JsonProperty("savingAccount") int _savingAccount,
+                @JsonProperty("checkingAccount") int _checkingAccount
+
     ) {
         this._id = _id;
         this.username = _username;
         this.displayName = Optional.ofNullable(_displayName);
         this.email = _email;
         this.authenticator = _authenticator;
+        this.firstName = _firstName;
+        this.lastName = _lastName;
+        this.ssn = _ssn;
+        this.savingAccount = _savingAccount;
+        this.checkingAccount = _checkingAccount;
     }
 
-    public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator) {
-        this(new ObjectId(), _username, _displayName, _email, _authenticator);
+    public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
+                int _savingAccount, int _checkingAccount) {
+        this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _savingAccount, _checkingAccount);
     }
 
     public ByteArray getUserHandle() {

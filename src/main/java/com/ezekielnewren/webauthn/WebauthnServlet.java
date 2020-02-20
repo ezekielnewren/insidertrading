@@ -17,15 +17,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * The WebauthnServlet class handles communication with server when user logs in or registers.
+ * */
 public class WebauthnServlet extends HttpServlet {
+    /**
+     *Object to hold data serialization.
+     */
     WebauthnServletContext ctx;
 
+    /**
+     * Constructor assigns data to ctx object and logs data on success.
+     * @throws ServletException throws a new Servlet Exception.
+     */
     @Override
     public void init() throws ServletException {
         if (Util.DEBUG) {
             getServletContext().log("DEBUG MODE");
         }
-
 
         ctx = new WebauthnServletContext(
                 JacksonHelper.newObjectMapper(),
@@ -34,15 +43,30 @@ public class WebauthnServlet extends HttpServlet {
                 Build.get("fqdn"),
                 Build.get("title")
         );
+
         getServletContext().log(WebauthnServlet.class.getSimpleName()+" loaded");
     }
 
+
+    /**
+     * Displays a html page with 'only POST allowed' on GET request
+     * @param req contains the client request information
+     * @param response contains all server response information
+     * @throws IOException throws new I/O Exception
+     */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
         out.println("<html><body>only POST allowed</body></html>");
     }
 
+
+    /**
+     * Displays correct webpage on POST, handles login and registration by error checking and deserializing values.
+     * @param request contains the client request information
+     * @param response contains all server response information
+     * @throws IOException throws new I/O Exception.
+     */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {

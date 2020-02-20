@@ -16,8 +16,15 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
+/**
+ *
+ */
 @Value
 public class WebauthnServletContext {
+
+    /**
+     *
+     */
     final Object mutex = new Object();
 
     ObjectMapper objectMapper;
@@ -30,6 +37,13 @@ public class WebauthnServletContext {
     WebAuthn webAuthn;
     UserStore userStore;
 
+    /**
+     * @param _om
+     * @param connectionString
+     * @param _cred
+     * @param fqdn
+     * @param title
+     */
     public WebauthnServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;
 

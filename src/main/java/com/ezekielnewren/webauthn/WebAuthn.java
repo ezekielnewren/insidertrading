@@ -14,26 +14,69 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The WebAuthn class
+ * */
 public class WebAuthn implements Closeable {
 
     // https://developers.yubico.com/WebAuthn/Libraries/Using_a_library.html
     // https://developers.yubico.com/java-webauthn-server/
 
+
+    /**
+     * Total length of user name
+     */
     public static final int LENGTH_USER_HANDLE = 12;
+
+    /**
+     * Total length of the request id
+     */
     public static final int LENGTH_REQUEST_ID = 16;
+
+    /**
+     * Total length of credential id
+     */
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
+    /**
+     * Constant Object for servlet context
+     */
     final WebauthnServletContext ctx;
+
+    /**
+     * Constant Object mutex with nullcheck parameter
+     */
     final @NonNull Object mutex;
 
+    /**
+     *
+     */
     RelyingPartyIdentity rpi;
+
+    /**
+     *
+     */
     RelyingParty rp;
     //ObjectMapper om;
     //CredentialRepository credStore;
 
+    /**
+     *
+     */
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
+
+    /**
+     *
+     */
     Map<ByteArray, AssertionRequestWrapper> assertMap = new HashMap<>();
 
+
+    /**
+     *
+     * @param _ctx the context of the servlet
+     * @param fqdn
+     * @param title
+     */
     public WebAuthn(final WebauthnServletContext _ctx, String fqdn, String title) {
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
@@ -58,14 +101,23 @@ public class WebAuthn implements Closeable {
         }
     }
 
+    /**
+     * @return
+     */
     public static ByteArray generateUserHandle() {
         return Util.generateRandomByteArray(LENGTH_USER_HANDLE);
     }
 
+    /**
+     * @return
+     */
     public static ByteArray generateRequestId() {
         return Util.generateRandomByteArray(LENGTH_REQUEST_ID);
     }
 
+    /**
+     * @return
+     */
     public static ByteArray generateCredentialId() {
         return Util.generateRandomByteArray(LENGTH_CREDENTIAL_ID);
     }
@@ -85,6 +137,14 @@ public class WebAuthn implements Closeable {
 //        return new ByteArray(tmp);
 //    }
 
+    /**
+     * @param session
+     * @param username
+     * @param displayName
+     * @param nickname
+     * @param requireResidentKey
+     * @return
+     */
     public RegistrationRequest registerStart(
             @NonNull HttpSession session,
             @NonNull String username,
@@ -128,6 +188,12 @@ public class WebAuthn implements Closeable {
         }
     }
 
+    /**
+     * @param session
+     * @param response
+     * @return
+     * @throws IOException
+     */
     public boolean registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
             ByteArray reqId = response.getRequestId();
@@ -164,6 +230,10 @@ public class WebAuthn implements Closeable {
         }
     }
 
+    /**
+     * @param username
+     * @return
+     */
     public AssertionRequestWrapper assertionStart(String username) {
 
         ByteArray requestId = generateRequestId();
@@ -178,6 +248,10 @@ public class WebAuthn implements Closeable {
         return request;
     }
 
+    /**
+     * @param response
+     * @return
+     */
     public boolean assertionFinish(AssertionResponse response) {
 
         AssertionRequestWrapper request = assertMap.remove(response.getRequestId());
@@ -204,6 +278,9 @@ public class WebAuthn implements Closeable {
     }
 
 
+    /**
+     * @throws IOException throws new I/O Exception
+     */
     @Override
     public void close() throws IOException {
 

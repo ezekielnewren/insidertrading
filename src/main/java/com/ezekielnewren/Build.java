@@ -7,8 +7,14 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ *
+ */
 public class Build {
 
+    /**
+     *
+     */
     static ImmutableMap<String, String> internal;
 
     static {
@@ -26,10 +32,17 @@ public class Build {
     }
 
 
+    /**
+     * @return
+     */
     public static ImmutableMap<String, String> info() {
         return internal;
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public static String get(String key) {
         return info().get(key);
     }

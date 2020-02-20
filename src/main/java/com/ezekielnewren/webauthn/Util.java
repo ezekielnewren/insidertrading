@@ -6,13 +6,23 @@ import org.bson.types.ObjectId;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ *
+ */
 public class Util {
 
+    /**
+     *
+     */
     public static final boolean DEBUG;
 
+    /**
+     *
+     */
     static final SecureRandom random;
 
     static {
+        //what are these
         boolean ASSERT_ON = false;
         assert(ASSERT_ON=true);
         boolean envDebug = "true".equals(System.getenv("debug"));
@@ -29,6 +39,10 @@ public class Util {
         }
     }
 
+    /**
+     * @param amount
+     * @return
+     */
     public static byte[] generateRandom(int amount) {
         if (amount <= 0) throw new IllegalArgumentException("amount must be greater than 0");
         byte[] b = new byte[amount];
@@ -36,10 +50,17 @@ public class Util {
         return b;
     }
 
+    /**
+     * @param amount
+     * @return
+     */
     public static ByteArray generateRandomByteArray(int amount) {
         return new ByteArray(generateRandom(amount));
     }
 
+    /**
+     * @return
+     */
     public static ObjectId generateRandomObjectId() {
         return new ObjectId(generateRandom(12));
     }

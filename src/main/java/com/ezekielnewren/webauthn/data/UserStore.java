@@ -67,7 +67,7 @@ public class UserStore {
         };
     }
 
-    public void addAuthenticator(String username, String displayName, Authenticator auth) {
+    public void addAuthenticator(String username, String displayName, Authenticator auth, String firstName, String lastName, int ssn, long savingAccount, long checkingAccount) {
         User user = null;
         boolean insert = !exists(username);
         if (insert) {

@@ -1,0 +1,30 @@
+.wrapper{
+    max-width: 350px;
+    max-height: 200px;
+    border: 1px dotted lightgrey;
+    display:flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 15%;
+    padding: 20px 40px;
+    border-radius: 15px;;
+    justify-content: center;
+}
+
+.center-text{
+    text-align: center;
+}
+
+.line-item{
+    padding: 10px;
+}
+
+#lbl-username{
+    flex: 1;
+    padding-right: 15px;
+}
+
+#username{
+    flex: 1;
+}
+

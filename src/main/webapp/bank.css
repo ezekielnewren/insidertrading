@@ -1,0 +1,128 @@
+ #nav{
+    position:fixed;
+    top:0;
+    left:0;
+    height: 75px;
+    background-color:grey;
+    color:white;
+    width: 100%;
+    text-align: center;
+}
+
+#body{
+    margin: 120px auto;
+    max-width: 1000px;
+    min-height: 500px;
+    display: flex;
+    border: dotted lightgrey 1px;
+    border-radius: 20px;
+}
+
+h2{
+    margin: 15px;
+    margin-bottom:5px;
+    text-align: left;
+}
+
+#accounts{
+    display:flex;
+    flex-direction: column;
+    flex: 2;
+    border: dotted lightgrey 1px;
+    margin: 10px;
+    border-radius: 20px;
+}
+
+.account-item{
+    display:flex;
+    padding: 10px 10px;
+    border-top: dotted lightgrey 1px;
+    border-bottom: dotted lightgrey 1px;
+}
+.account-item div{ font-size:25px; }
+.title{
+    flex: 1;
+    flex-grow: 1;
+    text-align: left;
+}
+.balance{
+    flex:1;
+    text-align: right;
+}
+
+#right{
+    flex: 2;
+    border: dotted lightgrey 1px;
+    margin: 10px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#transfer{
+    display:flex;
+    flex-direction: column;
+    min-height: 200px;
+    border-bottom: dotted lightgray 1px;
+}
+
+.select-account{
+    height: 35px;
+    font-size: 20px;
+    margin:10px;
+}
+
+#transfer-footer{
+    display: flex;
+    margin:10px;
+    height: 35px;
+}
+
+#amount{
+    flex: 1;
+    margin-right: 30px;
+    font-size: 20px;
+}
+
+#To{
+    padding-left: 15px;
+}
+
+#send-button{
+    flex:1;
+    font-size: 20px;
+}
+
+#history{
+    display:flex;
+    flex-direction: column;
+}
+
+.history-item{
+    display: flex;
+    padding: 5px 25px;
+    min-height: 25px;
+    align-items: center;
+    border-top: dotted lightgrey 1px;
+    border-bottom: dotted lightgrey 1px;
+}
+
+.history-authorized{
+    width: 90px;
+    text-align: left;
+    padding-right: 10px;
+    height:100%;
+    border-right: dotted lightgrey   1px;
+}
+.history-text{
+    flex:2;
+    flex-grow:1;
+    text-align: left;
+    padding-left:10px;
+}
+.history-amount{
+    flex:1;
+    flex-shrink: 1;
+
+    text-align: right;
+}

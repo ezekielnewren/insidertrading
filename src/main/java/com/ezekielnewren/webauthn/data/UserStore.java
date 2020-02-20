@@ -71,7 +71,7 @@ public class UserStore {
         User user = null;
         boolean insert = !exists(username);
         if (insert) {
-            user = new User(username, displayName, new ArrayList<>(), new ArrayList<>());
+            user = new User(username, displayName, new ArrayList<>(), new ArrayList<>(), null, null, 0, 0, 0);
         } else {
             user = getByUsername(username);
         }

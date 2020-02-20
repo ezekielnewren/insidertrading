@@ -28,9 +28,9 @@ public class User {
     @JsonProperty @NonNull List<Authenticator> authenticator;
     @JsonProperty @NonNull String firstName;
     @JsonProperty @NonNull String lastName;
-    @JsonProperty @NonNull int ssn;
-    @JsonProperty @NonNull long savingAccount;
-    @JsonProperty @NonNull long checkingAccount;
+    @JsonProperty int ssn;
+    @JsonProperty long savingAccount;
+    @JsonProperty long checkingAccount;
 
     @JsonCreator
     public User(@JsonProperty("_id") final ObjectId _id,

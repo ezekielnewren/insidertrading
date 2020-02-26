@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The WebAuthn class
+ * The WebAuthn class handles the authentication of client and server.
  * */
 public class WebAuthn implements Closeable {
 
@@ -24,58 +24,58 @@ public class WebAuthn implements Closeable {
 
 
     /**
-     * Total length of user name
+     * Total length of user name.
      */
     public static final int LENGTH_USER_HANDLE = 12;
 
     /**
-     * Total length of the request id
+     * Total length of the request id.
      */
     public static final int LENGTH_REQUEST_ID = 16;
 
     /**
-     * Total length of credential id
+     * Total length of credential id.
      */
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
     /**
-     * Constant Object for servlet context
+     * Constant Object for servlet context.
      */
     final WebauthnServletContext ctx;
 
     /**
-     * Constant Object mutex with nullcheck parameter
+     * Constant Object mutex with nullcheck parameter.
      */
     final @NonNull Object mutex;
 
     /**
-     *
+     * Variable for RelayingPartyIdentity.
      */
     RelyingPartyIdentity rpi;
 
     /**
-     *
+     * Variable for Relaying Party information.
      */
     RelyingParty rp;
     //ObjectMapper om;
     //CredentialRepository credStore;
 
     /**
-     *
+     * Map for registration request information.
      */
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
     /**
-     *
+     * Map for assertion information.
      */
     Map<ByteArray, AssertionRequestWrapper> assertMap = new HashMap<>();
 
 
     /**
-     *
-     * @param _ctx the context of the servlet
-     * @param fqdn
-     * @param title
+     * Contains information and constructs Builders RelyingPartyIdentity and RelyingParty
+     * @param _ctx the context of the servlet.
+     * @param fqdn fully qualified domain name.
+     * @param title client user name.
      */
     public WebAuthn(final WebauthnServletContext _ctx, String fqdn, String title) {
         this.ctx = _ctx;
@@ -102,21 +102,24 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * @return
+     * Generates a random user name.
+     * @return ByteArray of that user handle.
      */
     public static ByteArray generateUserHandle() {
         return Util.generateRandomByteArray(LENGTH_USER_HANDLE);
     }
 
     /**
-     * @return
+     * Generates random request id.
+     * @return ByteArray of that request id.
      */
     public static ByteArray generateRequestId() {
         return Util.generateRandomByteArray(LENGTH_REQUEST_ID);
     }
 
     /**
-     * @return
+     * Generates a random credential id.
+     * @return ByteArray of that credential id.
      */
     public static ByteArray generateCredentialId() {
         return Util.generateRandomByteArray(LENGTH_CREDENTIAL_ID);
@@ -138,12 +141,14 @@ public class WebAuthn implements Closeable {
 //    }
 
     /**
-     * @param session
-     * @param username
-     * @param displayName
-     * @param nickname
-     * @param requireResidentKey
-     * @return
+     * Contains the information and builds, on success, userIdentity and request.
+     * Maps request to the request map.
+     * @param session currently not in use.
+     * @param username clients name.
+     * @param displayName clients display name.
+     * @param nickname optional client name field.
+     * @param requireResidentKey specify requirements regarding authenticator.
+     * @return RegistrationRequest, request, containing necessary information.
      */
     public RegistrationRequest registerStart(
             @NonNull HttpSession session,
@@ -189,10 +194,13 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * @param session
-     * @param response
-     * @return
-     * @throws IOException
+     * Update results with completed registration object.
+     * Updates username, displayname, and auth.
+     * Adds authenticator with client information to ctx.
+     * @param session currently not in use.
+     * @param response response information from server.
+     * @return returns true on success.
+     * @throws IOException throws a new I/O Exception.
      */
     public boolean registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
@@ -231,7 +239,9 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * @param username
+     * Generates a request id.
+     * Creates a request using request id and
+     * @param username client user name.
      * @return
      */
     public AssertionRequestWrapper assertionStart(String username) {
@@ -249,8 +259,9 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * @param response
-     * @return
+     * Checks to see if assertion is finished.
+     * @param response response information from server.
+     * @return returns true if finished.
      */
     public boolean assertionFinish(AssertionResponse response) {
 
@@ -279,6 +290,8 @@ public class WebAuthn implements Closeable {
 
 
     /**
+     * Closes this stream and releases any system resources associated with it.
+     * If the stream is already closed then invoking this method has no effect.
      * @throws IOException throws new I/O Exception
      */
     @Override

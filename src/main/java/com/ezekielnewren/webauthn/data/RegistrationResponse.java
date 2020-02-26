@@ -32,12 +32,26 @@ import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import lombok.Value;
 
+/**
+ *
+ */
 @Value
 public class RegistrationResponse {
 
+    /**
+     *
+     */
     private final ByteArray requestId;
+
+    /**
+     *
+     */
     private final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential;
 
+    /**
+     * @param requestId
+     * @param credential
+     */
     @JsonCreator
     public RegistrationResponse(
         @JsonProperty("requestId") ByteArray requestId,

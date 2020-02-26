@@ -47,6 +47,7 @@ public class JacksonHelper {
      *
      */
     public static class ObjectIdDeserializer extends StdDeserializer<ObjectId> {
+
         /**
          *
          */
@@ -69,6 +70,7 @@ public class JacksonHelper {
 
     /**
      * @return
+     * @see ObjectMapper
      */
     public static ObjectMapper newObjectMapper() {
         SimpleModule module = new SimpleModule();

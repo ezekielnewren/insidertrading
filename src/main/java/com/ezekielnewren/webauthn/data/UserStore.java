@@ -11,14 +11,33 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
+/**
+ *
+ */
 public class UserStore {
 
+    /**
+     *
+     */
     WebauthnServletContext ctx;
+
+
+    /**
+     *
+     */
     CredentialRepository repo;
 
+    /**
+     * @param _ctx
+     */
     public UserStore(WebauthnServletContext _ctx) {
         this.ctx = _ctx;
         repo = new CredentialRepository() {
+
+            /**
+             * @param username
+             * @return
+             */
             @Override
             public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
                 User user = getByUsername(username);
@@ -31,6 +50,10 @@ public class UserStore {
                 return tmp;
             }
 
+            /**
+             * @param username
+             * @return
+             */
             @Override
             public Optional<ByteArray> getUserHandleForUsername(String username) {
                 User user = getByUsername(username);
@@ -39,6 +62,10 @@ public class UserStore {
                 return Optional.of(user.getUserHandle());
             }
 
+            /**
+             * @param userHandle
+             * @return
+             */
             @Override
             public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
                 User user = getByUserHandle(userHandle);
@@ -47,6 +74,11 @@ public class UserStore {
                 return Optional.of(user.getUsername());
             }
 
+            /**
+             * @param credentialId
+             * @param userHandle
+             * @return
+             */
             @Override
             public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
                 User user = getByUserHandle(userHandle);
@@ -55,6 +87,10 @@ public class UserStore {
                 return Optional.ofNullable(user.getRegisteredCredential(credentialId));
             }
 
+            /**
+             * @param credentialId
+             * @return
+             */
             @Override
             public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
                 Set<RegisteredCredential> tmp = new HashSet<>();
@@ -67,6 +103,11 @@ public class UserStore {
         };
     }
 
+    /**
+     * @param username
+     * @param displayName
+     * @param auth
+     */
     public void addAuthenticator(String username, String displayName, Authenticator auth) {
         User user = null;
         boolean insert = !exists(username);
@@ -83,6 +124,9 @@ public class UserStore {
         }
     }
 
+    /**
+     * @param result
+     */
     public void updateSignatureCount(AssertionResult result) {
         String username = result.getUsername();
         ByteArray credentialId = result.getCredentialId();
@@ -98,26 +142,48 @@ public class UserStore {
         }
     }
 
+    /**
+     * @return
+     */
     public CredentialRepository getCredentialRepository() {
         return repo;
     }
 
+    /**
+     * @param username
+     * @return
+     */
     public User getByUsername(String username) {
         return ctx.getCollectionUser().find(Filters.eq("username", username)).first();
     }
 
+    /**
+     * @param userHandle
+     * @return
+     */
     public User getByUserHandle(ByteArray userHandle) {
         return getByObjectId(new ObjectId(userHandle.getBytes()));
     }
 
+    /**
+     * @param _id
+     * @return
+     */
     public User getByObjectId(ObjectId _id) {
         return ctx.getCollectionUser().find(Filters.eq("_id", _id)).first();
     }
 
+    /**
+     * @return
+     */
     public Iterable<User> getAll() {
         return ctx.getCollectionUser().find();
     }
 
+    /**
+     * @param username
+     * @return
+     */
     public boolean exists(String username) {
         return ctx.getCollectionUser().countDocuments(Filters.eq("username", username))>0;
     }

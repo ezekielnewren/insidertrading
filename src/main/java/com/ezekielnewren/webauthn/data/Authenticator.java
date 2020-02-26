@@ -9,20 +9,52 @@ import java.util.Optional;
 
 import lombok.*;
 
+/**
+ *
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class Authenticator {
 
+    /**
+     *
+     */
     @JsonProperty long registrationTime;
+
+    /**
+     *
+     */
     @JsonProperty ByteArray credentialId;
+
+    /**
+     *
+     */
     @JsonProperty ByteArray publicKeyCose;
+
+    /**
+     *
+     */
     @JsonProperty long signatureCount;
 
+    /**
+     *
+     */
     @JsonProperty Optional<String> nickname;
+
+    /**
+     *
+     */
     @JsonProperty Optional<Attestation> attestation;
+
+    /**
+     *
+     */
     @JsonProperty AttestationType attestationType;
 
+    /**
+     * @param signatureCount
+     */
     @JsonIgnore
     public void setSignatureCount(long signatureCount) {
         this.signatureCount = signatureCount;

@@ -16,27 +16,67 @@ import org.bson.types.ObjectId;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+/**
+ *
+ */
 public class JacksonCodecProvider implements CodecProvider {
+
+    /**
+     *
+     */
     private final ObjectMapper objectMapper;
 
+    /**
+     * @param bsonObjectMapper
+     */
     public JacksonCodecProvider(final ObjectMapper bsonObjectMapper) {
         this.objectMapper = bsonObjectMapper;
     }
 
+    /**
+     * @param type
+     * @param registry
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> Codec<T> get(final Class<T> type, final CodecRegistry registry) {
             return new JacksonCodec<>(objectMapper, registry, type);
     }
 
+    /**
+     * @param <T>
+     */
     class JacksonCodec<T> implements Codec<T> {
+
+        /**
+         *
+         */
         private final ObjectMapper objectMapper;
+
+        /**
+         *
+         */
         private final CodecRegistry codecRegistry;
+
+        /**
+         *
+         */
         private final Class<T> type;
+
+        /**
+         *
+         */
         private final JsonWriterSettings plainJson = JsonWriterSettings.builder()
                 .objectIdConverter((value, writer)->writer.writeString(value.toHexString()))
                 .int64Converter((value, writer)->writer.writeNumber(value.toString()))
                 .build();
 
+        /**
+         * @param objectMapper
+         * @param codecRegistry
+         * @param type
+         */
         public JacksonCodec(ObjectMapper objectMapper,
                             CodecRegistry codecRegistry,
                             Class<T> type) {
@@ -45,6 +85,11 @@ public class JacksonCodecProvider implements CodecProvider {
             this.type = type;
         }
 
+        /**
+         * @param reader
+         * @param decoderContext
+         * @return
+         */
         @Override
         public T decode(BsonReader reader, DecoderContext decoderContext) {
             try {
@@ -57,6 +102,11 @@ public class JacksonCodecProvider implements CodecProvider {
             }
         }
 
+        /**
+         * @param writer
+         * @param value
+         * @param encoderContext
+         */
         @Override
         public void encode(BsonWriter writer, Object value, EncoderContext encoderContext) {
             try {
@@ -77,6 +127,9 @@ public class JacksonCodecProvider implements CodecProvider {
             }
         }
 
+        /**
+         * @return
+         */
         @Override
         public Class<T> getEncoderClass() {
             return this.type;

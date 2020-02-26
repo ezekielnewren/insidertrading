@@ -31,15 +31,36 @@ import java.util.Optional;
 
 import lombok.*;
 
+/**
+ *
+ */
 @AllArgsConstructor(onConstructor_={@JsonCreator})
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
 public class RegistrationRequest {
 
+    /**
+     *
+     */
     public String username;
+
+
+    /**
+     *
+     */
     public Optional<String> nickname;
+
+
+    /**
+     *
+     */
     public ByteArray requestId;
+
+
+    /**
+     *
+     */
     public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 
 }

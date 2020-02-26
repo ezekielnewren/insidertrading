@@ -23,18 +23,49 @@ import org.bson.codecs.configuration.CodecRegistry;
 public class WebauthnServletContext {
 
     /**
-     *
+     * Creating a new constant mutex object.
+     * @see Object
      */
     final Object mutex = new Object();
 
+    /**
+     * Creating an objectMapper variable
+     * @see ObjectMapper
+     */
     ObjectMapper objectMapper;
 
+    /**
+     * Declare a new client
+     * @see MongoClient
+     */
     MongoClient client;
+
+    /**
+     * Declare a new database
+     * @see MongoDatabase
+     */
     MongoDatabase database;
+
+    /**
+     * Declare a new collection
+     * @see MongoCollection
+     */
     MongoCollection<User> collectionUser;
+
+    /**
+     *
+     * @see MongoCollection
+     */
     MongoCollection<Document> collectionData;
 
+    /**
+     *
+     */
     WebAuthn webAuthn;
+
+    /**
+     *
+     */
     UserStore userStore;
 
     /**

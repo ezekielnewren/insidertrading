@@ -9,11 +9,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ *
+ */
 @NoArgsConstructor
 @Getter
 public class AssertionResponse {
 
+    /**
+     *
+     */
     @JsonProperty @NonNull ByteArray requestId;
+
+
+    /**
+     *
+     */
     @JsonProperty @NonNull PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> publicKeyCredential;
 
 }

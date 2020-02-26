@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,6 +131,10 @@ public class User {
     /**
      * @return
      */
+    public User(String _username, String _displayName, ArrayList<String> _email, ArrayList<Authenticator> _authenticator) {
+        this(_username, _displayName, _email, _authenticator, null, null, 0, 0, 0);
+    }
+
     public ByteArray getUserHandle() {
         return new ByteArray(_id.toByteArray());
     }

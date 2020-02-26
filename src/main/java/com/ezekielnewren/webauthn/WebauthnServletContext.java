@@ -11,6 +11,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import lombok.Getter;
 import lombok.Value;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -20,6 +21,7 @@ import org.bson.codecs.configuration.CodecRegistry;
  *
  */
 @Value
+@Getter
 public class WebauthnServletContext {
 
     /**
@@ -45,18 +47,23 @@ public class WebauthnServletContext {
      * @see MongoDatabase
      */
     MongoDatabase database;
+//<<<<<<< HEAD
+//
+//    /**
+//     * Declare a new collection
+//     * @see MongoCollection
+//     */
+//    MongoCollection<User> collectionUser;
+//
+//    /**
+//     *
+//     * @see MongoCollection
+//     */
+//    MongoCollection<Document> collectionData;
+//=======
+    public MongoCollection<User> collectionUser;
+    public MongoCollection<Document> collectionData;
 
-    /**
-     * Declare a new collection
-     * @see MongoCollection
-     */
-    MongoCollection<User> collectionUser;
-
-    /**
-     *
-     * @see MongoCollection
-     */
-    MongoCollection<Document> collectionData;
 
     /**
      *

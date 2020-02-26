@@ -232,7 +232,7 @@ public class WebAuthn implements Closeable {
             String username = request.getUsername();
             String displayName = request.getPublicKeyCredentialCreationOptions().getUser().getDisplayName();
 
-            ctx.getUserStore().addAuthenticator(username, displayName, auth);
+            ctx.getUserStore().addAuthenticator(username, displayName, auth, null, null, 0, 0, 0);
 
             return true;
         }

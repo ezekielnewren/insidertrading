@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *
+ * The class User contains user information, constructs user JSON and user object.
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE,
         isGetterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -26,66 +26,67 @@ import java.util.Optional;
 public class User {
 
     /**
-     *
+     * 12-byte primary key value for user
      */
     @JsonProperty @NonNull final ObjectId _id;
 
     /**
-     *
+     * user name for user
      */
     @JsonProperty @NonNull String username;
 
     /**
-     *
+     * display name for user
      */
     @JsonProperty @NonNull Optional<String> displayName;
 
     /**
-     *
+     * list of emails for user
      */
     @JsonProperty @NonNull List<String> email;
 
     /**
-     *
+     * list of authenticators for user
      */
     @JsonProperty @NonNull List<Authenticator> authenticator;
 
     /**
-     *
+     * first name for user
      */
     @JsonProperty @NonNull String firstName;
 
     /**
-     *
+     * last name for user
      */
     @JsonProperty @NonNull String lastName;
 
     /**
-     *
+     * ssn for user
      */
     @JsonProperty int ssn;
 
     /**
-     *
+     * savings account for user
      */
     @JsonProperty long savingAccount;
 
     /**
-     *
+     * checking account for user
      */
     @JsonProperty long checkingAccount;
 
     /**
-     * @param _id
-     * @param _username
-     * @param _displayName
-     * @param _email
-     * @param _authenticator
-     * @param _firstName
-     * @param _lastName
-     * @param _ssn
-     * @param _savingAccount
-     * @param _checkingAccount
+     * Constructs a User JSON object.
+     * @param _id generated user id.
+     * @param _username user specified name.
+     * @param _displayName user specified name (optional).
+     * @param _email list user specified email(s).
+     * @param _authenticator list user give authenticator(s).
+     * @param _firstName user specified firstname.
+     * @param _lastName user specified lastname.
+     * @param _ssn user specified ssn.
+     * @param _savingAccount user specified savings account.
+     * @param _checkingAccount user specified checking account.
      */
     @JsonCreator
     public User(@JsonProperty("_id") final ObjectId _id,
@@ -113,34 +114,45 @@ public class User {
     }
 
     /**
-     * @param _username
-     * @param _displayName
-     * @param _email
-     * @param _authenticator
-     * @param _firstName
-     * @param _lastName
-     * @param _ssn
-     * @param _savingAccount
-     * @param _checkingAccount
+     * Constructs a user object.
+     * @param _username user specified name.
+     * @param _displayName user specified name (optional).
+     * @param _email list of user specified email(s).
+     * @param _authenticator list of authenticator(s).
+     * @param _firstName user specified firstname.
+     * @param _lastName user specified lastame.
+     * @param _ssn user specified ssn.
+     * @param _savingAccount user specified savings account.
+     * @param _checkingAccount user specified checking account.
      */
     public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
                 long _savingAccount, long _checkingAccount) {
         this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _savingAccount, _checkingAccount);
     }
 
+    //possible duplicate?
     /**
-     * @return
+     * Constructs a user object.
+     * @param _username user specified name.
+     * @param _displayName user specified name (optional).
+     * @param _email list of user specified email(s).
+     * @param _authenticator list of user specified authenticator(s).
      */
     public User(String _username, String _displayName, ArrayList<String> _email, ArrayList<Authenticator> _authenticator) {
         this(_username, _displayName, _email, _authenticator, null, null, 0, 0, 0);
     }
 
+    /**
+     * Used to handler, mainly when optional,
+     * @return new bytearray with id bytearray.
+     */
     public ByteArray getUserHandle() {
         return new ByteArray(_id.toByteArray());
     }
 
 
     /**
+     *
      * @return
      */
     public String getDisplayName() {
@@ -165,7 +177,7 @@ public class User {
 
     /**
      * @param credentialId
-     * @return
+     * @return null
      */
     public Authenticator getAuthenticator(@NonNull ByteArray credentialId) {
         for (Authenticator auth: getAuthenticator()) {

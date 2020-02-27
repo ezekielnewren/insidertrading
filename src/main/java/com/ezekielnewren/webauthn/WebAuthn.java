@@ -239,10 +239,10 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * Generates a request id.
-     * Creates a request using request id and
+     * Creates a request using requestId and relying party username.
+     * Maps the request using the requestId as key.
      * @param username client user name.
-     * @return
+     * @return requestId and relying party username
      */
     public AssertionRequestWrapper assertionStart(String username) {
 

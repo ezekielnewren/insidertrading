@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 /**
- *
+ * The JacksonCodecProvider class
  */
 public class JacksonCodecProvider implements CodecProvider {
 

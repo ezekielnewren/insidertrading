@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 
 /**
  * The WebauthnServlet class handles communication with server when user logs in or registers.
- * @see HttpServlet
  * */
 public class WebauthnServlet extends HttpServlet {
 
@@ -52,11 +51,9 @@ public class WebauthnServlet extends HttpServlet {
 
     /**
      * Displays a html page with 'only POST allowed' on GET request.
-     * @param req contains the client request information
-     * @param response contains all server response information
-     * @throws IOException throws new I/O Exception
-     * @see HttpServletRequest
-     * @see HttpServletResponse
+     * @param req contains the client request information.
+     * @param response contains all server response information.
+     * @throws IOException throws new I/O Exception.
      */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
@@ -67,11 +64,9 @@ public class WebauthnServlet extends HttpServlet {
 
     /**
      * Displays correct webpage on POST, handles login and registration by error checking and deserializing values.
-     * @param request contains the client request information
-     * @param response contains all server response information
+     * @param request contains the client request information.
+     * @param response contains all server response information.
      * @throws IOException throws new I/O Exception.
-     * @see HttpServletRequest
-     * @see HttpServletResponse
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

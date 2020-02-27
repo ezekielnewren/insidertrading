@@ -14,28 +14,31 @@ import org.bson.types.ObjectId;
 import java.io.IOException;
 
 /**
- * The JacksonHelper class used to convert JSON to something Mongo can use.
+ * The JacksonHelper class that assists Jackson by serializing, deserializing and mapping object.
  */
 public class JacksonHelper {
 
+    //used only on objectId?
     /**
-     *
+     * The ObjectIdSerializer class that handles serialization for JacksonHelper.
      */
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {
 
+
         /**
-         *
+         * Constructor takes parent ObjectId reference.
          */
         protected ObjectIdSerializer() {
             super(ObjectId.class);
         }
 
         /**
-         * @param _id
-         * @param jgen
-         * @param provider
-         * @throws IOException
-         * @throws JsonProcessingException
+         * Generates a JSON with the id converted to hex.
+         * @param _id generated user id.
+         * @param jgen generator used for writing JSON.
+         * @param provider the 'blueprint' for how to serialize.
+         * @throws IOException throws a new I/O exception.
+         * @throws JsonProcessingException throws an exception if one occurs when parsing or generating JSON.
          */
         @Override
         public void serialize(ObjectId _id, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
@@ -44,18 +47,19 @@ public class JacksonHelper {
     }
 
     /**
-     *
+     * The ObjectIdDeserializer handles deserialization for JacksonHelper.
      */
     public static class ObjectIdDeserializer extends StdDeserializer<ObjectId> {
 
         /**
-         *
+         * Constructor takes the parent ObjectId reference.
          */
         protected ObjectIdDeserializer() {
             super(ObjectId.class);
         }
 
         /**
+         *
          * @param p
          * @param ctxt
          * @return
@@ -70,7 +74,6 @@ public class JacksonHelper {
 
     /**
      * @return
-     * @see ObjectMapper
      */
     public static ObjectMapper newObjectMapper() {
         SimpleModule module = new SimpleModule();

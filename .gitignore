@@ -5,6 +5,8 @@
 #gradlew
 #gradlew.bat
 
+/web/
+
 # generated
 bin/
 build/

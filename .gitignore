@@ -9,6 +9,7 @@
 bin/
 build/
 run/
+doc/
 *.class
 
 ## generated files or temporary code

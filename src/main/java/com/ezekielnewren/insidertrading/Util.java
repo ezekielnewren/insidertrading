@@ -1,4 +1,4 @@
-package com.ezekielnewren.webauthn;
+package com.ezekielnewren.insidertrading;
 
 import com.yubico.webauthn.data.ByteArray;
 import org.bson.types.ObjectId;

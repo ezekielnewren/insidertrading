@@ -22,43 +22,45 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package com.ezekielnewren.webauthn.data;
+package com.ezekielnewren.insidertrading.data;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
-import lombok.Value;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import java.util.Optional;
+
+import lombok.*;
 
 /**
  *
  */
-@Value
-public class RegistrationResponse {
+@AllArgsConstructor(onConstructor_={@JsonCreator})
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = false)
+public class RegistrationRequest {
 
     /**
      *
      */
-    private final ByteArray requestId;
+    public String username;
+
 
     /**
      *
      */
-    private final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential;
+    public Optional<String> nickname;
+
 
     /**
-     * @param requestId
-     * @param credential
+     *
      */
-    @JsonCreator
-    public RegistrationResponse(
-        @JsonProperty("requestId") ByteArray requestId,
-        @JsonProperty("credential") PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential
-    ) {
-        this.requestId = requestId;
-        this.credential = credential;
-    }
+    public ByteArray requestId;
+
+
+    /**
+     *
+     */
+    public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 
 }

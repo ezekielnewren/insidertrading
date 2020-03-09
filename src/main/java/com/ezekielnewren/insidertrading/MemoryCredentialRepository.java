@@ -1,4 +1,4 @@
-package com.ezekielnewren.webauthn;
+package com.ezekielnewren.insidertrading;
 
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;

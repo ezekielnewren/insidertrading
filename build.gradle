@@ -1,5 +1,6 @@
 plugins {
     id 'com.palantir.git-version' version '0.11.0'
+    id 'io.franzbecker.gradle-lombok' version '3.3.0' // https://github.com/franzbecker/gradle-lombok/blob/master/examples/delombok-gradle-groovy/build.gradle
 }
 
 apply plugin: 'java'
@@ -13,6 +14,12 @@ sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
+    jcenter()
+}
+
+lombok { // optional: values below are the defaults
+    version = "1.18.12"
+    sha256 = "" // "49381508ecb02b3c173368436ef71b24c0d4418ad260e6cc98becbcf4b345406"
 }
 
 dependencies {
@@ -58,6 +65,31 @@ task createProperties(dependsOn: processResources) {
             p['urlprefix'] = "/webauthn/"
             p.store w, null
         }
+    }
+}
+
+import io.franzbecker.gradle.lombok.task.DelombokTask
+
+task delombok(type: DelombokTask, dependsOn: compileJava) {
+    ext.outputDir = file("$buildDir/delombok")
+    outputs.dir(outputDir)
+    sourceSets.main.java.srcDirs.each {
+        inputs.dir(it)
+        args(it, "-d", outputDir)
+    }
+    doFirst {
+        outputDir.deleteDir()
+    }
+}
+
+javadoc {
+    dependsOn delombok
+    source = delombok.outputDir
+    destinationDir = reporting.file("$buildDir/doc")
+    failOnError = false
+    doLast {
+        delete "src/main/webapp/doc"
+        ant.move file: "$buildDir/doc", todir: "src/main/webapp"
     }
 }
 

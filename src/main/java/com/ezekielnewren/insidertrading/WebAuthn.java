@@ -1,6 +1,6 @@
-package com.ezekielnewren.webauthn;
+package com.ezekielnewren.insidertrading;
 
-import com.ezekielnewren.webauthn.data.*;
+import com.ezekielnewren.insidertrading.data.*;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
@@ -41,7 +41,7 @@ public class WebAuthn implements Closeable {
     /**
      * Constant Object for servlet context.
      */
-    final WebauthnServletContext ctx;
+    final InsiderTradingServletContext ctx;
 
     /**
      * Constant Object mutex with nullcheck parameter.
@@ -77,7 +77,7 @@ public class WebAuthn implements Closeable {
      * @param fqdn fully qualified domain name.
      * @param title client user name.
      */
-    public WebAuthn(final WebauthnServletContext _ctx, String fqdn, String title) {
+    public WebAuthn(final InsiderTradingServletContext _ctx, String fqdn, String title) {
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
         synchronized (mutex) {

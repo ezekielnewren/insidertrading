@@ -1,8 +1,8 @@
-package com.ezekielnewren.webauthn;
+package com.ezekielnewren.insidertrading;
 
-import com.ezekielnewren.webauthn.data.JacksonCodecProvider;
-import com.ezekielnewren.webauthn.data.User;
-import com.ezekielnewren.webauthn.data.UserStore;
+import com.ezekielnewren.insidertrading.data.JacksonCodecProvider;
+import com.ezekielnewren.insidertrading.data.User;
+import com.ezekielnewren.insidertrading.data.UserStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -22,7 +22,7 @@ import org.bson.codecs.configuration.CodecRegistry;
  */
 @Value
 @Getter
-public class WebauthnServletContext {
+public class InsiderTradingServletContext {
 
     /**
      * Creating a new constant mutex object.
@@ -83,7 +83,7 @@ public class WebauthnServletContext {
      * @param fqdn
      * @param title
      */
-    public WebauthnServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
+    public InsiderTradingServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;
 
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),

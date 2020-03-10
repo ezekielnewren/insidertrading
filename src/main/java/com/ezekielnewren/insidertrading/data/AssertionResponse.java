@@ -1,4 +1,4 @@
-package com.ezekielnewren.webauthn.data;
+package com.ezekielnewren.insidertrading.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;

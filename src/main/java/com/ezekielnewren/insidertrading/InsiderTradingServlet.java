@@ -1,10 +1,10 @@
-package com.ezekielnewren.webauthn;
+package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.Build;
-import com.ezekielnewren.webauthn.data.AssertionRequestWrapper;
-import com.ezekielnewren.webauthn.data.AssertionResponse;
-import com.ezekielnewren.webauthn.data.RegistrationRequest;
-import com.ezekielnewren.webauthn.data.RegistrationResponse;
+import com.ezekielnewren.insidertrading.data.AssertionRequestWrapper;
+import com.ezekielnewren.insidertrading.data.AssertionResponse;
+import com.ezekielnewren.insidertrading.data.RegistrationRequest;
+import com.ezekielnewren.insidertrading.data.RegistrationResponse;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * The WebauthnServlet class handles communication with server when user logs in or registers.
+ * The InsiderTradingServlet class handles communication with server when user logs in or registers.
  * */
-public class WebauthnServlet extends HttpServlet {
+public class InsiderTradingServlet extends HttpServlet {
 
     /**
      *Object to hold data serialization.
      */
-    WebauthnServletContext ctx;
+    InsiderTradingServletContext ctx;
 
     /**
      * Constructor assigns data to ctx object and logs data on success.
@@ -37,7 +37,7 @@ public class WebauthnServlet extends HttpServlet {
             getServletContext().log("DEBUG MODE");
         }
 
-        ctx = new WebauthnServletContext(
+        ctx = new InsiderTradingServletContext(
                 JacksonHelper.newObjectMapper(),
                 "mongodb://localhost",
                 null,
@@ -45,7 +45,7 @@ public class WebauthnServlet extends HttpServlet {
                 Build.get("title")
         );
 
-        getServletContext().log(WebauthnServlet.class.getSimpleName()+" loaded");
+        getServletContext().log(InsiderTradingServlet.class.getSimpleName()+" loaded");
     }
 
 

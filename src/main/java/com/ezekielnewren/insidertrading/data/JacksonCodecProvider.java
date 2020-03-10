@@ -1,7 +1,7 @@
 /*
  * https://stackoverflow.com/a/47949886/7514786
  */
-package com.ezekielnewren.webauthn.data;
+package com.ezekielnewren.insidertrading.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.*;

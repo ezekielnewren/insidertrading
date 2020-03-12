@@ -115,7 +115,7 @@ public class User {
      * @param _firstName user specified firstname.
      * @param _lastName user specified lastame.
      * @param _ssn user specified ssn.
-     * @param _savingAccount user specified savings account.
+     * @param _accounts user specified accounts.
      *      * @param _checkingAccount user specified checking account.
      */
     public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,

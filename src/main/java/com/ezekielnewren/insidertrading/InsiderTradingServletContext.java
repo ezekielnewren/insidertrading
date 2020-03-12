@@ -1,6 +1,7 @@
 package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.JacksonCodecProvider;
+import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
 import com.ezekielnewren.insidertrading.data.UserStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,6 +65,7 @@ public class InsiderTradingServletContext {
 
     public MongoCollection<User> collectionUser;
     public MongoCollection<Document> collectionData;
+    public MongoCollection<Transaction> collectionTransaction;
 
 
     /**
@@ -99,6 +101,7 @@ public class InsiderTradingServletContext {
         this.database = client.getDatabase("tomcat");
         this.collectionUser = database.getCollection("user", User.class);
         this.collectionData = database.getCollection("data");
+        this.collectionTransaction = database.getCollection("transaction", Transaction.class);
 
         this.userStore = new UserStore(this);
         this.webAuthn = new WebAuthn(this, fqdn, title);

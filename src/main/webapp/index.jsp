@@ -10,7 +10,7 @@
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
     <script>
-        var urlprefix = "/insidertrading/";//<%= Build.get("urlprefix") %>;
+        var urlprefix = <%= Build.get("urlprefix") %>;
         // debugger;
 
         function talk(service, payload) {

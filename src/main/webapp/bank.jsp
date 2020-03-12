@@ -9,15 +9,16 @@
 
 <body>
     <div id="nav">
-        <h1>WebAuth</h1>
-        <!-- Log In/Log Out -->
+        <div class="nav-item"></div>
+        <h1 class="nav-item">Insider Trading</h1>
+        <a  class="nav-item" href="./index.jsp">Login</a>
     </div>
     <div id="body">
         <div id="accounts">
             <h2>Accounts</h2>
             <div class="account-item">
                 <div class="title">Title</div>
-                <div class="balance">$$$$</div>
+                <div class="balance">Account Total</div>
             </div>
         </div>
         <div id="right">
@@ -42,12 +43,13 @@
                 <div class="history-item">
                     <div class="history-authorized">Authorized</div>
                     <div class="history-text">From: To:</div>
-                    <div class="history-amount">$$$$</div>
+                    <div class="history-amount">$ Transfered</div>
                 </div>
                 <!-- Use JSP for loop -->
             </div>
         </div>
     </div>
+    <script src="scripts/bank.js"></script>
 </body>
 
 </html>

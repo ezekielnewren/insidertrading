@@ -1,5 +1,5 @@
 .wrapper{
-    max-width: 350px;
+    max-width: 250px;
     max-height: 200px;
     border: 1px dotted lightgrey;
     display:flex;
@@ -11,12 +11,23 @@
     justify-content: center;
 }
 
+h2{
+    margin: 5px;
+}
+
 .center-text{
     text-align: center;
 }
 
 .line-item{
     padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+.line-item button{
+    margin: 0 10px;
+    width: 65px;
+    height: 25px;
 }
 
 #lbl-username{

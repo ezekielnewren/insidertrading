@@ -1,28 +1,43 @@
 package com.ezekielnewren.insidertrading.data;
 
 
+import com.ezekielnewren.insidertrading.Util;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class Account {
+    public final ObjectId _id;
     public long number;
     public String title;
     public long balance;
 
+    enum AccountDefaultNames {
+        Savings,
+        Checking,
+        MoneyMarket
+    }
 
+    @JsonCreator
+    Account(
+            @JsonProperty("_id") ObjectId _id,
+            @JsonProperty("number") long _number,
+            @JsonProperty("title") String _title,
+            @JsonProperty("balance") long _balance
+    ) {
+        this._id = _id;
+        this.number = _number;
+        this.title = _title;
+        this.balance = _balance;
+    }
 
-//    @JsonCreator
-//    public Account(
-//            @JsonProperty("number") long _number,
-//            @JsonProperty("title") String _title,
-//            @JsonProperty("balance") long _balance
-//    ) {
-//        this.number = _number;
-//        this.title = _title;
-//        this.balance = _balance;
-//    }
+    /**
+     * Create a new account with an ObjectId created by a csprng rather
+     * than the mongo default for ObjectId
+     * @param _title what kind of financial accout e.g. Savings, Checking
+     * @param _balance the number of cents
+     */
+    public Account(String _title, long _balance) {
+        this(Util.generateRandomObjectId(), Util.getRandom().nextInt(Integer.MAX_VALUE), _title, _balance);
+    }
 }

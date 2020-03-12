@@ -38,6 +38,10 @@ public class Util {
         }
     }
 
+    public static SecureRandom getRandom() {
+        return random;
+    }
+
     /**
      * Method to retrieve random bytes.
      * @param amount the number of bytes you would like.

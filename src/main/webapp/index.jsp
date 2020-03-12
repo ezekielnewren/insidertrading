@@ -4,12 +4,14 @@
 <head>
     <title>Title</title>
 
+    <link rel="stylesheet" type="text/css"  href="login.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="lib/base64js/base64js-1.3.0.min.js"></script>
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
     <script>
-        var urlprefix = <%= Build.get("urlprefix") %>;
+        var urlprefix = "/insidertrading/";//<%= Build.get("urlprefix") %>;
+        // debugger;
 
         function talk(service, payload) {
             return $.ajax({
@@ -125,13 +127,17 @@
 
 </head>
 <body>
-    Version: <%= Build.get("version") %><br/>
-    build time: <%= Build.get("buildtime") %><br/>
-    fqdn: <%= Build.get("fqdn") %><br/>
-    <div>
-        <input type="text" id="username"/>
-        <button onclick="onRegister()">Register</button>
-        <button onclick="onLogin()">Login</button>
+    <div class="wrapper">
+        <h2 class="center-text">Login</h2>
+        <div>
+            <div class="line-item">
+                <label id="lbl-username">Username:</label>
+                <input type="text" id="username"/></div>
+            <div class="line-item">
+                <button onclick="onRegister()">Register</button>
+                <button onclick="onLogin()">Login</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

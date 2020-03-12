@@ -7,22 +7,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- *
+ * Class Util contains static helper methods.
  */
 public class Util {
 
     /**
-     *
+     * Constant boolean variable used logging/debugging.
      */
     public static final boolean DEBUG;
 
     /**
-     *
+     * Cryptographically strong random number generator.
      */
     static final SecureRandom random;
 
     static {
-        //what are these
         boolean ASSERT_ON = false;
         assert(ASSERT_ON=true);
         boolean envDebug = "true".equals(System.getenv("debug"));
@@ -40,8 +39,9 @@ public class Util {
     }
 
     /**
-     * @param amount
-     * @return
+     * Method to retrieve random bytes.
+     * @param amount the number of bytes you would like.
+     * @return randomized bytes.
      */
     public static byte[] generateRandom(int amount) {
         if (amount <= 0) throw new IllegalArgumentException("amount must be greater than 0");
@@ -51,15 +51,17 @@ public class Util {
     }
 
     /**
-     * @param amount
-     * @return
+     *
+     * @param amount the number of bytes you would like.
+     * @return new byte array with the randomized bytes
      */
     public static ByteArray generateRandomByteArray(int amount) {
         return new ByteArray(generateRandom(amount));
     }
 
     /**
-     * @return
+     *
+     * @return new mongo ObjectId
      */
     public static ObjectId generateRandomObjectId() {
         return new ObjectId(generateRandom(12));

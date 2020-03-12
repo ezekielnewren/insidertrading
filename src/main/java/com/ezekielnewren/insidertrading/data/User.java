@@ -66,14 +66,10 @@ public class User {
     @JsonProperty int ssn;
 
     /**
-     * savings account for user
+     *Accounts for user
      */
-    @JsonProperty long savingAccount;
+    @JsonProperty List<Account> accounts;
 
-    /**
-     * checking account for user
-     */
-    @JsonProperty long checkingAccount;
 
     /**
      * Constructs a User JSON object.
@@ -85,8 +81,7 @@ public class User {
      * @param _firstName user specified firstname.
      * @param _lastName user specified lastname.
      * @param _ssn user specified ssn.
-     * @param _savingAccount user specified savings account.
-     * @param _checkingAccount user specified checking account.
+     * @param _accounts used for Accounts.
      */
     @JsonCreator
     public User(@JsonProperty("_id") final ObjectId _id,
@@ -97,8 +92,7 @@ public class User {
                 @JsonProperty("firstName") String _firstName,
                 @JsonProperty("lastName") String _lastName,
                 @JsonProperty("ssn") int _ssn,
-                @JsonProperty("savingAccount") long _savingAccount,
-                @JsonProperty("checkingAccount") long _checkingAccount
+                @JsonProperty("accounts") List<Account> _accounts
 
     ) {
         this._id = _id;
@@ -109,8 +103,7 @@ public class User {
         this.firstName = _firstName;
         this.lastName = _lastName;
         this.ssn = _ssn;
-        this.savingAccount = _savingAccount;
-        this.checkingAccount = _checkingAccount;
+        this.accounts = _accounts;
     }
 
     /**
@@ -122,12 +115,12 @@ public class User {
      * @param _firstName user specified firstname.
      * @param _lastName user specified lastame.
      * @param _ssn user specified ssn.
-     * @param _savingAccount user specified savings account.
-     * @param _checkingAccount user specified checking account.
+     * @param _accounts user specified accounts.
+     *      * @param _checkingAccount user specified checking account.
      */
     public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
-                long _savingAccount, long _checkingAccount) {
-        this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _savingAccount, _checkingAccount);
+                List<Account> _accounts) {
+        this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _accounts);
     }
 
     //possible duplicate?
@@ -139,7 +132,7 @@ public class User {
      * @param _authenticator list of user specified authenticator(s).
      */
     public User(String _username, String _displayName, ArrayList<String> _email, ArrayList<Authenticator> _authenticator) {
-        this(_username, _displayName, _email, _authenticator, null, null, 0, 0, 0);
+        this(_username, _displayName, _email, _authenticator, null, null, 0, null);
     }
 
     /**

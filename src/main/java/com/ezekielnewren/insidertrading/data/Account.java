@@ -4,15 +4,16 @@ package com.ezekielnewren.insidertrading.data;
 import com.ezekielnewren.insidertrading.Util;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NonNull;
 import org.bson.types.ObjectId;
 
 public class Account {
-    public final ObjectId _id;
-    public long number;
-    public String title;
+    @JsonProperty final ObjectId _id;
+    @JsonProperty long number;
+    @NonNull public String title;
     public long balance;
 
-    enum AccountDefaultNames {
+    public enum DefaultNames {
         Savings,
         Checking,
         MoneyMarket

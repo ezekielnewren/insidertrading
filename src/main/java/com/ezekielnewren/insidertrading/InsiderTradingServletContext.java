@@ -5,6 +5,7 @@ import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
 import com.ezekielnewren.insidertrading.data.UserStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
@@ -12,6 +13,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import lombok.Getter;
 import lombok.Value;
 import org.bson.Document;
@@ -101,6 +103,10 @@ public class InsiderTradingServletContext {
 
         this.userStore = new UserStore(this);
         this.webAuthn = new WebAuthn(this, fqdn, title);
+
+        // apply a unique constraint on user.username and transaction.number
+        collectionUser.createIndex(new BasicDBObject("username", 1), new IndexOptions().unique(true));
+        // collectionTransaction.createIndex(new BasicDBObject("number", 1), new IndexOptions().unique(true));
     }
 
 

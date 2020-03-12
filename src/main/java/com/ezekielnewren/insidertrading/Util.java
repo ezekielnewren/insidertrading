@@ -17,7 +17,7 @@ public class Util {
     public static final boolean DEBUG;
 
     /**
-     * Cryptographically strong random number generator.
+     * Cryptographically secure pseusdo random number generator.
      */
     static final SecureRandom random;
 

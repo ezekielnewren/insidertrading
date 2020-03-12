@@ -48,23 +48,19 @@ public class InsiderTradingServletContext {
      * @see MongoDatabase
      */
     MongoDatabase database;
-//<<<<<<< HEAD
-//
-//    /**
-//     * Declare a new collection
-//     * @see MongoCollection
-//     */
-//    MongoCollection<User> collectionUser;
-//
-//    /**
-//     *
-//     * @see MongoCollection
-//     */
-//    MongoCollection<Document> collectionData;
-//=======
 
+    /**
+     * Declare a new collection
+     * @see MongoCollection
+     */
     public MongoCollection<User> collectionUser;
+
+    /**
+     *
+     * @see MongoCollection
+     */
     public MongoCollection<Document> collectionData;
+
     public MongoCollection<Transaction> collectionTransaction;
 
 

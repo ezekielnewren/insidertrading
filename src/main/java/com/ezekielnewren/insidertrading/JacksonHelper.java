@@ -20,25 +20,30 @@ public class JacksonHelper {
 
     //used only on objectId?
     /**
-     * The ObjectIdSerializer class that handles serialization for JacksonHelper.
+     * The {@code ObjectIdSerializer} class that handles serialization for {@link com.ezekielnewren.insidertrading.JacksonHelper}.
+     * @see com.fasterxml.jackson.databind.ser.std.StdSerializer
      */
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {
 
 
         /**
-         * Constructor takes parent ObjectId reference.
+         * Constructor takes parent {@code ObjectId} reference.
+         * @see org.bson.types.ObjectId
          */
         protected ObjectIdSerializer() {
             super(ObjectId.class);
         }
 
         /**
-         * Generates a JSON with the id converted to hex.
+         * Generates a {@code JSON} with the id converted to hex.
          * @param _id generated user id.
-         * @param jgen generator used for writing JSON.
+         * @param jgen generator used for writing {@code JSON}.
          * @param provider the 'blueprint' for how to serialize.
-         * @throws IOException throws a new I/O exception.
-         * @throws JsonProcessingException throws an exception if one occurs when parsing or generating JSON.
+         * @throws IOException throws, never caught.
+         * @throws JsonProcessingException throws when parsing or generating {@code JSON}, never caught.
+         * @see org.bson.types.ObjectId
+         * @see com.fasterxml.jackson.core.JsonGenerator
+         * @see com.fasterxml.jackson.databind.SerializerProvider
          */
         @Override
         public void serialize(ObjectId _id, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
@@ -47,24 +52,30 @@ public class JacksonHelper {
     }
 
     /**
-     * The ObjectIdDeserializer handles deserialization for JacksonHelper.
+     * The {@code ObjectIdDeserializer} handles deserialization for {@link com.ezekielnewren.insidertrading.JacksonHelper}.
+     * @see com.fasterxml.jackson.databind.deser.std.StdDeserializer
      */
     public static class ObjectIdDeserializer extends StdDeserializer<ObjectId> {
 
         /**
-         * Constructor takes the parent ObjectId reference.
+         * Constructor takes the parent {@code ObjectId} reference.
+         * @see org.bson.types.ObjectId
          */
         protected ObjectIdDeserializer() {
             super(ObjectId.class);
         }
 
+        //not sure if this is correct
         /**
-         *
-         * @param p
-         * @param ctxt
-         * @return
-         * @throws IOException
-         * @throws JsonProcessingException
+         * Deserializes {@code JSON} payload.
+         * @param p data to be parsed.
+         * @param ctxt value to be deserialized.
+         * @return string of {@code ObjectId}.
+         * @throws IOException throws, never caught.
+         * @throws JsonProcessingException throws when parsing or generating {@code JSON}, never caught.
+         * @see org.bson.types.ObjectId
+         * @see com.fasterxml.jackson.core.JsonParser
+         * @see com.fasterxml.jackson.databind.DeserializationContext
          */
         @Override
         public ObjectId deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
@@ -73,7 +84,10 @@ public class JacksonHelper {
     }
 
     /**
-     * @return
+     * Method that used to create an {@code ObjectMapper} that will work with {@code Jackson} and {@code MongoDB}
+     * @return {@code ObjectMapper} that works with {@code MongoDB}.
+     * @see com.fasterxml.jackson.databind.ObjectMapper
+     * @see com.fasterxml.jackson.databind.module.SimpleModule
      */
     public static ObjectMapper newObjectMapper() {
         SimpleModule module = new SimpleModule();

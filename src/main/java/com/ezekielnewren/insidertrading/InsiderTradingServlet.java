@@ -29,7 +29,7 @@ public class InsiderTradingServlet extends HttpServlet {
 
     /**
      * Constructor assigns data to ctx object and logs data on success.
-     * @throws ServletException throws a new Servlet Exception.
+     * @throws ServletException throws, never caught.
      */
     @Override
     public void init() throws ServletException {
@@ -53,7 +53,7 @@ public class InsiderTradingServlet extends HttpServlet {
      * Displays a html page with 'only POST allowed' on GET request.
      * @param req contains the client request information.
      * @param response contains all server response information.
-     * @throws IOException throws new I/O Exception.
+     * @throws IOException if http request is {@code GET}.
      */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
@@ -66,7 +66,7 @@ public class InsiderTradingServlet extends HttpServlet {
      * Displays correct webpage on POST, handles login and registration by error checking and deserializing values.
      * @param request contains the client request information.
      * @param response contains all server response information.
-     * @throws IOException throws new I/O Exception.
+     * @throws IOException post fails.
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

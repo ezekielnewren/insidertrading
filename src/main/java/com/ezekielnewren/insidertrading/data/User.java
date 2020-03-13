@@ -204,7 +204,7 @@ public class User {
     /**
      * Creates an account.
      * @param _title name.
-     * @throws RuntimeException detailed exception.
+     * @throws RuntimeException detailed exception if the account type exists in that account.
      */
     public void createAccount(String _title) {
         if (accounts.containsKey(_title)) throw new RuntimeException("account: "+_title+" already exists");

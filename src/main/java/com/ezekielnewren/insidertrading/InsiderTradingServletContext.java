@@ -36,7 +36,7 @@ public class InsiderTradingServletContext {
     /**
      * Creating an objectMapper variable
      *
-     * @see com.fasterxml.jackson.databind
+     * @see com.fasterxml.jackson.databind.ObjectMapper
      */
     ObjectMapper objectMapper;
 
@@ -89,7 +89,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Variable for WebAuthn
+     * Variable for WebAuthn.
      *
      * <p>
      *     WebAuthn handles client and server authentication.
@@ -100,7 +100,7 @@ public class InsiderTradingServletContext {
     WebAuthn webAuthn;
 
     /**
-     * Variable for UserStore
+     * Variable for UserStore.
      *
      * <p>
      *     UserStore stores user information in database.
@@ -111,12 +111,15 @@ public class InsiderTradingServletContext {
     UserStore userStore;
 
     /**
-     *
-     * @param _om
-     * @param connectionString
-     * @param _cred
-     * @param fqdn
-     * @param title
+     * Method creates the connection to the {@code Mongo Server}
+     * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
+     * @param connectionString details of how to connect to {@code MongoDB}
+     * @param _cred credentials for the {@code Mongo Server}.
+     * @param fqdn fully qualified domain name.
+     * @param title account type.
+     * @see com.fasterxml.jackson.databind.ObjectMapper
+     * @see java.lang.String
+     * @see com.mongodb.MongoCredential
      */
     public InsiderTradingServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;

@@ -51,7 +51,7 @@ public class Util {
     }
 
     /**
-     *
+     * Method to generate a new byte array using a random byte array.
      * @param amount the number of bytes you would like.
      * @return new byte array with the randomized bytes
      */
@@ -60,8 +60,8 @@ public class Util {
     }
 
     /**
-     *
-     * @return new mongo ObjectId
+     * Generates an ObjectId using a random byte array.
+     * @return new mongo ObjectId.
      */
     public static ObjectId generateRandomObjectId() {
         return new ObjectId(generateRandom(12));

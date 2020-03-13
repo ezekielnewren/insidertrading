@@ -62,7 +62,16 @@ public class InsiderTradingServletContext {
 //    MongoCollection<Document> collectionData;
 //=======
 
+
+    /**
+     * Declare a new user collection.
+     */
     public MongoCollection<User> collectionUser;
+
+
+    /**
+     * Declare a new data collection.
+     */
     public MongoCollection<Document> collectionData;
 
 

@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.data.AttestationType;
 import com.yubico.webauthn.data.ByteArray;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Optional;
 
-import lombok.*;
-
 /**
- *
+ * Class that can "obtain" authentication information from the connection.
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,6 +55,7 @@ public class Authenticator {
     @JsonProperty AttestationType attestationType;
 
     /**
+     * sets the SignatureCount
      * @param signatureCount
      */
     @JsonIgnore

@@ -17,7 +17,7 @@ public class Util {
     public static final boolean DEBUG;
 
     /**
-     * Cryptographically secure pseusdo random number generator.
+     * Cryptographically secure pseudo-random number generator.
      */
     static final SecureRandom random;
 
@@ -38,6 +38,10 @@ public class Util {
         }
     }
 
+    /**
+     * Generates a cryptographically strong, default psuedo-random number generator
+     * @return random number
+     */
     public static SecureRandom getRandom() {
         return random;
     }

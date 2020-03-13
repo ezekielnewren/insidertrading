@@ -64,7 +64,7 @@ public class User {
     @JsonProperty int ssn;
 
     /**
-     *Accounts for user
+     * Accounts for user
      */
     @JsonProperty @NonNull Map<String, Account> accounts;
 
@@ -140,7 +140,7 @@ public class User {
 
     /**
      * Used to handler, mainly when optional,
-     * @return new bytearray with id bytearray.
+     * @return new byte array with id byte array.
      */
     public ByteArray getUserHandle() {
         return new ByteArray(_id.toByteArray());
@@ -148,14 +148,15 @@ public class User {
 
 
     /**
-     *
-     * @return
+     * Method to get the display name.
+     * @return a the display name or, if none given, username.
      */
     public String getDisplayName() {
         return displayName.orElse(username);
     }
 
     /**
+     *
      * @param credentialId
      * @return
      */

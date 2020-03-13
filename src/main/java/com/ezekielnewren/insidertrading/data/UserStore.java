@@ -12,22 +12,23 @@ import org.bson.types.ObjectId;
 import java.util.*;
 
 /**
- *
+ * Class contains methods used to store user information to database
  */
 public class UserStore {
 
     /**
-     *
+     * variable for servlet
      */
     InsiderTradingServletContext ctx;
 
 
     /**
-     *
+     * variable for repository
      */
     CredentialRepository repo;
 
     /**
+     *
      * @param _ctx
      */
     public UserStore(InsiderTradingServletContext _ctx) {

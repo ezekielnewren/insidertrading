@@ -12,30 +12,36 @@ import org.bson.types.ObjectId;
 import java.util.*;
 
 /**
- * Class contains methods used to store user information to database
+ * Class contains methods used to store user information to database.
  */
 public class UserStore {
 
     /**
-     * variable for servlet
+     * Variable for servlet.
      */
     InsiderTradingServletContext ctx;
 
 
     /**
-     * variable for repository
+     * Variable for repository, used to look up credentials.
+     *
+     * <p>
+     * Used to look up credentials, usernames and user handles from usernames, user handles
+     * and credential IDs.
+     * </p>
      */
     CredentialRepository repo;
 
     /**
-     *
-     * @param _ctx
+     * Method for storing user data.
+     * @param _ctx servlet context.
      */
     public UserStore(InsiderTradingServletContext _ctx) {
         this.ctx = _ctx;
         repo = new CredentialRepository() {
 
             /**
+             *
              * @param username
              * @return
              */
@@ -52,6 +58,7 @@ public class UserStore {
             }
 
             /**
+             *
              * @param username
              * @return
              */
@@ -64,6 +71,7 @@ public class UserStore {
             }
 
             /**
+             *
              * @param userHandle
              * @return
              */
@@ -76,6 +84,7 @@ public class UserStore {
             }
 
             /**
+             *
              * @param credentialId
              * @param userHandle
              * @return
@@ -89,6 +98,7 @@ public class UserStore {
             }
 
             /**
+             *
              * @param credentialId
              * @return
              */
@@ -127,6 +137,7 @@ public class UserStore {
     }
 
     /**
+     *
      * @param result
      */
     public void updateSignatureCount(AssertionResult result) {
@@ -145,46 +156,54 @@ public class UserStore {
     }
 
     /**
-     * @return
+     * Gets the credential repository.
+     * @return returns the repository.
      */
     public CredentialRepository getCredentialRepository() {
         return repo;
     }
 
     /**
-     * @param username
-     * @return
+     * Gets the username from database via the servlet.
+     * @param username the username.
+     * @return the first user name that matches.
      */
     public User getByUsername(String username) {
         return ctx.getCollectionUser().find(Filters.eq("username", username)).first();
     }
 
     /**
-     * @param userHandle
-     * @return
+     * Gets the user handle.
+     * @param userHandle user handle.
+     * @return the first id that matches.
      */
     public User getByUserHandle(ByteArray userHandle) {
         return getByObjectId(new ObjectId(userHandle.getBytes()));
     }
 
     /**
-     * @param _id
-     * @return
+     * Gets object Id.
+     * @param _id 12-byte primary key value for user.
+     * @return the first id that matches.
      */
     public User getByObjectId(ObjectId _id) {
         return ctx.getCollectionUser().find(Filters.eq("_id", _id)).first();
     }
 
     /**
-     * @return
+     * Gets all users using {@code Iterator} until all items are consumed.
+     * @return all users.
      */
     public Iterable<User> getAll() {
         return ctx.getCollectionUser().find();
     }
 
+    /////needs revising
+
     /**
-     * @param username
-     * @return
+     * Checks if username exists.
+     * @param username the username.
+     * @return true or false
      */
     public boolean exists(String username) {
         return ctx.getCollectionUser().countDocuments(Filters.eq("username", username))>0;

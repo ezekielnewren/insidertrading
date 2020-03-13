@@ -292,7 +292,7 @@ public class WebAuthn implements Closeable {
     /**
      * Closes this stream and releases any system resources associated with it.
      * If the stream is already closed then invoking this method has no effect.
-     * @throws IOException throws new I/O Exception
+     * @throws IOException throws new I/O Exception.
      */
     @Override
     public void close() throws IOException {

@@ -21,63 +21,97 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
 /**
- *
+ * Class contains a set of methods used to communicate with the servlet container e.g. HTTP.
  */
 @Value
 @Getter
 public class InsiderTradingServletContext {
 
     /**
-     * Creating a new constant mutex object.
-     * @see Object
+     * Creating a new constant object.
+     * @see java.lang
      */
     final Object mutex = new Object();
 
     /**
      * Creating an objectMapper variable
-     * @see ObjectMapper
+     *
+     * @see com.fasterxml.jackson.databind
      */
     ObjectMapper objectMapper;
 
     /**
-     * Declare a new client
-     * @see MongoClient
+     * Variable for a mongo client
+     * @see com.mongodb.client.MongoClient
      */
     MongoClient client;
 
     /**
-     * Declare a new database
-     * @see MongoDatabase
+     * Variable for mongo database
+     * @see com.mongodb.client.MongoDatabase
      */
     MongoDatabase database;
 
 
     /**
-     * Declare a new collection
-     * @see MongoCollection
+     * Declare a collection of users.
+     *
+     * <p>
+     *     MongoCollections are generic
+     * </p>
+     *
+     * @see com.mongodb.client.MongoCollection
      */
     public MongoCollection<User> collectionUser;
 
     /**
+     * Declare a collection of documents.
      *
-     * @see MongoCollection
+     * <p>
+     *     MongoCollections are generic
+     * </p>
+     *
+     * @see com.mongodb.client.MongoCollection
      */
     public MongoCollection<Document> collectionData;
 
+
+    /**
+     * Declare a collection of transactions.
+     *
+     * <p>
+     *     MongoCollections are generic
+     * </p>
+     *
+     * @see com.mongodb.client.MongoCollection
+     */
     public MongoCollection<Transaction> collectionTransaction;
 
 
     /**
+     * Variable for WebAuthn
      *
+     * <p>
+     *     WebAuthn handles client and server authentication.
+     * </p>
+     *
+     * @see com.ezekielnewren.insidertrading.WebAuthn
      */
     WebAuthn webAuthn;
 
     /**
+     * Variable for UserStore
      *
+     * <p>
+     *     UserStore stores user information in database.
+     * </p>
+     *
+     * @see com.ezekielnewren.insidertrading.data.UserStore
      */
     UserStore userStore;
 
     /**
+     *
      * @param _om
      * @param connectionString
      * @param _cred

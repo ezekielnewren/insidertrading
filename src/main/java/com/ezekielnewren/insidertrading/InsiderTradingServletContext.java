@@ -1,9 +1,11 @@
 package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.JacksonCodecProvider;
+import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
 import com.ezekielnewren.insidertrading.data.UserStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
@@ -11,6 +13,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import lombok.Getter;
 import lombok.Value;
 import org.bson.Document;
@@ -47,32 +50,21 @@ public class InsiderTradingServletContext {
      * @see MongoDatabase
      */
     MongoDatabase database;
-//<<<<<<< HEAD
-//
-//    /**
-//     * Declare a new collection
-//     * @see MongoCollection
-//     */
-//    MongoCollection<User> collectionUser;
-//
-//    /**
-//     *
-//     * @see MongoCollection
-//     */
-//    MongoCollection<Document> collectionData;
-//=======
 
 
     /**
-     * Declare a new user collection.
+     * Declare a new collection
+     * @see MongoCollection
      */
     public MongoCollection<User> collectionUser;
 
-
     /**
-     * Declare a new data collection.
+     *
+     * @see MongoCollection
      */
     public MongoCollection<Document> collectionData;
+
+    public MongoCollection<Transaction> collectionTransaction;
 
 
     /**
@@ -108,9 +100,14 @@ public class InsiderTradingServletContext {
         this.database = client.getDatabase("tomcat");
         this.collectionUser = database.getCollection("user", User.class);
         this.collectionData = database.getCollection("data");
+        this.collectionTransaction = database.getCollection("transaction", Transaction.class);
 
         this.userStore = new UserStore(this);
         this.webAuthn = new WebAuthn(this, fqdn, title);
+
+        // apply a unique constraint on user.username and transaction.number
+        collectionUser.createIndex(new BasicDBObject("username", 1), new IndexOptions().unique(true));
+        // collectionTransaction.createIndex(new BasicDBObject("number", 1), new IndexOptions().unique(true));
     }
 
 

@@ -17,7 +17,7 @@ public class Util {
     public static final boolean DEBUG;
 
     /**
-     * Cryptographically strong random number generator.
+     * Cryptographically secure pseusdo random number generator.
      */
     static final SecureRandom random;
 
@@ -36,6 +36,10 @@ public class Util {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static SecureRandom getRandom() {
+        return random;
     }
 
     /**

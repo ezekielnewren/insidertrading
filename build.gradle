@@ -62,7 +62,7 @@ task createProperties(dependsOn: processResources) {
             p['fqdn'] = "www.ezekielnewren.com"
             p['title'] = "Webauthn Demo"
             p['buildtime'] = Long.toString(System.currentTimeMillis())
-            p['urlprefix'] = "/webauthn/"
+            p['urlprefix'] = "/"+project.name+"/"
             p.store w, null
         }
     }

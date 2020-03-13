@@ -9,9 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The class User contains user information, constructs user JSON and user object.
@@ -68,11 +66,12 @@ public class User {
     /**
      *Accounts for user
      */
-    @JsonProperty List<Account> accounts;
+    @JsonProperty @NonNull Map<String, Account> accounts;
 
 
     /**
-     * Constructs a User JSON object.
+     * Constructs a User JSON object. If a null is passed for a list type it will
+     * be changed to an empty list.
      * @param _id generated user id.
      * @param _username user specified name.
      * @param _displayName user specified name (optional).
@@ -98,12 +97,16 @@ public class User {
         this._id = _id;
         this.username = _username;
         this.displayName = Optional.ofNullable(_displayName);
-        this.email = _email;
-        this.authenticator = _authenticator;
+        this.email = Optional.ofNullable(_email).orElseGet(()->new ArrayList<>());
+        this.authenticator = Optional.ofNullable(_authenticator).orElseGet(()->new ArrayList<>());
         this.firstName = _firstName;
         this.lastName = _lastName;
         this.ssn = _ssn;
-        this.accounts = _accounts;
+        List<Account> tmp = Optional.ofNullable(_accounts).orElseGet(()->new ArrayList<>());
+        this.accounts = new LinkedHashMap<>();
+        for (Account item: tmp) {
+            accounts.put(item.title, item);
+        }
     }
 
     /**
@@ -115,7 +118,7 @@ public class User {
      * @param _firstName user specified firstname.
      * @param _lastName user specified lastame.
      * @param _ssn user specified ssn.
-     * @param _savingAccount user specified savings account.
+     * @param _accounts user specified accounts.
      *      * @param _checkingAccount user specified checking account.
      */
     public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
@@ -177,6 +180,20 @@ public class User {
             if (credentialId.equals(auth.getCredentialId())) return auth;
         }
         return null;
+    }
+
+    @JsonProperty("accounts")
+    public List<Account> getAccounts() {
+        return new ArrayList<>(accounts.values());
+    }
+
+    public Account getAccount(String _title) {
+        return accounts.get(_title);
+    }
+
+    public void createAccount(String _title) {
+        if (accounts.containsKey(_title)) throw new RuntimeException("account: "+_title+" already exists");
+        accounts.put(_title, new Account(_title, 0));
     }
 
 }

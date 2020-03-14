@@ -200,7 +200,9 @@ public class WebAuthn implements Closeable {
      * @param session currently not in use.
      * @param response response information from server.
      * @return returns true on success.
-     * @throws IOException throws a new I/O Exception.
+     * @throws IOException throws, never caught.
+     * @see javax.servlet.http.HttpSession
+     * @see com.ezekielnewren.insidertrading.data.RegistrationResponse
      */
     public boolean registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
@@ -243,6 +245,7 @@ public class WebAuthn implements Closeable {
      * Maps the request using the requestId as key.
      * @param username client user name.
      * @return requestId and relying party username
+     * @see java.lang.String
      */
     public AssertionRequestWrapper assertionStart(String username) {
 
@@ -262,6 +265,7 @@ public class WebAuthn implements Closeable {
      * Checks to see if assertion is finished.
      * @param response response information from server.
      * @return returns true if finished.
+     * @see com.ezekielnewren.insidertrading.data.AssertionResponse
      */
     public boolean assertionFinish(AssertionResponse response) {
 
@@ -292,7 +296,7 @@ public class WebAuthn implements Closeable {
     /**
      * Closes this stream and releases any system resources associated with it.
      * If the stream is already closed then invoking this method has no effect.
-     * @throws IOException throws new I/O Exception.
+     * @throws IOException throws, never caught.
      */
     @Override
     public void close() throws IOException {

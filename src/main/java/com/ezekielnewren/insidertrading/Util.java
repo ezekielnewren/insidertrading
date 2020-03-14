@@ -18,6 +18,7 @@ public class Util {
 
     /**
      * Cryptographically secure pseudo-random number generator.
+     * @see java.security.SecureRandom
      */
     static final SecureRandom random;
 
@@ -41,6 +42,7 @@ public class Util {
     /**
      * Generates a cryptographically strong, default psuedo-random number generator
      * @return random number
+     * @see java.security.SecureRandom
      */
     public static SecureRandom getRandom() {
         return random;
@@ -62,6 +64,7 @@ public class Util {
      * Method to generate a new byte array using a random byte array.
      * @param amount the number of bytes you would like.
      * @return new byte array with the randomized bytes
+     * @see com.yubico.webauthn.data.ByteArray
      */
     public static ByteArray generateRandomByteArray(int amount) {
         return new ByteArray(generateRandom(amount));
@@ -70,6 +73,7 @@ public class Util {
     /**
      * Generates an ObjectId using a random byte array.
      * @return new mongo ObjectId.
+     * @see org.bson.types.ObjectId
      */
     public static ObjectId generateRandomObjectId() {
         return new ObjectId(generateRandom(12));

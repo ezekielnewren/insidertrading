@@ -87,7 +87,6 @@ public class JacksonHelper {
      * Method that used to create an {@code ObjectMapper} that will work with {@code Jackson} and {@code MongoDB}
      * @return {@code ObjectMapper} that works with {@code MongoDB}.
      * @see com.fasterxml.jackson.databind.ObjectMapper
-     * @see com.fasterxml.jackson.databind.module.SimpleModule
      */
     public static ObjectMapper newObjectMapper() {
         SimpleModule module = new SimpleModule();

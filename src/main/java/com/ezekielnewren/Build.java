@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- *
+ * Class that contains methods to create a {@code ImmutableMap}
+ * and retrieve values from it.
  */
 public class Build {
 
     /**
-     *
+     * Create a {@code ImmutableMap}.
+     * @see com.google.common.collect.ImmutableMap
      */
     static ImmutableMap<String, String> internal;
 
@@ -33,15 +35,19 @@ public class Build {
 
 
     /**
-     * @return
+     * Method to return a created {@code ImmutableMap}.
+     * @return {@code ImmutableMap} with values.
+     * @see com.google.common.collect.ImmutableMap
      */
     public static ImmutableMap<String, String> info() {
         return internal;
     }
 
     /**
-     * @param key
-     * @return
+     * Method to get the key from the {@link ImmutableMap}.
+     * @param key the key of key value pair in a hash map.
+     * @return key as a {@code String}.
+     * @see java.lang.String
      */
     public static String get(String key) {
         return info().get(key);

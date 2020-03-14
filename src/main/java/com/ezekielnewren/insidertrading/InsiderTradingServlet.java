@@ -19,11 +19,13 @@ import java.util.function.Supplier;
 
 /**
  * The InsiderTradingServlet class handles communication with server when user logs in or registers.
+ * @see javax.servlet.http
  * */
 public class InsiderTradingServlet extends HttpServlet {
 
     /**
-     *Object to hold data serialization.
+     * Object to hold data serialization.
+     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
      */
     InsiderTradingServletContext ctx;
 
@@ -50,10 +52,12 @@ public class InsiderTradingServlet extends HttpServlet {
 
 
     /**
-     * Displays a html page with 'only POST allowed' on GET request.
+     * Displays a html page with 'only POST allowed' on {@code POST} request.
      * @param req contains the client request information.
      * @param response contains all server response information.
      * @throws IOException if http request is {@code GET}.
+     * @see javax.servlet.http.HttpServletRequest
+     * @see javax.servlet.http.HttpServletResponse
      */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
@@ -63,10 +67,12 @@ public class InsiderTradingServlet extends HttpServlet {
 
 
     /**
-     * Displays correct webpage on POST, handles login and registration by error checking and deserializing values.
+     * Displays correct webpage on {@code POST}, handles login and registration by error checking and deserializing values.
      * @param request contains the client request information.
      * @param response contains all server response information.
-     * @throws IOException post fails.
+     * @throws IOException  {@code POST} fails.
+     * @see javax.servlet.http.HttpServletRequest
+     * @see javax.servlet.http.HttpServletResponse
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

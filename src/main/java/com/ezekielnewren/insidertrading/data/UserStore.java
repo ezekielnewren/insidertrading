@@ -18,6 +18,7 @@ public class UserStore {
 
     /**
      * Variable for servlet.
+     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
      */
     InsiderTradingServletContext ctx;
 
@@ -29,21 +30,27 @@ public class UserStore {
      * Used to look up credentials, usernames and user handles from usernames, user handles
      * and credential IDs.
      * </p>
+     *
+     * @see com.yubico.webauthn.CredentialRepository
      */
     CredentialRepository repo;
 
     /**
      * Method for storing user data.
      * @param _ctx servlet context.
+     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
      */
     public UserStore(InsiderTradingServletContext _ctx) {
         this.ctx = _ctx;
         repo = new CredentialRepository() {
 
             /**
-             *
-             * @param username
-             * @return
+             * Creates a unique collection, then adds and id for each item of the
+             * {@link com.ezekielnewren.insidertrading.data.Authenticator} to it.
+             * @param username specified name.
+             * @return the unique collection.
+             * @see java.util.Set
+             * @see com.yubico.webauthn.data.PublicKeyCredential
              */
             @Override
             public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
@@ -58,9 +65,11 @@ public class UserStore {
             }
 
             /**
-             *
-             * @param username
-             * @return
+             * Gets the users handle.
+             * @param username specified name.
+             * @return {@code Optional} with value.
+             * @see java.util.Optional
+             * @see java.lang.String
              */
             @Override
             public Optional<ByteArray> getUserHandleForUsername(String username) {
@@ -71,9 +80,11 @@ public class UserStore {
             }
 
             /**
-             *
-             * @param userHandle
-             * @return
+             * Gets username.
+             * @param userHandle specified handle.
+             * @return {@code Optional} with value.
+             * @see java.util.Optional
+             * @see com.yubico.webauthn.data.ByteArray
              */
             @Override
             public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
@@ -84,10 +95,12 @@ public class UserStore {
             }
 
             /**
-             *
-             * @param credentialId
-             * @param userHandle
-             * @return
+             * Used to lookup users.
+             * @param credentialId id used for assertion.
+             * @param userHandle user handle.
+             * @return {@code Optional} returns with value, if null returns {@code empty Optional}.
+             * @see java.util.Optional
+             * @see com.yubico.webauthn.data.ByteArray
              */
             @Override
             public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
@@ -98,9 +111,13 @@ public class UserStore {
             }
 
             /**
-             *
-             * @param credentialId
-             * @return
+             * Creates a unique collection, then adds all registered users in
+             * {@link com.yubico.webauthn.RegisteredCredential} to it.
+             * @param credentialId id used for assertion.
+             * @return the unique collection.
+             * @see java.util.Set
+             * @see com.yubico.webauthn.RegisteredCredential
+             * @see com.yubico.webauthn.data.ByteArray
              */
             @Override
             public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
@@ -116,9 +133,18 @@ public class UserStore {
 
 
     /**
-     * @param username
-     * @param displayName
-     * @param auth
+     * Adds an {@code Authenticator} if user is {@code null}.
+     * Adds user information to the {@code MongoDB}.
+     * @param username user name.
+     * @param displayName display name.
+     * @param auth Authenticator.
+     * @param firstName user first name.
+     * @param lastName user last name.
+     * @param ssn social security
+     * @param savingAccount savings account
+     * @param checkingAccount checking account
+     * @see java.lang.String
+     * @see com.ezekielnewren.insidertrading.data.Authenticator
      */
     public void addAuthenticator(String username, String displayName, Authenticator auth, String firstName, String lastName, int ssn, long savingAccount, long checkingAccount) {
         User user = null;
@@ -136,9 +162,11 @@ public class UserStore {
         }
     }
 
+    //may be incorrect
     /**
-     *
-     * @param result
+     * Updates on each successful authenticator assertion.
+     * @param result contains information from steps of mandatory assertions.
+     * @see com.yubico.webauthn.AssertionResult
      */
     public void updateSignatureCount(AssertionResult result) {
         String username = result.getUsername();
@@ -158,6 +186,7 @@ public class UserStore {
     /**
      * Gets the credential repository.
      * @return returns the repository.
+     * @see com.yubico.webauthn.CredentialRepository
      */
     public CredentialRepository getCredentialRepository() {
         return repo;
@@ -167,6 +196,8 @@ public class UserStore {
      * Gets the username from database via the servlet.
      * @param username the username.
      * @return the first user name that matches.
+     * @see com.ezekielnewren.insidertrading.data.User
+     * @see java.lang.String
      */
     public User getByUsername(String username) {
         return ctx.getCollectionUser().find(Filters.eq("username", username)).first();
@@ -176,6 +207,8 @@ public class UserStore {
      * Gets the user handle.
      * @param userHandle user handle.
      * @return the first id that matches.
+     * @see com.ezekielnewren.insidertrading.data.User
+     * @see com.yubico.webauthn.data.ByteArray
      */
     public User getByUserHandle(ByteArray userHandle) {
         return getByObjectId(new ObjectId(userHandle.getBytes()));
@@ -185,6 +218,8 @@ public class UserStore {
      * Gets object Id.
      * @param _id 12-byte primary key value for user.
      * @return the first id that matches.
+     * @see com.ezekielnewren.insidertrading.data.User
+     * @see org.bson.types.ObjectId
      */
     public User getByObjectId(ObjectId _id) {
         return ctx.getCollectionUser().find(Filters.eq("_id", _id)).first();
@@ -193,6 +228,7 @@ public class UserStore {
     /**
      * Gets all users using {@code Iterator} until all items are consumed.
      * @return all users.
+     * @see java.lang.Iterable
      */
     public Iterable<User> getAll() {
         return ctx.getCollectionUser().find();
@@ -203,7 +239,8 @@ public class UserStore {
     /**
      * Checks if username exists.
      * @param username the username.
-     * @return true or false
+     * @return true or false.
+     * @see java.lang.String
      */
     public boolean exists(String username) {
         return ctx.getCollectionUser().countDocuments(Filters.eq("username", username))>0;

@@ -20,7 +20,7 @@ import java.util.Optional;
 public class Authenticator {
 
     /**
-     *
+     * Registration time
      */
     @JsonProperty long registrationTime;
 

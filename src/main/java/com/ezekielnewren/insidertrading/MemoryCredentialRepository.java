@@ -14,12 +14,15 @@ public class MemoryCredentialRepository implements CredentialRepository {
 
     /**
      *
+     * @see java.util.Map
      */
     Map<String, Set<PublicKeyCredentialDescriptor>> credStore = new HashMap<>();
 
     /**
      * @param username
      * @return
+     * @see java.util.Set
+     * @see java.lang.String
      */
     @Override
     public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
@@ -30,6 +33,8 @@ public class MemoryCredentialRepository implements CredentialRepository {
     /**
      * @param username
      * @return
+     * @see java.util.Optional
+     * @see java.lang.String
      */
     @Override
     public Optional<ByteArray> getUserHandleForUsername(String username) {
@@ -39,6 +44,8 @@ public class MemoryCredentialRepository implements CredentialRepository {
     /**
      * @param userHandle
      * @return
+     * @see java.util.Optional
+     * @see com.yubico.webauthn.data.ByteArray
      */
     @Override
     public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
@@ -49,6 +56,8 @@ public class MemoryCredentialRepository implements CredentialRepository {
      * @param credentialId
      * @param userHandle
      * @return
+     * @see java.util.Optional
+     * @see com.yubico.webauthn.data.ByteArray
      */
     @Override
     public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
@@ -58,6 +67,8 @@ public class MemoryCredentialRepository implements CredentialRepository {
     /**
      * @param credentialId
      * @return
+     * @see java.util.Set
+     * @see com.yubico.webauthn.data.ByteArray
      */
     @Override
     public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * The InsiderTradingServlet class handles communication with server when user logs in or registers.
+ * The {@code InsiderTradingServlet} class handles communication with server when user logs in or registers.
  * @see javax.servlet.http
  * */
 public class InsiderTradingServlet extends HttpServlet {

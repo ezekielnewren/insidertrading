@@ -10,15 +10,16 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Contains information about the {@code AssertionResponse}.
- * Data is given assigned in {@link com.ezekielnewren.insidertrading.InsiderTradingServlet}s {@code doPost} method.
+ * <p>Class that contains data about the {@code AssertionResponse}.
+ * Contains the {@code Jackson} properties for serialization and deserialization.
+ * Contains getters for Java objects used for assertion request.</p>
  */
 @NoArgsConstructor
 @Getter
 public class AssertionResponse {
 
     /**
-     * The requestId for the assertion.
+     * Unique requestId for the assertion.
      * @see com.yubico.webauthn.data.ByteArray
      */
     @JsonProperty @NonNull ByteArray requestId;

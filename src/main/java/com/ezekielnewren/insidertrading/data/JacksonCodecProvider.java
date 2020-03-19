@@ -60,19 +60,19 @@ public class JacksonCodecProvider implements CodecProvider {
     class JacksonCodec<T> implements Codec<T> {
 
         /**
-         * Constant {@code ObjectMapper} variable.
+         * Constant{@code ObjectMapper} object.
          * @see com.fasterxml.jackson.databind.ObjectMapper
          */
         private final ObjectMapper objectMapper;
 
         /**
-         * Constant {@code CodecRegistry} variable.
+         * Constant {@code CodecRegistry} object.
          * @see org.bson.codecs.configuration.CodecRegistry
          */
         private final CodecRegistry codecRegistry;
 
         /**
-         * Constant {@code Class<T>} variable.
+         * Constant {@code Class<T>} object.
          * @see java.lang.Class
          */
         private final Class<T> type;

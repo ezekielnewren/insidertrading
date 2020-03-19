@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The WebAuthn class handles the authentication of client and server.
+ * The {@code WebAuthn} class handles the authentication of client and server.
  * */
 public class WebAuthn implements Closeable {
 
@@ -241,10 +241,10 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * Creates a request using requestId and relying party username.
-     * Maps the request using the requestId as key.
+     * <p>Creates a request using {@code requestId} and relying party {@code username}.
+     * Maps the request using the {@code requestId} as key.</p>
      * @param username client user name.
-     * @return requestId and relying party username
+     * @return requestId and relying party username.
      * @see java.lang.String
      */
     public AssertionRequestWrapper assertionStart(String username) {
@@ -294,8 +294,8 @@ public class WebAuthn implements Closeable {
 
 
     /**
-     * Closes this stream and releases any system resources associated with it.
-     * If the stream is already closed then invoking this method has no effect.
+     * <p>Closes this stream and releases any system resources associated with it.
+     * If the stream is already closed then invoking this method has no effect.</p>
      * @throws IOException throws, never caught.
      */
     @Override

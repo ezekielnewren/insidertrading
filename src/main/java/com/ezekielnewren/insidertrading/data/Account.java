@@ -8,7 +8,7 @@ import lombok.NonNull;
 import org.bson.types.ObjectId;
 
 /**
- * Contains data about an {@code Account}
+ * Class that contains data about an {@code Account}
  */
 public class Account {
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.Optional;
 
 /**
- * Class that can "obtain" authentication information from the connection.
+ * Class that contains {@code Authenticator} information from the connection.
  */
 @AllArgsConstructor
 @NoArgsConstructor

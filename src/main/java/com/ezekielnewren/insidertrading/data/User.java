@@ -12,11 +12,11 @@ import org.bson.types.ObjectId;
 import java.util.*;
 
 /**
- * The class User contains user information, constructs user {@code JSON} and constructs users..
+ * The class {@code User} contains user information, constructs user {@code JSON} and constructs users.
  *
  * <p>
- *     JSON formatting is used for Jackson. Will need to implement {@link com.ezekielnewren.insidertrading.JacksonHelper}
- *     to convert JSON so Mongo can interpret it.
+ *     {@code JSON} formatting is used for {@code Jackson}. Will need to implement {@link com.ezekielnewren.insidertrading.JacksonHelper}
+ *     to convert {@code JSON} so {@code Mongo} can interpret it.
  * </p>
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE,

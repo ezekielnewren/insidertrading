@@ -8,20 +8,24 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- *
+ * <p>Class that contains data about {@code AssertionRequest}.
+ * Contains the {@code Jackson} properties for serialization and deserialization.
+ * Contains getters for Java objects used for assertion request.</p>
  */
 @AllArgsConstructor
 @Getter
 public class AssertionRequestWrapper {
 
     /**
-     *
+     * Unique id used for request.
+     * @see com.yubico.webauthn.data.ByteArray
      */
     @JsonProperty @NonNull ByteArray requestId;
 
 
     /**
-     *
+     * Contains publicKey and a username.
+     * @see com.yubico.webauthn.AssertionRequest
      */
     @JsonProperty @NonNull AssertionRequest assertionRequest;
 

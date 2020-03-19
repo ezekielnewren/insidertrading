@@ -19,6 +19,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     Map<String, Set<PublicKeyCredentialDescriptor>> credStore = new HashMap<>();
 
     /**
+     *
      * @param username
      * @return
      * @see java.util.Set
@@ -31,6 +32,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
+     *
      * @param username
      * @return
      * @see java.util.Optional
@@ -42,6 +44,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
+     *
      * @param userHandle
      * @return
      * @see java.util.Optional
@@ -53,6 +56,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
+     *
      * @param credentialId
      * @param userHandle
      * @return
@@ -65,6 +69,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
+     *
      * @param credentialId
      * @return
      * @see java.util.Set

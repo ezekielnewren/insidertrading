@@ -75,8 +75,8 @@ public class User {
 
 
     /**
-     * Constructs a {@code User JSON} object. If a null is passed for a list type it will.
-     * be changed to an empty list.
+     * <p>Constructs a {@code User JSON} object. If a null is passed for a list type it will.
+     * be changed to an empty list.</p>
      * @param _id generated user id.
      * @param _username user specified name.
      * @param _displayName user specified name (optional).

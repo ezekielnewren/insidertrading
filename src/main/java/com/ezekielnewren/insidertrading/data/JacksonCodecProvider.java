@@ -78,7 +78,7 @@ public class JacksonCodecProvider implements CodecProvider {
         private final Class<T> type;
 
         /**
-         *
+         * Constant object that contains {@code JSONWriter} settings.
          * @see org.bson.json.JsonWriterSettings
          */
         private final JsonWriterSettings plainJson = JsonWriterSettings.builder()
@@ -87,10 +87,10 @@ public class JacksonCodecProvider implements CodecProvider {
                 .build();
 
         /**
-         *
-         * @param objectMapper
-         * @param codecRegistry
-         * @param type
+         * Constructor for the codec.
+         * @param objectMapper {@code ObjectMapper}, used for reading and writing {@code JSON}
+         * @param codecRegistry registry
+         * @param type type for class
          * @see com.fasterxml.jackson.databind.ObjectMapper
          * @see org.bson.codecs.configuration.CodecRegistry
          * @see java.lang.Class
@@ -104,9 +104,10 @@ public class JacksonCodecProvider implements CodecProvider {
         }
 
         /**
-         * @param reader
-         * @param decoderContext
-         * @return
+         * Method to decode {@code MongoDB BSON} to Java objects
+         * @param reader the BSON reader.
+         * @param decoderContext the decoder context.
+         * @return Java object.
          * @see org.bson.BsonReader
          * @see org.bson.codecs.DecoderContext
          */
@@ -123,10 +124,10 @@ public class JacksonCodecProvider implements CodecProvider {
         }
 
         /**
-         *
-         * @param writer
-         * @param value
-         * @param encoderContext
+         * Method for encoding {@code JSON} to {@code BSON}
+         * @param writer the {@code BSON} writer to encode into.
+         * @param value the value to encode.
+         * @param encoderContext the encoder context.
          * @see org.bson.BsonWriter
          * @see java.lang.Object
          * @see org.bson.codecs.EncoderContext

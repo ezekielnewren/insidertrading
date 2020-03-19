@@ -33,24 +33,28 @@ import com.yubico.webauthn.data.PublicKeyCredential;
 import lombok.Value;
 
 /**
- *
+ * Class contains data used for {@code RegistrationResponse}s
  */
 @Value
 public class RegistrationResponse {
 
     /**
-     *
+     * Constant object that holds a unique id used for requests.
      */
     private final ByteArray requestId;
 
     /**
-     *
+     * Constant object that contains attributes that are returned to the caller when a new credential is created, or a new assertion is
+     * requested
+     * @see com.yubico.webauthn.data.AuthenticatorAssertionResponse
+     * @see com.yubico.webauthn.data.ClientRegistrationExtensionOutputs
      */
     private final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential;
 
     /**
-     * @param requestId
-     * @param credential
+     * Creates the {@code JSON} object for the response.
+     * @param requestId unique request response.
+     * @param credential credential returned to caller.
      */
     @JsonCreator
     public RegistrationResponse(

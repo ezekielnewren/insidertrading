@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * Class Util contains static helper methods.
+ * Contains static helper methods.
  */
 public class Util {
 
@@ -49,7 +49,7 @@ public class Util {
     }
 
     /**
-     * Method to retrieve random bytes.
+     * Retrieves random bytes.
      * @param amount the number of bytes you would like.
      * @return randomized bytes.
      */
@@ -61,7 +61,7 @@ public class Util {
     }
 
     /**
-     * Method to generate a new byte array using a random byte array.
+     * Generate a new byte array using a random byte array.
      * @param amount the number of bytes you would like.
      * @return new byte array with the randomized bytes
      * @see com.yubico.webauthn.data.ByteArray

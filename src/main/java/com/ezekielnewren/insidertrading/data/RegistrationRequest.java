@@ -32,7 +32,8 @@ import java.util.Optional;
 import lombok.*;
 
 /**
- *
+ * <p>Class contains data used for {@code RegistrationRequest}s
+ * Contains getters and setters for variables</p>
  */
 @AllArgsConstructor(onConstructor_={@JsonCreator})
 @Getter
@@ -41,25 +42,29 @@ import lombok.*;
 public class RegistrationRequest {
 
     /**
-     *
+     * Variable that holds user a provided name.
+     * @see java.lang.String
      */
     public String username;
 
 
     /**
-     *
+     * Object that holds optional user provided data.
+     * @see java.util.Optional
      */
     public Optional<String> nickname;
 
 
     /**
-     *
+     * Object that holds a unique id used for requests.
+     * @see com.yubico.webauthn.data.ByteArray
      */
     public ByteArray requestId;
 
 
     /**
-     *
+     * Object that holds option used for credential creation.
+     * @see com.yubico.webauthn.data.PublicKeyCredentialCreationOptions
      */
     public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 

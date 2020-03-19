@@ -21,7 +21,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
 /**
- * Class contains a set of methods used to communicate with the servlet container e.g. HTTP.
+ * Class contains a set of methods used to communicate with the servlet container e.g. {@code HTTP}.
  */
 @Value
 @Getter
@@ -34,13 +34,13 @@ public class InsiderTradingServletContext {
     final Object mutex = new Object();
 
     /**
-     * Creating an objectMapper object
+     * Object for {@code ObjectMapper}.
      * @see com.fasterxml.jackson.databind.ObjectMapper
      */
     ObjectMapper objectMapper;
 
     /**
-     * Object for a mongo client
+     * Object for a {@code Mongo Client}
      * @see com.mongodb.client.MongoClient
      */
     MongoClient client;
@@ -53,7 +53,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Collection of Users.
+     * Collection of {@code User}s.
      *
      * <p>
      *     MongoCollections are generic
@@ -64,7 +64,7 @@ public class InsiderTradingServletContext {
     public MongoCollection<User> collectionUser;
 
     /**
-     * Collection of Documents.
+     * Collection of {@code Document}s.
      *
      * <p>
      *     MongoCollections are generic
@@ -76,7 +76,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Collection of Transactions.
+     * Collection of {@code Transactions}.
      *
      * <p>
      *     MongoCollections are generic
@@ -88,7 +88,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Object for WebAuthn.
+     * Object for {@code WebAuthn}.
      *
      * <p>
      *     WebAuthn handles client and server authentication.
@@ -99,10 +99,10 @@ public class InsiderTradingServletContext {
     WebAuthn webAuthn;
 
     /**
-     * Object for UserStore.
+     * Object for {@code UserStore}.
      *
      * <p>
-     *     UserStore stores user information in database.
+     *     {@code UserStore} stores user information in database.
      * </p>
      *
      * @see com.ezekielnewren.insidertrading.data.UserStore

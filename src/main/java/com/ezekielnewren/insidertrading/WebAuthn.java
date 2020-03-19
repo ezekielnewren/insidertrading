@@ -24,55 +24,55 @@ public class WebAuthn implements Closeable {
 
 
     /**
-     * Total length of user name.
+     * Constant variable total length of user name.
      */
     public static final int LENGTH_USER_HANDLE = 12;
 
     /**
-     * Total length of the request id.
+     * Constant variable total length of the request id.
      */
     public static final int LENGTH_REQUEST_ID = 16;
 
     /**
-     * Total length of credential id.
+     * Constant variable total length of credential id.
      */
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
     /**
-     * Constant Object for servlet context.
+     * Constant variable for servlet context.
      */
     final InsiderTradingServletContext ctx;
 
     /**
-     * Constant Object mutex with nullcheck parameter.
+     * Constant variable mutex with nullcheck parameter.
      */
     final @NonNull Object mutex;
 
     /**
-     * Variable for RelayingPartyIdentity.
+     * Variable for {@code RelayingPartyIdentity}.
      */
     RelyingPartyIdentity rpi;
 
     /**
-     * Variable for Relaying Party information.
+     * Variable {@code RelayingParty} information.
      */
     RelyingParty rp;
     //ObjectMapper om;
     //CredentialRepository credStore;
 
     /**
-     * Map for registration request information.
+     * Object that holds a {@code Map} for registration request information.
      */
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
 
     /**
-     * Map for assertion information.
+     * Object that holds a {@code Map} for assertion information.
      */
     Map<ByteArray, AssertionRequestWrapper> assertMap = new HashMap<>();
 
 
     /**
-     * Contains information and constructs Builders RelyingPartyIdentity and RelyingParty
+     * Constructor {@code Builders RelyingPartyIdentity} and {@code RelyingParty}.
      * @param _ctx the context of the servlet.
      * @param fqdn fully qualified domain name.
      * @param title client user name.
@@ -141,8 +141,8 @@ public class WebAuthn implements Closeable {
 //    }
 
     /**
-     * Contains the information and builds, on success, userIdentity and request.
-     * Maps request to the request map.
+     * <p>Contains the information necessary to build a {@code RegistrationRequest}: on success, userIdentity and request.
+     * Maps request to the request map.</p>
      * @param session currently not in use.
      * @param username clients name.
      * @param displayName clients display name.
@@ -194,9 +194,9 @@ public class WebAuthn implements Closeable {
     }
 
     /**
-     * Update results with completed registration object.
+     * <p>Update results with completed registration object.
      * Updates username, displayname, and auth.
-     * Adds authenticator with client information to ctx.
+     * Adds authenticator with client information to ctx.</p>
      * @param session currently not in use.
      * @param response response information from server.
      * @return returns true on success.

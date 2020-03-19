@@ -10,7 +10,7 @@ import lombok.NonNull;
 /**
  * <p>Class that contains data about {@code AssertionRequest}.
  * Contains the {@code Jackson} properties for serialization and deserialization.
- * Contains getters for Java objects used for assertion request.</p>
+ * Contains getters for  used for assertion request.</p>
  */
 @AllArgsConstructor
 @Getter

@@ -34,27 +34,26 @@ public class InsiderTradingServletContext {
     final Object mutex = new Object();
 
     /**
-     * Creating an objectMapper variable
-     *
+     * Creating an objectMapper object
      * @see com.fasterxml.jackson.databind.ObjectMapper
      */
     ObjectMapper objectMapper;
 
     /**
-     * Variable for a mongo client
+     * Object for a mongo client
      * @see com.mongodb.client.MongoClient
      */
     MongoClient client;
 
     /**
-     * Variable for mongo database
+     * Object for mongo database
      * @see com.mongodb.client.MongoDatabase
      */
     MongoDatabase database;
 
 
     /**
-     * Declare a collection of users.
+     * Collection of Users.
      *
      * <p>
      *     MongoCollections are generic
@@ -65,7 +64,7 @@ public class InsiderTradingServletContext {
     public MongoCollection<User> collectionUser;
 
     /**
-     * Declare a collection of documents.
+     * Collection of Documents.
      *
      * <p>
      *     MongoCollections are generic
@@ -77,7 +76,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Declare a collection of transactions.
+     * Collection of Transactions.
      *
      * <p>
      *     MongoCollections are generic
@@ -89,7 +88,7 @@ public class InsiderTradingServletContext {
 
 
     /**
-     * Variable for WebAuthn.
+     * Object for WebAuthn.
      *
      * <p>
      *     WebAuthn handles client and server authentication.
@@ -100,7 +99,7 @@ public class InsiderTradingServletContext {
     WebAuthn webAuthn;
 
     /**
-     * Variable for UserStore.
+     * Object for UserStore.
      *
      * <p>
      *     UserStore stores user information in database.

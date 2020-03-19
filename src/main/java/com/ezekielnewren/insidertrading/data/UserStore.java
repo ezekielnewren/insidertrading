@@ -17,14 +17,14 @@ import java.util.*;
 public class UserStore {
 
     /**
-     * Variable for servlet.
+     * Object for servlet.
      * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
      */
     InsiderTradingServletContext ctx;
 
 
     /**
-     * Variable for repository, used to look up credentials.
+     * Object for repository, used to look up credentials.
      *
      * <p>
      * Used to look up credentials, usernames and user handles from usernames, user handles

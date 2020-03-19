@@ -7,9 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
-import java.time.LocalDateTime;
 
 
+/**
+ * The class Transaction contains transaction information, constructs transaction {@code JSON} and constructs transactions.
+ */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE,
         isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -19,12 +21,39 @@ import java.time.LocalDateTime;
 @Getter
 public class Transaction {
 
+    /**
+     * 12-byte primary key value for transaction.
+     */
     @JsonProperty @NonNull final ObjectId _id;
+
+    /**
+     * Sending account information.
+     */
     @JsonProperty long sendingAccount;
+
+    /**
+     * Receiving account information.
+     */
     @JsonProperty long receivingAccount;
+
+    /**
+     * Amount of the transaction.
+     */
     @JsonProperty long amount;
+
+    /**
+     * Date of the transaction.
+     */
     @JsonIgnore @NonNull long date;
 
+    /**
+     * Constructs {@code Transaction JSON} object using the transaction data.
+     * @param _id unique transaction id.
+     * @param _sendingAccount sending account information.
+     * @param _receivingAccount receiving account information.
+     * @param _amount amount of the transaction.
+     * @param _date date of the transaction.
+     */
     @JsonCreator
     public Transaction(@JsonProperty("_id") final ObjectId _id,
                        @JsonProperty("sendingAccount") long _sendingAccount,
@@ -38,6 +67,13 @@ public class Transaction {
         this.date = _date;
     }
 
+    /**
+     * {@code Transaction} constructor for a new transaction.
+     * @param _sendingAccount
+     * @param _receivingAccount
+     * @param _amount
+     * @param _date
+     */
     public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date){
         this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date);
     }

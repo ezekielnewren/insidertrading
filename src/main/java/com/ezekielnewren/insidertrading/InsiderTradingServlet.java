@@ -157,7 +157,7 @@ public class InsiderTradingServlet extends HttpServlet {
                         errMsg.get();
                     }
                 } else if ("api".equals(args[0])) {
-                    ctx.getApi().onRequest(request.getSession(), args, data);
+                    ctx.getApi().onRequest(request.getSession(), data);
                 }
             } else {
                 errMsg.get();

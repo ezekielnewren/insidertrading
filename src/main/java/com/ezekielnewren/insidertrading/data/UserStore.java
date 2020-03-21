@@ -159,7 +159,7 @@ public class UserStore {
         if (insert) {
             ctx.getCollectionUser().insertOne(user);
         } else {
-            ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user);
+            writeToDatabase(user);
         }
     }
 
@@ -180,7 +180,7 @@ public class UserStore {
 
         if (auth != null) {
             auth.setSignatureCount(result.getSignatureCount());
-            ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user);
+            writeToDatabase(user);
         }
     }
 
@@ -248,6 +248,7 @@ public class UserStore {
     }
 
 
-
-
+    public void writeToDatabase(User user) {
+        ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user);
+    }
 }

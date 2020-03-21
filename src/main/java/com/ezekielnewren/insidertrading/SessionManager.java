@@ -117,6 +117,8 @@ public class SessionManager {
      */
     UserStore userStore;
 
+    BankAPI api;
+
     /**
      * Method creates the connection to the {@code Mongo Server}
      * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
@@ -152,6 +154,8 @@ public class SessionManager {
         // apply a unique constraint on user.username and transaction.number
         collectionUser.createIndex(new BasicDBObject("username", 1), new IndexOptions().unique(true));
         // collectionTransaction.createIndex(new BasicDBObject("number", 1), new IndexOptions().unique(true));
+
+        this.api = new BankAPI(this);
     }
 
     public boolean isLoggedIn(HttpSession httpSession) { return isLoggedIn(httpSession, null); }

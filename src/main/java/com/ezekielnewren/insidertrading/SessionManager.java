@@ -20,6 +20,11 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
+import java.util.*;
+
 /**
  * Class contains a set of methods used to communicate with the servlet container e.g. {@code HTTP}.
  */
@@ -32,6 +37,9 @@ public class SessionManager {
      * @see java.lang
      */
     final Object mutex = new Object();
+
+    Map<String, String> sessionIdAndUsername = new HashMap<>();
+    Map<String, HttpSession> sessionIdAndHttpSession = new HashMap<>();
 
     /**
      * Object for {@code ObjectMapper}.
@@ -109,9 +117,6 @@ public class SessionManager {
      */
     UserStore userStore;
 
-    SessionManager sessionManager;
-
-
     /**
      * Method creates the connection to the {@code Mongo Server}
      * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
@@ -149,5 +154,46 @@ public class SessionManager {
         // collectionTransaction.createIndex(new BasicDBObject("number", 1), new IndexOptions().unique(true));
     }
 
+    public boolean isLoggedIn(HttpSession httpSession) { return isLoggedIn(httpSession, null); }
+    public boolean isLoggedIn(HttpSession httpSession, String username) {
+        Objects.nonNull(httpSession);
+
+        String tmp = sessionIdAndUsername.get(httpSession.getId());
+        if (username == null && tmp != null) return true;
+        if (username.equals(tmp)) return true;
+        return false;
+    }
+
+
+    public void setLoggedIn(HttpSession httpSession, String username) {
+        Objects.nonNull(httpSession);
+        Objects.nonNull(username);
+
+        sessionIdAndUsername.put(httpSession.getId(), username);
+        sessionIdAndHttpSession.put(httpSession.getId(), httpSession);
+    }
+
+    public void clearLoggedIn(HttpSession httpSession) {
+        sessionIdAndUsername.put(httpSession.getId(), null);
+        sessionIdAndHttpSession.put(httpSession.getId(), null);
+    }
+
+    public String getUsername(HttpSession httpSession) {
+        return sessionIdAndUsername.get(httpSession.getId());
+    }
+
+    public List<HttpSession> getEverySession(String _username) {
+        Objects.nonNull(_username);
+
+        List<HttpSession> tmp = new ArrayList<>();
+
+        sessionIdAndHttpSession.forEach((session, username)->{
+            if (_username.equals(username)) {
+                tmp.add(sessionIdAndHttpSession.get(session));
+            }
+        });
+
+        return tmp;
+    }
 
 }

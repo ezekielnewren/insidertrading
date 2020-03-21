@@ -124,13 +124,6 @@ public class InsiderTradingServlet extends HttpServlet {
 
                         // finish webauthn registration
                         boolean result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
-//                        String username = result.getUsername();
-//
-//                        UserStore store = ctx.getUserStore();
-//                        RegistrationStorage regStore = store.getRegistrationStorage();
-//                        if (result != null) {
-//                            regStore.addRegistrationByUsername(username, result);
-//                        }
 
                         // respond to client
                         String json = result?"\"good\"":"\"bad\"";
@@ -144,14 +137,19 @@ public class InsiderTradingServlet extends HttpServlet {
                         String username = jsonTmp.getString("username");
                         boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
 
-                        AssertionRequestWrapper arw = ctx.getWebAuthn().assertionStart(username);
+                        String json;
+                        if (!ctx.isLoggedIn(request.getSession(), username)) {
+                            AssertionRequestWrapper arw = ctx.getWebAuthn().loginStart(username);
+                            json = ctx.getObjectMapper().writeValueAsString(arw);
+                        } else {
+                            json = ctx.getObjectMapper().writeValueAsString(null);
+                        }
 
-                        String json = ctx.getObjectMapper().writeValueAsString(arw);
                         out.println(json);
                     } else if ("finish".equals(args[1])) {
                         AssertionResponse ar = ctx.getObjectMapper().readValue(data, AssertionResponse.class);
 
-                        boolean result = ctx.getWebAuthn().assertionFinish(ar);
+                        boolean result = ctx.getWebAuthn().loginFinish(request.getSession(), ar);
 
                         String json = result?"\"good\"":"\"bad\"";
                         out.println(json);

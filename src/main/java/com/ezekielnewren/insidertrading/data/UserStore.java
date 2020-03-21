@@ -9,6 +9,7 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import org.bson.types.ObjectId;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -245,5 +246,8 @@ public class UserStore {
     public boolean exists(String username) {
         return ctx.getCollectionUser().countDocuments(Filters.eq("username", username))>0;
     }
+
+
+
 
 }

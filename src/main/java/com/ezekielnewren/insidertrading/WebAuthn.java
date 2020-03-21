@@ -162,6 +162,16 @@ public class WebAuthn implements Closeable {
             try {
                 //Optional<User> user = Optional.ofNullable((User) session.getAttribute(username));
 
+                // that username has been taken
+                if (ctx.getUserStore().exists(username)) {
+                    return null;
+                }
+
+                // you must log out before creating a new account
+                if (ctx.isLoggedIn(session)) {
+                    return null;
+                }
+
                 UserIdentity userIdentity = UserIdentity.builder()
                         .name(username)
                         .displayName(displayName)
@@ -235,6 +245,7 @@ public class WebAuthn implements Closeable {
             String displayName = request.getPublicKeyCredentialCreationOptions().getUser().getDisplayName();
 
             ctx.getUserStore().addAuthenticator(username, displayName, auth, null, null, 0, 0, 0);
+            ctx.setLoggedIn(session, username);
 
             return true;
         }
@@ -254,6 +265,11 @@ public class WebAuthn implements Closeable {
                 rp.startAssertion(StartAssertionOptions.builder()
                         .username(username)
                         .build())
+        );
+
+        rp.startAssertion(StartAssertionOptions.builder()
+                .username("")
+                .build()
         );
 
         assertMap.put(requestId, request);
@@ -292,6 +308,18 @@ public class WebAuthn implements Closeable {
         return true;
     }
 
+    public AssertionRequestWrapper loginStart(String username) {
+        return ctx.getWebAuthn().assertionStart(username);
+    }
+
+    public boolean loginFinish(HttpSession httpSession, AssertionResponse response) {
+        AssertionRequestWrapper request = assertMap.get(response.getRequestId());
+        if (ctx.getWebAuthn().assertionFinish(response)) {
+            ctx.setLoggedIn(httpSession, request.getAssertionRequest().getUsername().get());
+            return true;
+        }
+        return false;
+    }
 
     /**
      * <p>Closes this stream and releases any system resources associated with it.

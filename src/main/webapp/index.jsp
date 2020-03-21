@@ -36,6 +36,10 @@
                 success: function(data) {
                     var request = data;
                     console.log("got the request");
+                    if (request == null) {
+                        alert("that username has been taken");
+                        return;
+                    }
                     webauthn.createCredential(request.publicKeyCredentialCreationOptions)
                     .then(function (res) {
                         // Send new credential info to server for verification and registration.
@@ -83,6 +87,11 @@
             .done(function(data) {
                 console.log(data);
                 // console.log('executeAuthenticateRequest', request);
+
+                if (data == null) {
+                    alert("you are already logged in");
+                    return;
+                }
                 var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
 
                 return webauthn.getAssertion(pkcro).then(function(assertion) {
@@ -98,7 +107,8 @@
                         .done(function(data) {
                             console.log(data);
                             if ("good" === data) {
-                                alert("good assertion");
+                                alert("you are now logged in, navigating to bank home page");
+                                window.location.href = urlprefix+"/bank.jsp"
                             }
                         }).catch(function(err) {
                         alert("uh oh, check the log");

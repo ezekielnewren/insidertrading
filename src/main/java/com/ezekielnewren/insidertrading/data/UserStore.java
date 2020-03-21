@@ -1,6 +1,6 @@
 package com.ezekielnewren.insidertrading.data;
 
-import com.ezekielnewren.insidertrading.InsiderTradingServletContext;
+import com.ezekielnewren.insidertrading.SessionManager;
 import com.mongodb.client.model.Filters;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.CredentialRepository;
@@ -18,9 +18,9 @@ public class UserStore {
 
     /**
      * Object for servlet.
-     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
+     * @see SessionManager
      */
-    InsiderTradingServletContext ctx;
+    SessionManager ctx;
 
 
     /**
@@ -38,9 +38,9 @@ public class UserStore {
     /**
      * Method for storing user data.
      * @param _ctx servlet context.
-     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
+     * @see SessionManager
      */
-    public UserStore(InsiderTradingServletContext _ctx) {
+    public UserStore(SessionManager _ctx) {
         this.ctx = _ctx;
         repo = new CredentialRepository() {
 

@@ -25,9 +25,9 @@ public class InsiderTradingServlet extends HttpServlet {
 
     /**
      * Object to hold data serialization.
-     * @see com.ezekielnewren.insidertrading.InsiderTradingServletContext
+     * @see SessionManager
      */
-    InsiderTradingServletContext ctx;
+    SessionManager ctx;
 
     /**
      * Constructor assigns data to ctx object and logs data on success.
@@ -39,7 +39,7 @@ public class InsiderTradingServlet extends HttpServlet {
             getServletContext().log("DEBUG MODE");
         }
 
-        ctx = new InsiderTradingServletContext(
+        ctx = new SessionManager(
                 JacksonHelper.newObjectMapper(),
                 "mongodb://localhost",
                 null,

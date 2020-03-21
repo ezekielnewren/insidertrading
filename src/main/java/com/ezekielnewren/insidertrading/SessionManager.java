@@ -25,7 +25,7 @@ import org.bson.codecs.configuration.CodecRegistry;
  */
 @Value
 @Getter
-public class InsiderTradingServletContext {
+public class SessionManager {
 
     /**
      * Creating a new constant object.
@@ -109,6 +109,9 @@ public class InsiderTradingServletContext {
      */
     UserStore userStore;
 
+    SessionManager sessionManager;
+
+
     /**
      * Method creates the connection to the {@code Mongo Server}
      * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
@@ -120,7 +123,7 @@ public class InsiderTradingServletContext {
      * @see java.lang.String
      * @see com.mongodb.MongoCredential
      */
-    public InsiderTradingServletContext(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
+    public SessionManager(ObjectMapper _om, String connectionString, MongoCredential _cred, String fqdn, String title) {
         this.objectMapper = _om;
 
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),

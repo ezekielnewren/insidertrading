@@ -41,7 +41,7 @@ public class WebAuthn implements Closeable {
     /**
      * Constant variable for servlet context.
      */
-    final InsiderTradingServletContext ctx;
+    final SessionManager ctx;
 
     /**
      * Constant variable mutex with nullcheck parameter.
@@ -77,7 +77,7 @@ public class WebAuthn implements Closeable {
      * @param fqdn fully qualified domain name.
      * @param title client user name.
      */
-    public WebAuthn(final InsiderTradingServletContext _ctx, String fqdn, String title) {
+    public WebAuthn(final SessionManager _ctx, String fqdn, String title) {
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
         synchronized (mutex) {

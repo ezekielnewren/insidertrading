@@ -122,8 +122,17 @@
         }
 
         function onTest() {
-            getUsername().then(function(data) {
-                console.log(data);
+            getUsername().then(function(response) {
+                if (response.error === null) {
+                    var username = response.data;
+                    if (username != null) {
+                        alert("your username is: "+username);
+                    } else {
+                        alert("you haven't logged in yet");
+                    }
+                } else {
+                    console.log(response.error);
+                }
             }).catch(function(err) {
                 console.log(err);
             });
@@ -143,7 +152,7 @@
             <div class="line-item">
                 <button onclick="onRegister()">Register</button>
                 <button onclick="onLogin()">Login</button>
-                <button onclick="onTest()">test</button>
+                <button onclick="onTest()">whoami?</button>
             </div>
         </div>
     </div>

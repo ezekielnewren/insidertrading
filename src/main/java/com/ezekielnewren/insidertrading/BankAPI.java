@@ -1,15 +1,16 @@
 package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.Account;
+import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This class is used by the front end for interfacing with the back.
@@ -58,6 +59,13 @@ public class BankAPI {
             // turn result into json
             jsonOut = ctx.getObjectMapper().writeValueAsString(result);
         }
+        else if(json.getString("cmd").equals("getTransactionHistory")){
+            //Gets the list of accounts
+            List<Account> result = getAccountList(session);
+
+            //returns the history of each account
+            return getTransactionHistory(result);
+        }
         else {
             jsonOut = ctx.getObjectMapper().writeValueAsString(null);
         }
@@ -91,18 +99,45 @@ public class BankAPI {
         String to = otherUser; // do they exist? if not return false
 
         User userFrom = ctx.getUserStore().getByUsername(from);
+
         User userTo = ctx.getUserStore().getByUsername(to);
+        if(userTo == null) return false;
 
         Account acctFrom = userFrom.getAccount(accountTypeFrom.toString());
         Account acctTo = userTo.getAccount(accountTypeTo.toString());
 
         // transfer the money only if it makes sense e.g. the from account has at least the amount being transferred
         // your code here ...
+        if(acctFrom.balance < amount){
+            return false;
+            //maybe return exception instead.
+        }
+        acctFrom.balance = acctFrom.balance - amount;
+        acctTo.balance = acctTo.balance + amount;
 
         ctx.getUserStore().writeToDatabase(userFrom);
         ctx.getUserStore().writeToDatabase(userTo);
-
+        Transaction t = new Transaction(acctFrom.getNumber(), acctTo.getNumber(), amount, System.currentTimeMillis());
+        ctx.collectionTransaction.insertOne(t);
         return true;
+    }
+
+    public String getTransactionHistory(List<Account> aList){
+
+        List<Transaction> tList = null;
+
+
+        for(Account a : aList){
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
+        }
+
+        try {
+            return ctx.getObjectMapper().writeValueAsString(tList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

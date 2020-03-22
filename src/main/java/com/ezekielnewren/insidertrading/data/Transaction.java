@@ -44,7 +44,7 @@ public class Transaction {
     /**
      * Date of the transaction.
      */
-    @JsonIgnore @NonNull long date;
+    @JsonIgnore long date;
 
     /**
      * Constructs {@code Transaction JSON} object using the transaction data.

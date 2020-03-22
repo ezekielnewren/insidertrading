@@ -28,4 +28,37 @@ function getUsername() {
   });
 }
 
+function getAccountList() {
+var cmd = "getAccountList";
+var payload = {cmd};
+
+return new Promise(function(resolve, reject) {
+  talk('api', payload)
+    .done(function (data) {
+      console.log(data);
+      var accountList = data;
+      resolve(accountList);
+    }).catch(function (err) {
+      reject(err);
+    })
+  });
+}
+
+function getTransactionHistory() {
+var cmd = "getTransactionHistory";
+var payload = {cmd};
+
+return new Promise(function(resolve, reject) {
+  talk('api', payload)
+    .done(function (data) {
+    console.log(data);
+    var transactionHistory = data;
+    resolve(transactionHistory);
+  }).catch(function (err) {
+    reject(err);
+  })
+});
+}
+
+
 

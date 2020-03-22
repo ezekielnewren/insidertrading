@@ -77,4 +77,8 @@ public class Account {
     public Account(String _title, long _balance) {
         this(Util.generateRandomObjectId(), Util.getRandom().nextInt(Integer.MAX_VALUE), _title, _balance);
     }
+
+    public long getNumber(){
+        return this.number;
+    }
 }

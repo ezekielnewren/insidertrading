@@ -9,7 +9,9 @@
     <script src="lib/base64js/base64js-1.3.0.min.js"></script>
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
-    <script>
+<%--    <script src="js/api.jsp" type="application/javascript"></script>--%>
+
+      <script>
         var urlprefix = <%= Build.get("urlprefix") %>;
         // debugger;
 
@@ -23,6 +25,22 @@
             })
         }
 
+        function getUsername() {
+          var cmd = "getUsername";
+          var args = null;
+          var payload = JSON.stringify({cmd, args});
+
+          return new Promise(function(resolve, reject) {
+            talk('api', payload)
+              .done(function (data) {
+                console.log(data);
+                var username = data;
+                resolve(username);
+              }).catch(function (err) {
+              reject(err);
+            })
+          });
+        }
 
         function register(username, displayName, nickname, requireResidentKey) {
             var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
@@ -132,6 +150,15 @@
             var username = $('#username').val();
             login(username, false);
         }
+
+        function onTest() {
+            getUsername().then(function(data) {
+                console.log(data);
+            }).catch(function(err) {
+                console.log(err);
+            });
+        }
+
     </script>
 
 
@@ -146,6 +173,7 @@
             <div class="line-item">
                 <button onclick="onRegister()">Register</button>
                 <button onclick="onLogin()">Login</button>
+                <button onclick="onTest()">test</button>
             </div>
         </div>
     </div>

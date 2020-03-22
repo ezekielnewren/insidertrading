@@ -95,7 +95,7 @@ public class InsiderTradingServlet extends HttpServlet {
 
             Supplier<String> errMsg = () -> {
                 try {
-                    response.sendError(400, "bad arguments must be /webauthn/<action>/<state> e.g. /webauthn/register/start");
+                    response.sendError(400, "bad arguments must be "+Build.get("urlprefix")+"<action>/<state> e.g. "+Build.get("urlprefix")+"register/start");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -158,10 +158,13 @@ public class InsiderTradingServlet extends HttpServlet {
                     } else {
                         errMsg.get();
                     }
-                } else if ("api".equals(args[0])) {
-                    ctx.getApi().onRequest(request.getSession(), data);
                 }
-            } else {
+            } else if ("api".equals(args[0])) {
+                String json = ctx.getApi().onRequest(request.getSession(), data);
+
+                out.println(json);
+            }
+            else {
                 errMsg.get();
             }
         } catch (IOException e) {

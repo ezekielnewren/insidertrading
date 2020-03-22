@@ -14,7 +14,8 @@ function talk(service, payload) {
 
 function getUsername() {
   var cmd = "getUsername";
-  var payload = {cmd};
+  var args = null;
+  var payload = {cmd, args};
 
   return new Promise(function(resolve, reject) {
     talk('api', payload)

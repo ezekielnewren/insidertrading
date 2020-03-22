@@ -6,18 +6,20 @@ import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import javax.servlet.http.HttpSession;
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The {@code WebAuthn} class handles the authentication of client and server.
  * */
-public class WebAuthn implements Closeable {
+public class WebAuthn /*implements Closeable*/ {
 
     // https://developers.yubico.com/WebAuthn/Libraries/Using_a_library.html
     // https://developers.yubico.com/java-webauthn-server/
@@ -260,13 +262,11 @@ public class WebAuthn implements Closeable {
      * @return requestId and relying party username.
      * @see java.lang.String
      */
-    public AssertionRequestWrapper assertionStart(String username, ByteArray aad) {
+    public <T> AssertionRequestWrapper<T> assertionStart(String username, ByteArray aad, T attachment) {
+        if (aad == null) aad = new ByteArray(new byte[0]);
 
-        ByteArray challenge;
-        byte[] buff = new byte[(aad==null?0:aad.size())+LENGTH_ASSERTION_NONCE];
-        Util.getRandom().nextBytes(buff);
-        if (aad != null) System.arraycopy(aad, 0, buff, 0, aad.size());
-        challenge = new ByteArray(buff);
+        ByteArray nonce = Util.generateRandomByteArray(LENGTH_ASSERTION_NONCE);
+        ByteArray challenge = aad.concat(nonce);
 
         ByteArray requestId = generateRequestId();
         AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
@@ -274,7 +274,8 @@ public class WebAuthn implements Closeable {
                         .username(username)
                         .build(),
                         challenge
-                        )
+                        ),
+                attachment
         );
 
         assertMap.put(requestId, request);
@@ -288,7 +289,7 @@ public class WebAuthn implements Closeable {
      * @return returns true if finished.
      * @see com.ezekielnewren.insidertrading.data.AssertionResponse
      */
-    public boolean assertionFinish(AssertionResponse response) {
+    public <T> Triple<Boolean, AssertionRequestWrapper<T>, AssertionResult> assertionFinish(AssertionResponse response) {
 
         AssertionRequestWrapper request = assertMap.remove(response.getRequestId());
 
@@ -302,39 +303,87 @@ public class WebAuthn implements Closeable {
             );
 
             if (!(result.isSuccess() && result.isSignatureCounterValid())) {
-                return false;
+                return new ImmutableTriple<>(false, request, result);
             }
 
             ctx.getUserStore().updateSignatureCount(result);
         } catch (AssertionFailedException e) {
-            return false;
+            return new ImmutableTriple<>(false, request, null);
         }
 
-        return true;
+        return new ImmutableTriple<>(true, request, result);
     }
 
     public AssertionRequestWrapper loginStart(String username) {
-        return ctx.getWebAuthn().assertionStart(username, null);
+        return ctx.getWebAuthn().assertionStart(username, null, null);
     }
 
     public boolean loginFinish(HttpSession httpSession, AssertionResponse response) {
         AssertionRequestWrapper request = assertMap.get(response.getRequestId());
-        if (ctx.getWebAuthn().assertionFinish(response)) {
+        if (assertionFinish(response).getLeft()) {
             ctx.setLoggedIn(httpSession, request.getAssertionRequest().getUsername().get());
             return true;
         }
         return false;
     }
 
-    /**
-     * <p>Closes this stream and releases any system resources associated with it.
-     * If the stream is already closed then invoking this method has no effect.</p>
-     * @throws IOException throws, never caught.
-     */
-    @Override
-    public void close() throws IOException {
-
+    public AssertionRequestWrapper signTransactionStart(String username, Transaction t) {
+        return assertionStart(username, t.getBytesForSignature(ctx.getObjectMapper()), t);
     }
+
+    public boolean signTransactionFinish(HttpSession httpSession, AssertionResponse response) {
+        Triple<Boolean, AssertionRequestWrapper<Transaction>, AssertionResult> x = assertionFinish(response);
+        if (x.getLeft()) {
+            // unpack
+            Transaction t = x.getMiddle().getAttachment();
+            AssertionResult result = x.getRight();
+
+            t.setSignature(response.getPublicKeyCredential());
+
+            // continue with the transaction
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean verifyTransaction(String username, Transaction t) throws AssertionFailedException {
+        ByteArray forsign = t.getBytesForSignature(ctx.getObjectMapper());
+
+
+        PublicKeyCredential pkc = t.getSignature();
+        ByteArray challenge = pkc.getResponse().getClientData().getChallenge();
+        AssertionRequest request = Util.startAssertion(rp, StartAssertionOptions.builder().username(username).build(), challenge);
+
+        if (!Arrays.equals(challenge.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE, forsign.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE)) return false;
+
+
+        AssertionResult result;
+        try {
+            result = rp.finishAssertion(
+                    FinishAssertionOptions.builder()
+                            .request(request)
+                            .response(pkc)
+                            .build()
+                );
+        } catch (AssertionFailedException e) {
+            return false;
+        }
+
+        return result.isSuccess();
+    }
+
+
+
+//    /**
+//     * <p>Closes this stream and releases any system resources associated with it.
+//     * If the stream is already closed then invoking this method has no effect.</p>
+//     * @throws IOException throws, never caught.
+//     */
+//    @Override
+//    public void close() throws IOException {
+//
+//    }
 
 
 }

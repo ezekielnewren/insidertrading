@@ -1,5 +1,6 @@
 package com.ezekielnewren.insidertrading.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.ByteArray;
@@ -14,7 +15,7 @@ import lombok.NonNull;
  */
 @AllArgsConstructor
 @Getter
-public class AssertionRequestWrapper {
+public class AssertionRequestWrapper<T> {
 
     /**
      * Unique id used for request.
@@ -28,5 +29,7 @@ public class AssertionRequestWrapper {
      * @see com.yubico.webauthn.AssertionRequest
      */
     @JsonProperty @NonNull AssertionRequest assertionRequest;
+
+    @JsonIgnore public T attachment;
 
 }

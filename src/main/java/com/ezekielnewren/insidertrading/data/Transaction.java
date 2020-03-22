@@ -7,7 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
+import com.yubico.webauthn.data.PublicKeyCredential;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
@@ -53,10 +56,7 @@ public class Transaction {
      */
     @JsonProperty long date;
 
-    @JsonProperty ByteArray nonce;
-
-    @JsonProperty ByteArray signature;
-
+    @JsonProperty PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature;
 
     /**
      * Constructs {@code Transaction JSON} object using the transaction data.
@@ -101,6 +101,9 @@ public class Transaction {
         return new ByteArray(json.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    public void setSignature(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature) {
+        this.signature = signature;
+    }
 }
 
 

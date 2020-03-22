@@ -1,5 +1,6 @@
 package com.ezekielnewren.insidertrading.data;
 
+import com.ezekielnewren.insidertrading.Util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -175,13 +176,7 @@ public class User {
     public RegisteredCredential getRegisteredCredential(ByteArray credentialId) {
         Authenticator auth = getAuthenticator(credentialId);
 
-        if (auth == null) return null;
-        return RegisteredCredential.builder()
-                    .credentialId(credentialId)
-                    .userHandle(getUserHandle())
-                    .publicKeyCose(auth.getPublicKeyCose())
-                    .signatureCount(auth.getSignatureCount())
-                    .build();
+        return Util.getRegisteredCredential(auth, getUserHandle());
     }
 
     /**

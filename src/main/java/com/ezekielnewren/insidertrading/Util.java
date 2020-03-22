@@ -1,10 +1,11 @@
 package com.ezekielnewren.insidertrading;
 
+import com.ezekielnewren.insidertrading.data.Authenticator;
 import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
-import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
+import com.yubico.webauthn.data.*;
 import org.bson.types.ObjectId;
 
 import java.security.NoSuchAlgorithmException;
@@ -111,6 +112,23 @@ public class Util {
                 .build();
     }
 
+    public static RegisteredCredential getRegisteredCredential(Authenticator auth, ByteArray userHandle) {
+        if (auth == null) return null;
+        return RegisteredCredential.builder()
+                .credentialId(auth.getCredentialId())
+                    .userHandle(userHandle)
+            .publicKeyCose(auth.getPublicKeyCose())
+            .signatureCount(auth.getSignatureCount())
+            .build();
+    }
 
+    public static PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> copyPublicKeyCredential(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc) {
+        PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> other = PublicKeyCredential.<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>builder()
+                .id(pkc.getId())
+                .response(pkc.getResponse())
+                .clientExtensionResults(pkc.getClientExtensionResults())
+                .build();
+        return other;
+    }
 
 }

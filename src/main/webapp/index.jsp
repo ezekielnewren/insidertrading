@@ -9,39 +9,9 @@
     <script src="lib/base64js/base64js-1.3.0.min.js"></script>
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
-<%--    <script src="js/api.jsp" type="application/javascript"></script>--%>
+    <script src="js/api.jsp" type="application/javascript"></script>
 
       <script>
-        var urlprefix = <%= Build.get("urlprefix") %>;
-        // debugger;
-
-        function talk(service, payload) {
-            return $.ajax({
-                type: 'POST',
-                url: urlprefix + service,
-                contentType: 'application/json',
-                dataType: 'json',
-                data: payload,
-            })
-        }
-
-        function getUsername() {
-          var cmd = "getUsername";
-          var args = null;
-          var payload = JSON.stringify({cmd, args});
-
-          return new Promise(function(resolve, reject) {
-            talk('api', payload)
-              .done(function (data) {
-                console.log(data);
-                var username = data;
-                resolve(username);
-              }).catch(function (err) {
-              reject(err);
-            })
-          });
-        }
-
         function register(username, displayName, nickname, requireResidentKey) {
             var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
 

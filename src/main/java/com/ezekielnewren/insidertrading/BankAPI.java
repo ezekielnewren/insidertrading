@@ -3,8 +3,8 @@ package com.ezekielnewren.insidertrading;
 import com.ezekielnewren.insidertrading.data.Account;
 import com.ezekielnewren.insidertrading.data.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -23,12 +23,12 @@ public class BankAPI {
     }
 
     String onRequest(HttpSession session, String data) throws JsonProcessingException {
-        JSONObject json = new JSONObject(data);
+        ObjectNode json = ctx.getObjectMapper().createObjectNode();
         String jsonOut;
 
         String whoami = getUsername(session);
 
-        if (json.getString("cmd").equals("getUsername")) {
+        if (json.get("cmd").asText().equals("getUsername")) {
             // no arguments for this command
 
             // call the function
@@ -36,7 +36,7 @@ public class BankAPI {
 
             // turn result into json
             jsonOut = ctx.getObjectMapper().writeValueAsString(result);
-        } else if (json.getString("cmd").equals("getAccountList")) {
+        } else if (json.get("cmd").asText().equals("getAccountList")) {
             // no arguments for this command
 
             // call the function
@@ -44,13 +44,13 @@ public class BankAPI {
 
             // turn result into json
             jsonOut = ctx.getObjectMapper().writeValueAsString(result);
-        } else if (json.getString("cmd").equals("transfer")) {
+        } else if (json.get("cmd").asText().equals("transfer")) {
             // extract arguments from json
-            JSONObject args = json.getJSONObject("args");
-            String otherUser = args.getString("otherUser");
-            String accountTypeFrom = args.getString("accountTypeFrom");
-            String accountTypeTo = args.getString("accountTypeTo");
-            long amount = args.getLong("amount");
+            JsonNode args = json.get("args");
+            String otherUser = args.get("otherUser").asText();
+            String accountTypeFrom = args.get("accountTypeFrom").asText();
+            String accountTypeTo = args.get("accountTypeTo").asText();
+            long amount = args.get("amount").asLong();
 
             // call the function
             boolean result = transfer(session, otherUser, accountTypeFrom, accountTypeTo, amount);

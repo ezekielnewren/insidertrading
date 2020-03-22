@@ -38,6 +38,8 @@ public class WebAuthn implements Closeable {
      */
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
+    public static final int LENGTH_ASSERTION_NONCE = 32;
+
     /**
      * Constant variable for servlet context.
      */
@@ -258,18 +260,21 @@ public class WebAuthn implements Closeable {
      * @return requestId and relying party username.
      * @see java.lang.String
      */
-    public AssertionRequestWrapper assertionStart(String username) {
+    public AssertionRequestWrapper assertionStart(String username, ByteArray aad) {
+
+        ByteArray challenge;
+        byte[] buff = new byte[(aad==null?0:aad.size())+LENGTH_ASSERTION_NONCE];
+        Util.getRandom().nextBytes(buff);
+        if (aad != null) System.arraycopy(aad, 0, buff, 0, aad.size());
+        challenge = new ByteArray(buff);
 
         ByteArray requestId = generateRequestId();
         AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
-                rp.startAssertion(StartAssertionOptions.builder()
+                Util.startAssertion(rp, StartAssertionOptions.builder()
                         .username(username)
-                        .build())
-        );
-
-        rp.startAssertion(StartAssertionOptions.builder()
-                .username("")
-                .build()
+                        .build(),
+                        challenge
+                        )
         );
 
         assertMap.put(requestId, request);
@@ -309,7 +314,7 @@ public class WebAuthn implements Closeable {
     }
 
     public AssertionRequestWrapper loginStart(String username) {
-        return ctx.getWebAuthn().assertionStart(username);
+        return ctx.getWebAuthn().assertionStart(username, null);
     }
 
     public boolean loginFinish(HttpSession httpSession, AssertionResponse response) {

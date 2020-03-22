@@ -1,10 +1,15 @@
 package com.ezekielnewren.insidertrading;
 
+import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import org.bson.types.ObjectId;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 
 /**
  * Contains static helper methods.
@@ -78,6 +83,34 @@ public class Util {
     public static ObjectId generateRandomObjectId() {
         return new ObjectId(generateRandom(12));
     }
+
+    public static AssertionRequest startAssertion(RelyingParty rp, StartAssertionOptions startAssertionOptions, ByteArray challenge) {
+        PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder pkcro = PublicKeyCredentialRequestOptions.builder()
+                .challenge(challenge)
+                .rpId(rp.getIdentity().getId())
+                .allowCredentials(
+                        startAssertionOptions.getUsername().map(un ->
+                                new ArrayList<>(rp.getCredentialRepository().getCredentialIdsForUsername(un)))
+                )
+                .extensions(
+                        startAssertionOptions.getExtensions()
+                                .toBuilder()
+                                .appid(rp.getAppId())
+                                .build()
+                )
+                .timeout(startAssertionOptions.getTimeout())
+                ;
+
+        startAssertionOptions.getUserVerification().ifPresent(pkcro::userVerification);
+
+        return AssertionRequest.builder()
+                .publicKeyCredentialRequestOptions(
+                        pkcro.build()
+                )
+                .username(startAssertionOptions.getUsername())
+                .build();
+    }
+
 
 
 }

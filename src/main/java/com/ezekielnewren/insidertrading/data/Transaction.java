@@ -4,9 +4,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yubico.webauthn.data.ByteArray;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 
 /**
@@ -44,7 +51,12 @@ public class Transaction {
     /**
      * Date of the transaction.
      */
-    @JsonIgnore @NonNull long date;
+    @JsonProperty long date;
+
+    @JsonProperty ByteArray nonce;
+
+    @JsonProperty ByteArray signature;
+
 
     /**
      * Constructs {@code Transaction JSON} object using the transaction data.
@@ -77,4 +89,62 @@ public class Transaction {
     public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date){
         this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date);
     }
+
+    public ByteArray getBytesForSignature(ObjectMapper om) {
+        ObjectNode json = om.createObjectNode();
+
+        json.put("sendingAccount", sendingAccount);
+        json.put("receivingAccount", receivingAccount);
+        json.put("amount", amount);
+        json.put("date", date);
+
+        return new ByteArray(json.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

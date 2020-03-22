@@ -41,7 +41,7 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1'
 
     // https://mvnrepository.com/artifact/org.json/json
-    compile 'org.json:json:20190722'
+    // DO NOT USE THIS USE JACKSON FOR CUSTOM JSON OBJECTS!!! compile 'org.json:json:20190722'
 
 
     // DATA STRUCTURES

@@ -5,7 +5,7 @@ import com.ezekielnewren.insidertrading.data.AssertionRequestWrapper;
 import com.ezekielnewren.insidertrading.data.AssertionResponse;
 import com.ezekielnewren.insidertrading.data.RegistrationRequest;
 import com.ezekielnewren.insidertrading.data.RegistrationResponse;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -106,11 +106,12 @@ public class InsiderTradingServlet extends HttpServlet {
                 if ("register".equals(args[0])) {
                     if ("start".equals(args[1])) {
                         // decode arguments
-                        JSONObject jsonTmp = new JSONObject(data);
-                        String username = jsonTmp.getString("username");
-                        String displayName = jsonTmp.getString("displayName");
-                        String nickname = jsonTmp.isNull("nickname") ? null : jsonTmp.getString("nickname");
-                        boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
+
+                        JsonNode jsonTmp = ctx.getObjectMapper().readTree(data);
+                        String username = jsonTmp.get("username").asText();
+                        String displayName = jsonTmp.get("displayName").asText();
+                        String nickname = jsonTmp.asText(null);
+                        boolean requireResidentKey = jsonTmp.get("requireResidentKey").asBoolean();
 
                         // webauthn registration start
                         RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, displayName, nickname, requireResidentKey);
@@ -133,9 +134,10 @@ public class InsiderTradingServlet extends HttpServlet {
                     }
                 } else if ("login".equals(args[0])) {
                     if ("start".equals(args[1])) {
-                        JSONObject jsonTmp = new JSONObject(data);
-                        String username = jsonTmp.getString("username");
-                        boolean requireResidentKey = jsonTmp.getBoolean("requireResidentKey");
+
+                        JsonNode jsonTmp = ctx.getObjectMapper().readTree(data);
+                        String username = jsonTmp.get("username").asText();
+                        boolean requireResidentKey = jsonTmp.get("requireResidentKey").asBoolean();
 
                         String json;
                         if (!ctx.isLoggedIn(request.getSession(), username)) {

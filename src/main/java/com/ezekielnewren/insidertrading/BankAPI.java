@@ -2,11 +2,13 @@ package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.Account;
 import com.ezekielnewren.insidertrading.data.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,17 +80,21 @@ public class BankAPI {
         return user.getAccounts();
     }
 
-    public boolean transfer(HttpSession session, String otherUser,
-                            String accountTypeFrom, String accountTypeTo, long amount) {
+    public boolean transfer(HttpSession session,
+                            @JsonProperty("recipient") String recipient,
+                            @JsonProperty("accountTypeFrom") String accountTypeFrom,
+                            @JsonProperty("accountTypeTo") String accountTypeTo,
+                            @JsonProperty("amount") long amount
+    ) {
         // argument checking
-        Objects.nonNull(otherUser);
+        Objects.nonNull(recipient);
         Objects.nonNull(accountTypeFrom);
         Objects.nonNull(accountTypeTo);
         if (amount < 0) throw new IllegalArgumentException();
 
         String from = getUsername(session);
         if (from == null) return false; // not logged in
-        String to = otherUser; // do they exist? if not return false
+        String to = recipient; // do they exist? if not return false
 
         User userFrom = ctx.getUserStore().getByUsername(from);
         User userTo = ctx.getUserStore().getByUsername(to);

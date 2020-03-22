@@ -25,7 +25,7 @@ lombok { // optional: values below are the defaults
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    compileOnly 'javax:javaee-api:7.0'
+    compile 'javax:javaee-api:7.0'
 
     // webauthn server library
     // https://developers.yubico.com/java-webauthn-server/

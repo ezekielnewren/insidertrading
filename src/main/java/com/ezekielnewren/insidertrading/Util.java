@@ -1,6 +1,8 @@
 package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.Authenticator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
@@ -11,6 +13,9 @@ import org.bson.types.ObjectId;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Contains static helper methods.
@@ -129,6 +134,27 @@ public class Util {
                 .clientExtensionResults(pkc.getClientExtensionResults())
                 .build();
         return other;
+    }
+
+    public static <T> Optional<T> findOne(Collection<T> coll, Predicate<T> pred) {
+        return coll.stream().filter(pred).findFirst();
+    }
+
+    public static Object asPOJO(JsonNode node) {
+        switch (node.getNodeType()) {
+            case NULL:
+                return null;
+            case BOOLEAN:
+                return node.asBoolean();
+            case NUMBER:
+                return node.asLong();
+            case STRING:
+                return node.asText();
+            case POJO:
+                return ((POJONode) node).getPojo();
+            default:
+                throw new RuntimeException("must be a basic json type");
+        }
     }
 
 }

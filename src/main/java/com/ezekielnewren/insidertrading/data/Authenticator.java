@@ -40,7 +40,7 @@ public class Authenticator {
     @JsonProperty long signatureCount;
 
     /**
-     * Container that contains {@code String}.
+     * Container that contains {@code String}. Nickname for authenticator (not required).
      * If a value is present, {@code isPresent()} returns {@code true}.
      * If no value is present, the object is considered <i>empty</i> and
      * {@code isPresent()} returns {@code false}.

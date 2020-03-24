@@ -13,15 +13,16 @@ import java.util.*;
 public class MemoryCredentialRepository implements CredentialRepository {
 
     /**
-     *
+     * {@code Map} of usernames and unique public key credential attributes.
      * @see java.util.Map
+     * @see com.yubico.webauthn.data.PublicKeyCredentialDescriptor
      */
     Map<String, Set<PublicKeyCredentialDescriptor>> credStore = new HashMap<>();
 
     /**
-     *
-     * @param username
-     * @return
+     * Checks if the username exists in the {@code HashMap}.
+     * @param username the key of the {@code HashMap} and the user specified name.
+     * @return the user name if one exists or a new {@code HashMap}
      * @see java.util.Set
      * @see java.lang.String
      */
@@ -32,9 +33,9 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
-     *
-     * @param username
-     * @return
+     * Get the userhandle for their username.
+     * @param username users specified name.
+     * @return an empty {@code Optional}
      * @see java.util.Optional
      * @see java.lang.String
      */
@@ -44,9 +45,9 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
-     *
-     * @param userHandle
-     * @return
+     * Get username for their handle.
+     * @param userHandle user handle the credential is assigned to.
+     * @return an empty {@code Optional}
      * @see java.util.Optional
      * @see com.yubico.webauthn.data.ByteArray
      */
@@ -56,12 +57,13 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
-     *
-     * @param credentialId
-     * @param userHandle
-     * @return
+     * Lookup up credential ids with user handle.
+     * @param credentialId id of the credential.
+     * @param userHandle user handle the credential is assigned to.
+     * @return an empty {@code Optional}
      * @see java.util.Optional
      * @see com.yubico.webauthn.data.ByteArray
+     * @see com.yubico.webauthn.RegisteredCredential
      */
     @Override
     public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
@@ -69,9 +71,9 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
-     *
-     * @param credentialId
-     * @return
+     * Looking up all credential ids.
+     * @param credentialId id of the credential.
+     * @return a new {@code HashMap}
      * @see java.util.Set
      * @see com.yubico.webauthn.data.ByteArray
      */

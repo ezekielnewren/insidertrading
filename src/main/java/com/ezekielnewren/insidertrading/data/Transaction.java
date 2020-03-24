@@ -61,8 +61,8 @@ public class Transaction {
     /**
      * Constructs {@code Transaction JSON} object using the transaction data.
      * @param _id unique transaction id.
-     * @param _sendingAccount sending account information.
-     * @param _receivingAccount receiving account information.
+     * @param _sendingAccount information about the sending account.
+     * @param _receivingAccount information about the receiving account.
      * @param _amount amount of the transaction.
      * @param _date date of the transaction.
      */
@@ -81,10 +81,10 @@ public class Transaction {
 
     /**
      * {@code Transaction} constructor for a new transaction.
-     * @param _sendingAccount
-     * @param _receivingAccount
-     * @param _amount
-     * @param _date
+     * @param _sendingAccount information about the sending account.
+     * @param _receivingAccount information about the receiving account.
+     * @param _amount amount of the transaction.
+     * @param _date date of the transaction
      */
     public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date){
         this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date);

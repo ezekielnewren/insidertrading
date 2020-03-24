@@ -165,7 +165,12 @@ public class BankAPI {
      * @return
      * @see java.util.List
      */
-    public String getTransactionHistory(List<Account> aList) {
+    public String getTransactionHistory(HttpSession session) {
+
+        String userN = getUsername(session);
+        User u = ctx.getUserStore().getByUsername(userN);
+        List<Account> aList = u.getAccounts();
+
         List<Transaction> tList = null;
 
         for(Account a : aList){

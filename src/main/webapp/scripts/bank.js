@@ -29,3 +29,19 @@ testHistory = [
 
 insertAccounts(testAccounts);
 insertTransactions(testHistory);
+
+getUsername().then(function(response) {
+    if (response.error === null) {
+        var username = response.data;
+        var nav = document.getElementById('nav')
+        if (username != null) {
+            nav.innerHTML += '<div class="nav-item">' + username + '</div>'
+        } else {
+            nav += '<a  class="nav-item" href="./index.jsp">Login</a>'
+        }
+    } else {
+        console.log(response.error);
+    }
+}).catch(function(err) {
+    console.log(err);
+});

@@ -164,6 +164,7 @@ public class SessionManager {
 
         String tmp = sessionIdAndUsername.get(httpSession.getId());
         if (username == null && tmp != null) return true;
+        if (username == null && tmp == null) return false;
         if (username.equals(tmp)) return true;
         return false;
     }

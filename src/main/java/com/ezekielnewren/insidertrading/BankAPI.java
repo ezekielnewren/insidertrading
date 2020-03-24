@@ -160,8 +160,6 @@ public class BankAPI {
     }
 
     /**
-     *
-     * @param aList
      * @return
      * @see java.util.List
      */
@@ -171,7 +169,7 @@ public class BankAPI {
         User u = ctx.getUserStore().getByUsername(userN);
         List<Account> aList = u.getAccounts();
 
-        List<Transaction> tList = null;
+        List<Transaction> tList = new ArrayList<>();
 
         for(Account a : aList){
             tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));

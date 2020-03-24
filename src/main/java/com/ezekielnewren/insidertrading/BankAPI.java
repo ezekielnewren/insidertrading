@@ -17,12 +17,30 @@ import java.util.*;
  */
 public class BankAPI {
 
+    /**
+     * {@code SessionManager} object.
+     * @see com.ezekielnewren.insidertrading.SessionManager
+     */
     SessionManager ctx;
 
+    /**
+     * Constructor for {@code BankAPI}.
+     * @param _ctx context for {@code SessionManager}.
+     * @see com.ezekielnewren.insidertrading.SessionManager
+     */
     public BankAPI(SessionManager _ctx) {
         ctx = _ctx;
     }
 
+    /**
+     *
+     * @param session
+     * @param data
+     * @return
+     * @throws JsonProcessingException
+     * @see javax.servlet.http.HttpSession
+     * @see java.lang.String
+     */
     String onRequest(HttpSession session, String data) throws JsonProcessingException {
         JSONObject json = new JSONObject(data);
         String jsonOut;
@@ -74,10 +92,22 @@ public class BankAPI {
         return jsonOut;
     }
 
+    /**
+     * Get username from the {@code session}.
+     * @param session current {@code session}.
+     * @return the username from the {@code session}.
+     * @see javax.servlet.http.HttpSession
+     */
     public String getUsername(HttpSession session) {
         return ctx.getUsername(session);
     }
 
+    /**
+     * Checks if user is logged in, if they are gets account information for user.
+     * @param session current {@code session}.
+     * @return if not logged in null else account for the user.
+     * @see javax.servlet.http.HttpSession
+     */
     public List<Account> getAccountList(HttpSession session) {
         if (!ctx.isLoggedIn(session)) return null;
         String username = ctx.getUsername(session);
@@ -86,6 +116,17 @@ public class BankAPI {
         return user.getAccounts();
     }
 
+    /**
+     *
+     * @param session
+     * @param otherUser
+     * @param accountTypeFrom
+     * @param accountTypeTo
+     * @param amount
+     * @return
+     * @see javax.servlet.http.HttpSession
+     * @see java.lang.String
+     */
     public boolean transfer(HttpSession session, String otherUser,
                             String accountTypeFrom, String accountTypeTo, long amount) {
         // argument checking
@@ -122,6 +163,12 @@ public class BankAPI {
         return true;
     }
 
+    /**
+     *
+     * @param aList
+     * @return
+     * @see java.util.List
+     */
     public String getTransactionHistory(List<Account> aList){
 
         List<Transaction> tList = null;

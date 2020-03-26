@@ -79,7 +79,8 @@ public class BankAPI {
             view = view.substring(1, view.length()-1);
 
             sb.append("function "+command+"("+view+") {\n");
-            sb.append("  return makeRequest(arguments.callee.name, ["+view+"]);\n");
+            sb.append("    \"use strict\";\n");
+            sb.append("    return makeRequest(\""+command+"\", ["+view+"]);\n");
             sb.append("}\n");
             sb.append("\n");
         }
@@ -173,7 +174,7 @@ public class BankAPI {
         return tList;
     }
 
-    public void logout(HttpSession session){
+    public void logout(HttpSession session) {
         ctx.clearLoggedIn(session);
     }
 

@@ -12,9 +12,7 @@ function talk(service, payload) {
   })
 }
 
-function getAccountList() {
-  var cmd = arguments.callee.name;
-  var args = null;
+function makeRequest(cmd, args) {
   var payload = JSON.stringify({cmd, args});
 
   return new Promise(function(resolve, reject) {
@@ -25,67 +23,26 @@ function getAccountList() {
         reject(err);
       })
   });
+}
+
+function getAccountList() {
+  return makeRequest(arguments.callee.name, null);
 }
 
 function getUsername() {
-  var cmd = arguments.callee.name;
-  var args = null;
-  var payload = JSON.stringify({cmd, args});
-
-  return new Promise(function(resolve, reject) {
-    talk('api', payload)
-      .done(function (data) {
-        resolve(data);
-      }).catch(function (err) {
-        reject(err);
-      });
-  });
+  return makeRequest(arguments.callee.name, null);
 }
 
-
 function getTransactionHistory() {
-  var cmd = arguments.callee.name;
-  var args = null;
-  var payload = JSON.stringify({cmd, args});
-
-  return new Promise(function(resolve, reject) {
-    talk('api', payload)
-      .done(function (data) {
-        resolve(data);
-      }).catch(function (err) {
-        reject(err);
-      })
-  });
+  return makeRequest(arguments.callee.name, null);
 }
 
 function logout() {
-  var cmd = arguments.callee.name;
-  var args = null;
-  var payload = JSON.stringify({cmd, args});
-
-  return new Promise(function(resolve, reject) {
-    talk('api', payload)
-      .done(function (data) {
-        resolve(data);
-      }).catch(function (err) {
-        reject(err);
-      })
-  });
+  return makeRequest(arguments.callee.name, null);
 }
 
 function transfer(recipient, accountTypeFrom, accountTypeTo, amount) {
-  var cmd = arguments.callee.name;
-  var args = [recipient, accountTypeFrom, accountTypeTo, amount];
-  var payload = JSON.stringify({cmd, args});
-
-  return new Promise(function(resolve, reject) {
-    talk('api', payload)
-      .done(function (data) {
-        resolve(data);
-      }).catch(function (err) {
-        reject(err);
-      })
-  });
+  return makeRequest(arguments.callee.name, [recipient, accountTypeFrom, accountTypeTo, amount]);
 }
 
 

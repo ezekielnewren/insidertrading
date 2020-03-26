@@ -51,7 +51,7 @@ public class BankAPI {
      * @see javax.servlet.http.HttpSession
      * @see java.lang.String
      */
-    String onRequest(HttpSession session, String data) {
+    ObjectNode onRequest(HttpSession session, String data) {
         ObjectNode response = ctx.getObjectMapper().createObjectNode();
         JsonNode request;
         try {
@@ -59,7 +59,7 @@ public class BankAPI {
         } catch (JsonProcessingException e) {
             response.put("error", "cannot parse request");
             response.put("data", (String)null);
-            return response.toString();
+            return response;
         }
 
         Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
@@ -81,7 +81,7 @@ public class BankAPI {
             response.putPOJO("data", null);
         }
 
-        return response.toString();
+        return response;
     }
 
     /**

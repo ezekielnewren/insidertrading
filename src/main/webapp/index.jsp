@@ -122,8 +122,14 @@
         }
 
         function onRegister() {
-            var username = $('#username').val();
-            register(username, username, null, false);
+            getUsername().then(function(username) {
+                if (username != null) {
+                    alert("you must logout before creating an account");
+                    return;
+                }
+                var username = $('#username').val();
+                register(username, username, null, false);
+            });
         }
 
         function onLogin() {

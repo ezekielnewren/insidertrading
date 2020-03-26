@@ -131,19 +131,13 @@
             login(username, false);
         }
 
-        function onTest() {
+        function onLogout() {
             logout().then(function(username) {
                 $('#welcome').text("Login");
                 alert("goodbye "+username);
             }).catch(function(err) {
                 console.log(err);
             });
-            // getUsername().then(function(username) {
-            //     if (username != null) alert("your username is: "+username);
-            //     else alert("you haven't logged in yet");
-            // }).catch(function(err) {
-            //     console.log(err);
-            // });
         }
 
     </script>
@@ -160,7 +154,7 @@
         <div class="line-item">
             <button onclick="onRegister()">Register</button>
             <button onclick="onLogin()">Login</button>
-            <button onclick="onTest()">test</button>
+            <button onclick="onLogout()">Logout</button>
         </div>
     </div>
 </div>

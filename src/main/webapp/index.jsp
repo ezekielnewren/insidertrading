@@ -11,7 +11,17 @@
     <script src="js/webauthn.js"></script>
     <script src="js/BankAPI.jsp" type="application/javascript"></script>
 
-      <script>
+    <script>
+        function onPageLoad() {
+            getUsername().then(function(username) {
+                if (username != null) {
+                    $('#welcome').text("Welcome "+username);
+                }
+            });
+        }
+        window.onload = onPageLoad();
+
+
         function register(username, displayName, nickname, requireResidentKey) {
             var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
 
@@ -29,32 +39,32 @@
                         return;
                     }
                     webauthn.createCredential(request.publicKeyCredentialCreationOptions)
-                    .then(function (res) {
-                        // Send new credential info to server for verification and registration.
-                        var credential = webauthn.responseToObject(res);
-                        const body = {
-                            requestId: request.requestId,
-                            credential,
-                        };
-                        var json = JSON.stringify(body);
-                        // console.log("client signature: "+json);
-                        $.ajax({
-                            type: 'POST',
-                            url: urlprefix + 'register/finish',
-                            contentType: 'application/json',
-                            dataType: 'json',
-                            data: json,
-                            success: function(data) {
-                                var response = data;
-                                if ("good" == response) {
-                                    alert("registration successful");
+                        .then(function (res) {
+                            // Send new credential info to server for verification and registration.
+                            var credential = webauthn.responseToObject(res);
+                            const body = {
+                                requestId: request.requestId,
+                                credential,
+                            };
+                            var json = JSON.stringify(body);
+                            // console.log("client signature: "+json);
+                            $.ajax({
+                                type: 'POST',
+                                url: urlprefix + 'register/finish',
+                                contentType: 'application/json',
+                                dataType: 'json',
+                                data: json,
+                                success: function(data) {
+                                    var response = data;
+                                    if ("good" == response) {
+                                        alert("registration successful");
+                                    }
+                                },
+                                error: function(errMsg) {
+                                    console.log(errMsg);
                                 }
-                            },
-                            error: function(errMsg) {
-                                console.log(errMsg);
-                            }
-                        })
-                    }).catch(function (err) {
+                            })
+                        }).catch(function (err) {
                         // No acceptable authenticator or user refused consent. Handle appropriately.
                         console.log(err);
                         alert("Failed to add Authenticator");
@@ -72,40 +82,40 @@
             var payload = JSON.stringify({username, requireResidentKey});
 
             talk('login/start', payload)
-            .done(function(data) {
-                console.log(data);
-                // console.log('executeAuthenticateRequest', request);
+                .done(function(data) {
+                    console.log(data);
+                    // console.log('executeAuthenticateRequest', request);
 
-                if (data == null) {
-                    alert("you are already logged in");
-                    return;
-                }
-                var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
+                    if (data == null) {
+                        alert("you are already logged in");
+                        return;
+                    }
+                    var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
 
-                return webauthn.getAssertion(pkcro).then(function(assertion) {
-                    var requestId = data.requestId;
-                    var publicKeyCredential = webauthn.responseToObject(assertion);
+                    return webauthn.getAssertion(pkcro).then(function(assertion) {
+                        var requestId = data.requestId;
+                        var publicKeyCredential = webauthn.responseToObject(assertion);
 
-                    var payload = JSON.stringify({
-                        requestId,
-                        publicKeyCredential
-                    });
+                        var payload = JSON.stringify({
+                            requestId,
+                            publicKeyCredential
+                        });
 
-                    talk('login/finish', payload)
-                        .done(function(data) {
-                            console.log(data);
-                            if ("good" === data) {
-                                alert("you are now logged in, navigating to bank home page");
-                                window.location.href = urlprefix+"/bank.jsp"
-                            }
-                        }).catch(function(err) {
-                        alert("uh oh, check the log");
+                        talk('login/finish', payload)
+                            .done(function(data) {
+                                console.log(data);
+                                if ("good" === data) {
+                                    alert("you are now logged in, navigating to bank home page");
+                                    window.location.href = urlprefix+"/bank.jsp"
+                                }
+                            }).catch(function(err) {
+                            alert("uh oh, check the log");
+                            console.log(err);
+                        })
+                    }).catch(function(err) {
                         console.log(err);
                     })
                 }).catch(function(err) {
-                    console.log(err);
-                })
-            }).catch(function(err) {
                 console.log(err);
             })
 
@@ -122,12 +132,18 @@
         }
 
         function onTest() {
-            getUsername().then(function(username) {
-                if (username != null) alert("your username is: "+username);
-                else alert("you haven't logged in yet");
+            logout().then(function(username) {
+                $('#welcome').text("Login");
+                alert("goodbye "+username);
             }).catch(function(err) {
                 console.log(err);
             });
+            // getUsername().then(function(username) {
+            //     if (username != null) alert("your username is: "+username);
+            //     else alert("you haven't logged in yet");
+            // }).catch(function(err) {
+            //     console.log(err);
+            // });
         }
 
     </script>
@@ -135,18 +151,18 @@
 
 </head>
 <body>
-    <div class="wrapper">
-        <h2 class="center-text">Login</h2>
-        <div>
-            <div class="line-item">
-                <label id="lbl-username">Username:</label>
-                <input type="text" id="username"/></div>
-            <div class="line-item">
-                <button onclick="onRegister()">Register</button>
-                <button onclick="onLogin()">Login</button>
-                <button onclick="onTest()">whoami?</button>
-            </div>
+<div class="wrapper">
+    <h2 id="welcome" class="center-text">Login</h2>
+    <div>
+        <div class="line-item">
+            <label id="lbl-username">Username:</label>
+            <input type="text" id="username"/></div>
+        <div class="line-item">
+            <button onclick="onRegister()">Register</button>
+            <button onclick="onLogin()">Login</button>
+            <button onclick="onTest()">test</button>
         </div>
     </div>
+</div>
 </body>
 </html>

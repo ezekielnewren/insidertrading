@@ -174,8 +174,10 @@ public class BankAPI {
         return tList;
     }
 
-    public void logout(HttpSession session) {
+    public String logout(HttpSession session) {
+        String username = ctx.getUsername(session);
         ctx.clearLoggedIn(session);
+        return username;
     }
 
     /**

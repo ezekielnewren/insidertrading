@@ -31,17 +31,9 @@ public class BankAPI {
      */
     SessionManager ctx;
 
-    Map<String, Pair<Method, JsonProperty[]>> call = new HashMap<>();
-
-    /**
-     * Constructor for {@code BankAPI}.
-     * @param _ctx context for {@code SessionManager}.
-     * @see com.ezekielnewren.insidertrading.SessionManager
-     */
-    public BankAPI(SessionManager _ctx) {
-        ctx = _ctx;
-
-        List<Method> methList = Arrays.asList(this.getClass().getMethods());
+    static final Map<String, Pair<Method, JsonProperty[]>> call = new LinkedHashMap<>();
+    static {
+        List<Method> methList = Arrays.asList(BankAPI.class.getMethods());
         for (Method m: methList) {
 
             if (m.getParameterCount() <= 0) continue;
@@ -51,7 +43,7 @@ public class BankAPI {
             JsonProperty[] prop = new JsonProperty[annmat.length-1];
             boolean good = true;
             for (int i=0; i<prop.length; i++) {
-                if (annmat[i+1].length != 1 || annmat[i+1][0].getClass() != JsonProperty.class) {
+                if (annmat[i+1].length != 1 || !(annmat[i+1][0] instanceof JsonProperty)) {
                     good = false;
                     break;
                 }
@@ -61,6 +53,38 @@ public class BankAPI {
 
             call.put(m.getName(), new ImmutablePair<>(m, prop));
         }
+    }
+
+    /**
+     * Constructor for {@code BankAPI}.
+     * @param _ctx context for {@code SessionManager}.
+     * @see com.ezekielnewren.insidertrading.SessionManager
+     */
+    public BankAPI(SessionManager _ctx) {
+        ctx = _ctx;
+    }
+
+    public static String generateJSFunctions() {
+        StringBuilder sb = new StringBuilder();
+
+        for (String command: call.keySet()) {
+            JsonProperty[] prop = call.get(command).getRight();
+            String[] args = new String[prop.length];
+
+            for (int i=0; i<args.length; i++) {
+                args[i] = prop[i].value();
+            }
+
+            String view = Arrays.toString(args);
+            view = view.substring(1, view.length()-1);
+
+            sb.append("function "+command+"("+view+") {\n");
+            sb.append("  return makeRequest(arguments.callee.name, ["+view+"]);\n");
+            sb.append("}\n");
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     /**

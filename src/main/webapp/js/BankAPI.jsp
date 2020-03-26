@@ -1,4 +1,5 @@
 <%@ page import="com.ezekielnewren.Build" %>
+<%@ page import="com.ezekielnewren.insidertrading.BankAPI" %>
 
 var urlprefix = <%= Build.get("urlprefix") %>;
 
@@ -25,28 +26,5 @@ function makeRequest(cmd, args) {
   });
 }
 
-function getAccountList() {
-  return makeRequest(arguments.callee.name, null);
-}
-
-function getUsername() {
-  return makeRequest(arguments.callee.name, null);
-}
-
-function getTransactionHistory() {
-  return makeRequest(arguments.callee.name, null);
-}
-
-function logout() {
-  return makeRequest(arguments.callee.name, null);
-}
-
-function transfer(recipient, accountTypeFrom, accountTypeTo, amount) {
-  return makeRequest(arguments.callee.name, [recipient, accountTypeFrom, accountTypeTo, amount]);
-}
-
-
-
-
-
+<%= BankAPI.generateJSFunctions() %>
 

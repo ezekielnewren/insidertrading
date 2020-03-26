@@ -184,6 +184,12 @@ public class BankAPI {
         }
     }
 
+    public void logout(HttpSession session){
+
+        ctx.clearLoggedIn(session);
+        
+    }
+
 
 
 

@@ -23,60 +23,19 @@
         }
         window.onload = onPageLoad();
 
-        function onSuccessfulLogin() {
+        function onSuccessfulRegistration(username) {
+            alert("the username \""+username+"\" has now been registered");
+            onSuccessfulLogin(username);
+        }
+
+        function onSuccessfulLogin(username) {
+            window.username = username;
             window.location.href = urlprefix+"/bank.jsp"
         }
 
         function onSuccessfulLogout() {
             $('#welcome').text("Login");
             window.username = null;
-        }
-
-        function login(username, requireResidentKey) {
-            if (window.username != null) {
-                alert("you are already logged in");
-                return;
-            }
-
-            var payload = JSON.stringify({username, requireResidentKey});
-
-            talk('login/start', payload)
-                .done(function(data) {
-                    console.log(data);
-
-                    if (data == null) {
-                        alert("that username does not exist")
-                        return;
-                    }
-                    var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
-
-                    return webauthn.getAssertion(pkcro).then(function(assertion) {
-                        var requestId = data.requestId;
-                        var publicKeyCredential = webauthn.responseToObject(assertion);
-
-                        var payload = JSON.stringify({
-                            requestId,
-                            publicKeyCredential
-                        });
-
-                        talk('login/finish', payload)
-                            .done(function(data) {
-                                console.log(data);
-                                if ("good" === data) {
-                                    // alert("you are now logged in, navigating to bank home page");
-                                    onSuccessfulLogin();
-                                }
-                            }).catch(function(err) {
-                            alert("uh oh, check the log");
-                            console.log(err);
-                        })
-                    }).catch(function(err) {
-                        console.log(err);
-                    })
-                }).catch(function(err) {
-                console.log(err);
-            })
-
         }
 
         function onRegister() {
@@ -86,13 +45,21 @@
                     return;
                 }
                 var username = $('#username').val();
-                register(username, username, null, false);
+                register(username, username, null, false).then(function (username) {
+                    onSuccessfulRegistration(username);
+                }).catch(function (err) {
+                    alert(err);
+                })
             });
         }
 
         function onLogin() {
             var username = $('#username').val();
-            login(username, false);
+            login(username, false).then(function (username) {
+                onSuccessfulLogin(username);
+            }).catch(function (err) {
+                alert(err);
+            })
         }
 
         function onLogout() {

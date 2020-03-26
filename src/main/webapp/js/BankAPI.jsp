@@ -60,5 +60,42 @@ function register(username, displayName, nickname, requireResidentKey) {
     });
 }
 
+function login(username, requireResidentKey) {
+    "use strict";
+
+    var payload = JSON.stringify({username, requireResidentKey});
+    return new Promise(function (resolve, reject) {
+        if (window.username != null) {
+            reject("you are already logged in");
+            return;
+        }
+        talk('login/start', payload).done(function (data) {
+            if (data == null) {
+                reject("that username does not exist")
+                return;
+            }
+
+            var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
+            return webauthn.getAssertion(pkcro).then(function(assertion) {
+                var payload = JSON.stringify({
+                    requestId: data.requestId,
+                    publicKeyCredential: webauthn.responseToObject(assertion)
+                });
+
+                talk('login/finish', payload).done(function(data) {
+                    if ("good" === data) resolve(username);
+                    else reject("login failed");
+                }).catch(function(err) {
+                    reject(err);
+                })
+            }).catch(function(err) {
+                reject(err);
+            })
+        }).catch(function (err) {
+            reject(err);
+        });
+    });
+}
+
 <%= BankAPI.generateJSFunction() %>
 

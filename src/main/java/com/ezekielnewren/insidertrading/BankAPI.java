@@ -40,6 +40,27 @@ public class BankAPI {
      */
     public BankAPI(SessionManager _ctx) {
         ctx = _ctx;
+
+        List<Method> methList = Arrays.asList(this.getClass().getMethods());
+        for (Method m: methList) {
+
+            if (m.getParameterCount() <= 0) continue;
+            if (m.getParameterTypes()[0] != HttpSession.class) continue;
+
+            Annotation[][] annmat = m.getParameterAnnotations();
+            JsonProperty[] prop = new JsonProperty[annmat.length-1];
+            boolean good = true;
+            for (int i=0; i<prop.length; i++) {
+                if (annmat[i+1].length != 1 || annmat[i+1][0].getClass() != JsonProperty.class) {
+                    good = false;
+                    break;
+                }
+                prop[i] = (JsonProperty) annmat[i+1][0];
+            }
+            if (!good) continue;
+
+            call.put(m.getName(), new ImmutablePair<>(m, prop));
+        }
     }
 
     /**
@@ -187,7 +208,7 @@ public class BankAPI {
     public void logout(HttpSession session){
 
         ctx.clearLoggedIn(session);
-        
+
     }
 
 

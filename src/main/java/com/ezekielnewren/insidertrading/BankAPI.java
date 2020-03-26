@@ -184,7 +184,7 @@ public class BankAPI {
      * @return
      * @see java.util.List
      */
-    public String getTransactionHistory(HttpSession session) {
+    public List<Transaction> getTransactionHistory(HttpSession session) {
 
         String userN = getUsername(session);
         User u = ctx.getUserStore().getByUsername(userN);
@@ -197,12 +197,7 @@ public class BankAPI {
             tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
         }
 
-        try {
-            return ctx.getObjectMapper().writeValueAsString(tList);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return tList;
     }
 
     public void logout(HttpSession session){

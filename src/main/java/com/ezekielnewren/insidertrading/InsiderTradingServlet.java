@@ -163,11 +163,10 @@ public class InsiderTradingServlet extends HttpServlet {
             } else if ("api".equals(args[0])) {
                 ObjectNode json = ctx.getApi().onRequest(request.getSession(), data);
 
-                Util.asPOJO(json);
-                if (json.get("error").isNull()) {
+                if (!json.get("error").isNull()) {
                     response.sendError(400, json.get("error").asText());
                 } else {
-                    out.println(json.toString());
+                    out.println(json.get("data").toString());
                 }
             }
             else {

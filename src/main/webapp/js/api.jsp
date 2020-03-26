@@ -20,45 +20,41 @@ function getUsername() {
   return new Promise(function(resolve, reject) {
     talk('api', payload)
       .done(function (data) {
-        console.log(data);
-        var username = data;
-        resolve(username);
+        resolve(data);
+      }).catch(function (err) {
+        reject(err);
+      });
+  });
+}
+
+function getAccountList() {
+  var cmd = "getAccountList";
+  var args = null;
+  var payload = JSON.stringify({cmd, args});
+
+  return new Promise(function(resolve, reject) {
+    talk('api', payload)
+      .done(function (data) {
+        resolve(data);
       }).catch(function (err) {
         reject(err);
       })
   });
 }
 
-function getAccountList() {
-var cmd = "getAccountList";
-var payload = {cmd};
-
-return new Promise(function(resolve, reject) {
-  talk('api', payload)
-    .done(function (data) {
-      console.log(data);
-      var accountList = data;
-      resolve(accountList);
-    }).catch(function (err) {
-      reject(err);
-    })
-  });
-}
-
 function getTransactionHistory() {
-var cmd = "getTransactionHistory";
-var payload = {cmd};
+  var cmd = "getTransactionHistory";
+  var args = null;
+  var payload = JSON.stringify({cmd, args});
 
-return new Promise(function(resolve, reject) {
-  talk('api', payload)
-    .done(function (data) {
-    console.log(data);
-    var transactionHistory = data;
-    resolve(transactionHistory);
-  }).catch(function (err) {
-    reject(err);
-  })
-});
+  return new Promise(function(resolve, reject) {
+    talk('api', payload)
+      .done(function (data) {
+        resolve(data);
+      }).catch(function (err) {
+        reject(err);
+      })
+  });
 }
 
 

@@ -122,17 +122,9 @@
         }
 
         function onTest() {
-            getUsername().then(function(response) {
-                if (response.error === null) {
-                    var username = response.data;
-                    if (username != null) {
-                        alert("your username is: "+username);
-                    } else {
-                        alert("you haven't logged in yet");
-                    }
-                } else {
-                    console.log(response.error);
-                }
+            getUsername().then(function(username) {
+                if (username != null) alert("your username is: "+username);
+                else alert("you haven't logged in yet");
             }).catch(function(err) {
                 console.log(err);
             });

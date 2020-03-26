@@ -12,15 +12,25 @@
     <script src="js/BankAPI.jsp" type="application/javascript"></script>
 
     <script>
+        window.username = null;
         function onPageLoad() {
-            getUsername().then(function(username) {
-                if (username != null) {
-                    $('#welcome').text("Welcome "+username);
+            getUsername().then(function(_username) {
+                if (_username != null) {
+                    window.username = _username;
+                    $('#welcome').text("Welcome "+_username);
                 }
             });
         }
         window.onload = onPageLoad();
 
+        function onSuccessfulLogin() {
+            window.location.href = urlprefix+"/bank.jsp"
+        }
+
+        function onSuccessfulLogout() {
+            $('#welcome').text("Login");
+            window.username = null;
+        }
 
         function register(username, displayName, nickname, requireResidentKey) {
             var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
@@ -57,7 +67,8 @@
                                 success: function(data) {
                                     var response = data;
                                     if ("good" == response) {
-                                        alert("registration successful");
+                                        //alert("registration successful");
+                                        onSuccessfulLogin();
                                     }
                                 },
                                 error: function(errMsg) {
@@ -79,15 +90,19 @@
         }
 
         function login(username, requireResidentKey) {
+            if (window.username != null) {
+                alert("you are already logged in");
+                return;
+            }
+
             var payload = JSON.stringify({username, requireResidentKey});
 
             talk('login/start', payload)
                 .done(function(data) {
                     console.log(data);
-                    // console.log('executeAuthenticateRequest', request);
 
                     if (data == null) {
-                        alert("you are already logged in");
+                        alert("that username does not exist")
                         return;
                     }
                     var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
@@ -105,8 +120,8 @@
                             .done(function(data) {
                                 console.log(data);
                                 if ("good" === data) {
-                                    alert("you are now logged in, navigating to bank home page");
-                                    window.location.href = urlprefix+"/bank.jsp"
+                                    // alert("you are now logged in, navigating to bank home page");
+                                    onSuccessfulLogin();
                                 }
                             }).catch(function(err) {
                             alert("uh oh, check the log");
@@ -139,7 +154,7 @@
 
         function onLogout() {
             logout().then(function(username) {
-                $('#welcome').text("Login");
+                onSuccessfulLogout();
                 alert("goodbye "+username);
             }).catch(function(err) {
                 console.log(err);

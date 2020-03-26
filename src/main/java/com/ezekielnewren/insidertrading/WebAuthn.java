@@ -315,6 +315,7 @@ public class WebAuthn /*implements Closeable*/ {
     }
 
     public AssertionRequestWrapper loginStart(String username) {
+        if (!ctx.getUserStore().exists(username)) return null;
         return ctx.getWebAuthn().assertionStart(username, null, null);
     }
 

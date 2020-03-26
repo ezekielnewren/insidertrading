@@ -106,16 +106,6 @@ public class BankAPI {
     }
 
     /**
-     * Get username from the {@code session}.
-     * @param session current {@code session}.
-     * @return the username from the {@code session}.
-     * @see javax.servlet.http.HttpSession
-     */
-    public String getUsername(HttpSession session) {
-        return ctx.getUsername(session);
-    }
-
-    /**
      * Checks if user is logged in, if they are gets account information for user.
      * @param session current {@code session}.
      * @return if not logged in null else account for the user.
@@ -127,6 +117,40 @@ public class BankAPI {
 
         User user = ctx.getUserStore().getByUsername(username);
         return user.getAccounts();
+    }
+
+    /**
+     * Get username from the {@code session}.
+     * @param session current {@code session}.
+     * @return the username from the {@code session}.
+     * @see javax.servlet.http.HttpSession
+     */
+    public String getUsername(HttpSession session) {
+        return ctx.getUsername(session);
+    }
+
+    /**
+     * @return
+     * @see java.util.List
+     */
+    public List<Transaction> getTransactionHistory(HttpSession session) {
+
+        String userN = getUsername(session);
+        User u = ctx.getUserStore().getByUsername(userN);
+        List<Account> aList = u.getAccounts();
+
+        List<Transaction> tList = new ArrayList<>();
+
+        for(Account a : aList){
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
+        }
+
+        return tList;
+    }
+
+    public void logout(HttpSession session){
+        ctx.clearLoggedIn(session);
     }
 
     /**
@@ -179,34 +203,4 @@ public class BankAPI {
         ctx.collectionTransaction.insertOne(t);
         return true;
     }
-
-    /**
-     * @return
-     * @see java.util.List
-     */
-    public List<Transaction> getTransactionHistory(HttpSession session) {
-
-        String userN = getUsername(session);
-        User u = ctx.getUserStore().getByUsername(userN);
-        List<Account> aList = u.getAccounts();
-
-        List<Transaction> tList = new ArrayList<>();
-
-        for(Account a : aList){
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
-        }
-
-        return tList;
-    }
-
-    public void logout(HttpSession session){
-
-        ctx.clearLoggedIn(session);
-
-    }
-
-
-
-
 }

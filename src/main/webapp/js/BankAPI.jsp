@@ -12,8 +12,23 @@ function talk(service, payload) {
   })
 }
 
+function getAccountList() {
+  var cmd = arguments.callee.name;
+  var args = null;
+  var payload = JSON.stringify({cmd, args});
+
+  return new Promise(function(resolve, reject) {
+    talk('api', payload)
+      .done(function (data) {
+        resolve(data);
+      }).catch(function (err) {
+        reject(err);
+      })
+  });
+}
+
 function getUsername() {
-  var cmd = "getUsername";
+  var cmd = arguments.callee.name;
   var args = null;
   var payload = JSON.stringify({cmd, args});
 
@@ -27,23 +42,9 @@ function getUsername() {
   });
 }
 
-function getAccountList() {
-  var cmd = "getAccountList";
-  var args = null;
-  var payload = JSON.stringify({cmd, args});
-
-  return new Promise(function(resolve, reject) {
-    talk('api', payload)
-      .done(function (data) {
-        resolve(data);
-      }).catch(function (err) {
-        reject(err);
-      })
-  });
-}
 
 function getTransactionHistory() {
-  var cmd = "getTransactionHistory";
+  var cmd = arguments.callee.name;
   var args = null;
   var payload = JSON.stringify({cmd, args});
 
@@ -56,6 +57,39 @@ function getTransactionHistory() {
       })
   });
 }
+
+function logout() {
+  var cmd = arguments.callee.name;
+  var args = null;
+  var payload = JSON.stringify({cmd, args});
+
+  return new Promise(function(resolve, reject) {
+    talk('api', payload)
+      .done(function (data) {
+        resolve(data);
+      }).catch(function (err) {
+        reject(err);
+      })
+  });
+}
+
+function transfer(recipient, accountTypeFrom, accountTypeTo, amount) {
+  var cmd = arguments.callee.name;
+  var args = [recipient, accountTypeFrom, accountTypeTo, amount];
+  var payload = JSON.stringify({cmd, args});
+
+  return new Promise(function(resolve, reject) {
+    talk('api', payload)
+      .done(function (data) {
+        resolve(data);
+      }).catch(function (err) {
+        reject(err);
+      })
+  });
+}
+
+
+
 
 
 

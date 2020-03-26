@@ -28,5 +28,5 @@ function makeRequest(cmd, args) {
     });
 }
 
-<%= BankAPI.generateJSFunctions() %>
+<%= BankAPI.generateJSFunction() %>
 

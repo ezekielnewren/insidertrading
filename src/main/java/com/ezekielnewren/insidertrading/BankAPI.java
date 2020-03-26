@@ -64,7 +64,7 @@ public class BankAPI {
         ctx = _ctx;
     }
 
-    public static String generateJSFunctions() {
+    public static String generateJSFunction() {
         StringBuilder sb = new StringBuilder();
 
         for (String command: call.keySet()) {

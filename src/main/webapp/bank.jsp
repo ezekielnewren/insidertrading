@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title><%=request.getServletContext().getServerInfo() %></title>
+    <script src="js/api.jsp" type="application/javascript"></script>
     <link href="bank.css" rel="stylesheet" type="text/css" />
 </head>
 

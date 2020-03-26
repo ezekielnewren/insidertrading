@@ -9,7 +9,7 @@
     <script src="lib/base64js/base64js-1.3.0.min.js"></script>
     <script src="js/base64url.js"></script>
     <script src="js/webauthn.js"></script>
-    <script src="js/api.jsp" type="application/javascript"></script>
+    <script src="js/BankAPI.jsp" type="application/javascript"></script>
 
       <script>
         function register(username, displayName, nickname, requireResidentKey) {

@@ -32,63 +32,6 @@
             window.username = null;
         }
 
-        function register(username, displayName, nickname, requireResidentKey) {
-            var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
-
-            $.ajax({
-                type: 'POST',
-                url: urlprefix+'register/start',
-                contentType: 'application/json',
-                dataType: 'json',
-                data: payload,
-                success: function(data) {
-                    var request = data;
-                    console.log("got the request");
-                    if (request == null) {
-                        alert("that username has been taken");
-                        return;
-                    }
-                    webauthn.createCredential(request.publicKeyCredentialCreationOptions)
-                        .then(function (res) {
-                            // Send new credential info to server for verification and registration.
-                            var credential = webauthn.responseToObject(res);
-                            const body = {
-                                requestId: request.requestId,
-                                credential,
-                            };
-                            var json = JSON.stringify(body);
-                            // console.log("client signature: "+json);
-                            $.ajax({
-                                type: 'POST',
-                                url: urlprefix + 'register/finish',
-                                contentType: 'application/json',
-                                dataType: 'json',
-                                data: json,
-                                success: function(data) {
-                                    var response = data;
-                                    if ("good" == response) {
-                                        //alert("registration successful");
-                                        onSuccessfulLogin();
-                                    }
-                                },
-                                error: function(errMsg) {
-                                    console.log(errMsg);
-                                }
-                            })
-                        }).catch(function (err) {
-                        // No acceptable authenticator or user refused consent. Handle appropriately.
-                        console.log(err);
-                        alert("Failed to add Authenticator");
-                    });
-                    // console.log("got a signature");
-                },
-                error: function(errMsg) {
-                    console.log(errMsg);
-                }
-            });
-
-        }
-
         function login(username, requireResidentKey) {
             if (window.username != null) {
                 alert("you are already logged in");

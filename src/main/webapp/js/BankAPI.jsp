@@ -28,5 +28,37 @@ function makeRequest(cmd, args) {
     });
 }
 
+function register(username, displayName, nickname, requireResidentKey) {
+    "use strict";
+    var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
+
+    return new Promise(function (resolve, reject) {
+        talk('register/start', payload).done(function (request) {
+            if (request == null) {
+                reject("that username has been taken");
+                return;
+            }
+            webauthn.createCredential(request.publicKeyCredentialCreationOptions).then(function (res) {
+                // Send new credential info to server for verification and registration.
+                var credential = webauthn.responseToObject(res);
+                var json = JSON.stringify({requestId: request.requestId, credential});
+                talk('register/finish', json).done(function (response) {
+                    if ("good" == response) {
+                        resolve(username);
+                    } else {
+                        reject(response);
+                    }
+                }).catch(function (err) {
+                    reject(err);
+                });
+            }).catch(function (err) {
+                reject(err);
+            });
+        }).catch(function (err) {
+            reject(err);
+        });
+    });
+}
+
 <%= BankAPI.generateJSFunction() %>
 

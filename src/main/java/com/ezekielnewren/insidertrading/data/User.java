@@ -70,9 +70,9 @@ public class User {
     @JsonProperty int ssn;
 
     /**
-     * Accounts for user.
+     * Account for user.
      */
-    @JsonProperty @NonNull Map<String, Account> accounts;
+    @JsonProperty @NonNull Map<String, Account> account;
 
 
     /**
@@ -86,7 +86,7 @@ public class User {
      * @param _firstName user specified firstname.
      * @param _lastName user specified lastname.
      * @param _ssn user specified ssn.
-     * @param _accounts used for Accounts.
+     * @param _account used for Account.
      * @see org.bson.types.ObjectId
      * @see java.lang.String
      * @see java.util.List
@@ -100,7 +100,7 @@ public class User {
                 @JsonProperty("firstName") String _firstName,
                 @JsonProperty("lastName") String _lastName,
                 @JsonProperty("ssn") int _ssn,
-                @JsonProperty("accounts") List<Account> _accounts
+                @JsonProperty("account") List<Account> _account
 
     ) {
         this._id = _id;
@@ -111,10 +111,10 @@ public class User {
         this.firstName = _firstName;
         this.lastName = _lastName;
         this.ssn = _ssn;
-        List<Account> tmp = Optional.ofNullable(_accounts).orElseGet(()->new ArrayList<>());
-        this.accounts = new LinkedHashMap<>();
+        List<Account> tmp = Optional.ofNullable(_account).orElseGet(()->new ArrayList<>());
+        this.account = new LinkedHashMap<>();
         for (Account item: tmp) {
-            accounts.put(item.title, item);
+            account.put(item.title, item);
         }
     }
 
@@ -175,23 +175,23 @@ public class User {
     }
 
     /**
-     * Gets list of accounts.
-     * @return an arraylist of accounts.
+     * Gets list of account.
+     * @return an arraylist of account.
      * @see java.util.ArrayList
      */
-    @JsonProperty("accounts")
-    public List<Account> getAccounts() {
-        return new ArrayList<>(accounts.values());
+    @JsonProperty("account")
+    public List<Account> getAccount() {
+        return new ArrayList<>(account.values());
     }
 
     /**
-     * Gets account type (checking, savings, etc.).
+     * Get account by type (checking, savings, etc.).
      * @param _title account type.
      * @return account type.
      * @see java.lang.String
      */
     public Account getAccount(String _title) {
-        return accounts.get(_title);
+        return account.get(_title);
     }
 
     /**
@@ -201,8 +201,8 @@ public class User {
      * @see java.lang.String
      */
     public void createAccount(String _title) {
-        if (accounts.containsKey(_title)) throw new RuntimeException("account: "+_title+" already exists");
-        accounts.put(_title, new Account(_title, 0));
+        if (account.containsKey(_title)) throw new RuntimeException("account: "+_title+" already exists");
+        account.put(_title, new Account(_title, 0));
     }
 
     public void setUsername(String _username) {

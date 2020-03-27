@@ -16,10 +16,9 @@ import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import com.mongodb.client.FindIterable;
+
 import com.mongodb.client.model.Filters;
 
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -153,7 +152,7 @@ public class BankAPI {
         String username = ctx.getUsername(session);
 
         User user = ctx.getUserStore().getByUsername(username);
-        return user.getAccounts();
+        return user.getAccount();
     }
 
     /**
@@ -174,7 +173,7 @@ public class BankAPI {
 
         String userN = getUsername(session);
         User u = ctx.getUserStore().getByUsername(userN);
-        List<Account> aList = u.getAccounts();
+        List<Account> aList = u.getAccount();
 
         List<Transaction> tList = new ArrayList<>();
 

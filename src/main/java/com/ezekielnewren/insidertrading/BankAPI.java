@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -75,12 +76,11 @@ public class BankAPI {
                 args[i] = prop[i].value();
             }
 
-            String view = Arrays.toString(args);
-            view = view.substring(1, view.length()-1);
+            String view = StringUtils.join(args, ", ");
 
             sb.append("function "+command+"("+view+") {\n");
             sb.append("    \"use strict\";\n");
-            sb.append("    return makeRequest(\""+command+"\", ["+view+"]);\n");
+            sb.append("    return makeRequest(\""+command+"\", {"+view+"});\n");
             sb.append("}\n");
             sb.append("\n");
         }

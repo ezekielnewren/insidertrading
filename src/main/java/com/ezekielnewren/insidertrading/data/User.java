@@ -118,8 +118,17 @@ public class User {
         }
     }
 
+    static List<Account> createEmptyAccountList() {
+        List<Account> list = new ArrayList<>();
+
+        list.add(new Account(Account.DefaultNames.Savings.toString(), 0));
+        list.add(new Account(Account.DefaultNames.Checking.toString(), 0));
+
+        return list;
+    }
+
     public User(String _username, String _displayName) {
-        this(new ObjectId(), _username, _displayName, null, null, null, null, 0, new ArrayList<>());
+        this(new ObjectId(), _username, _displayName, null, null, null, null, 0, createEmptyAccountList());
     }
 
     /**

@@ -118,8 +118,8 @@ public class User {
         }
     }
 
-    public User(String _username, String _displayName, Authenticator _auth) {
-        this(new ObjectId(), _username, _displayName, new ArrayList<>(), Arrays.asList(_auth!=null?new Authenticator[]{_auth}:new Authenticator[0]), null, null, 0, new ArrayList<>());
+    public User(String _username, String _displayName) {
+        this(new ObjectId(), _username, _displayName, null, null, null, null, 0, new ArrayList<>());
     }
 
     /**
@@ -196,4 +196,7 @@ public class User {
         accounts.put(_title, new Account(_title, 0));
     }
 
+    public void setUsername(String _username) {
+        this.username = _username;
+    }
 }

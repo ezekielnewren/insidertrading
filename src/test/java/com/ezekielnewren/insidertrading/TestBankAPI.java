@@ -30,7 +30,7 @@ public class TestBankAPI {
 
         Assert.assertEquals(null, username);
 
-        ctx.getUserStore().createUser("testuser", "testuser", null);
+        ctx.getUserStore().createUser("testuser", "testuser");
 
     }
 

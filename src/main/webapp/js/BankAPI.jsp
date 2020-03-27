@@ -43,11 +43,7 @@ function register(username, displayName, nickname, requireResidentKey) {
                 var credential = webauthn.responseToObject(res);
                 var json = JSON.stringify({requestId: request.requestId, credential});
                 talk('register/finish', json).done(function (response) {
-                    if ("good" == response) {
-                        resolve(username);
-                    } else {
-                        reject(response);
-                    }
+                    resolve(response);
                 }).catch(function (err) {
                     reject(err);
                 });
@@ -82,9 +78,8 @@ function login(username, requireResidentKey) {
                     publicKeyCredential: webauthn.responseToObject(assertion)
                 });
 
-                talk('login/finish', payload).done(function(data) {
-                    if ("good" === data) resolve(username);
-                    else reject("login failed");
+                talk('login/finish', payload).done(function(response) {
+                    resolve(response);
                 }).catch(function(err) {
                     reject(err);
                 })

@@ -218,7 +218,7 @@ public class WebAuthn /*implements Closeable*/ {
      * @see javax.servlet.http.HttpSession
      * @see com.ezekielnewren.insidertrading.data.RegistrationResponse
      */
-    public boolean registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
+    public Triple<Boolean, RegistrationRequest, RegistrationResult> registerFinish(HttpSession session, RegistrationResponse response) throws IOException {
         synchronized(mutex) {
             ByteArray reqId = response.getRequestId();
             RegistrationRequest request = requestMap.remove(reqId);
@@ -232,7 +232,7 @@ public class WebAuthn /*implements Closeable*/ {
                                 .build()
                 );
             } catch (RegistrationFailedException e) {
-                return false;
+                return new ImmutableTriple<>(false, request, null);
             }
 
             Authenticator auth = new Authenticator(
@@ -251,7 +251,7 @@ public class WebAuthn /*implements Closeable*/ {
             ctx.getUserStore().addAuthenticator(username, displayName, auth, null, null, 0, 0, 0);
             ctx.setLoggedIn(session, username);
 
-            return true;
+            return new ImmutableTriple<>(true, request, result);
         }
     }
 
@@ -319,13 +319,14 @@ public class WebAuthn /*implements Closeable*/ {
         return ctx.getWebAuthn().assertionStart(username, null, null);
     }
 
-    public boolean loginFinish(HttpSession httpSession, AssertionResponse response) {
-        AssertionRequestWrapper request = assertMap.get(response.getRequestId());
-        if (assertionFinish(response).getLeft()) {
-            ctx.setLoggedIn(httpSession, request.getAssertionRequest().getUsername().get());
-            return true;
+    public String loginFinish(HttpSession httpSession, AssertionResponse response) {
+        Triple<Boolean, AssertionRequestWrapper<Object>, AssertionResult> tuple = assertionFinish(response);
+        if (tuple.getLeft()) {
+            String username = tuple.getMiddle().getAssertionRequest().getUsername().get();
+            ctx.setLoggedIn(httpSession, username);
+            return username;
         }
-        return false;
+        return null;
     }
 
     public AssertionRequestWrapper signTransactionStart(String username, Transaction t) {
@@ -373,18 +374,5 @@ public class WebAuthn /*implements Closeable*/ {
 
         return result.isSuccess();
     }
-
-
-
-//    /**
-//     * <p>Closes this stream and releases any system resources associated with it.
-//     * If the stream is already closed then invoking this method has no effect.</p>
-//     * @throws IOException throws, never caught.
-//     */
-//    @Override
-//    public void close() throws IOException {
-//
-//    }
-
 
 }

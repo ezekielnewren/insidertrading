@@ -38,6 +38,13 @@
             window.username = null;
         }
 
+        function handleError(err) {
+            console.log(err);
+            var errorCode = err.responseJSON.errorCode;
+            var message = err.responseJSON.message;
+            alert(message+" error code: "+errorCode);
+        }
+
         function onRegister() {
             getUsername().then(function(username) {
                 if (username != null) {
@@ -48,7 +55,7 @@
                 register(username, username, null, false).then(function (username) {
                     onSuccessfulRegistration(username);
                 }).catch(function (err) {
-                    alert(err);
+                    handleError(err);
                 })
             });
         }
@@ -58,7 +65,7 @@
             login(username, false).then(function (username) {
                 onSuccessfulLogin(username);
             }).catch(function (err) {
-                alert(err);
+                handleError(err);
             })
         }
 
@@ -67,7 +74,15 @@
                 onSuccessfulLogout();
                 alert("goodbye "+username);
             }).catch(function(err) {
-                console.log(err);
+                handleError(err);
+            });
+        }
+
+        function onTest() {
+            getAccountList().then(function (list) {
+                console.log(list);
+            }).catch(function (err) {
+                handleError(err);
             });
         }
 
@@ -86,6 +101,7 @@
             <button onclick="onRegister()">Register</button>
             <button onclick="onLogin()">Login</button>
             <button onclick="onLogout()">Logout</button>
+            <button onclick="onTest()">test</button>
         </div>
     </div>
 </div>

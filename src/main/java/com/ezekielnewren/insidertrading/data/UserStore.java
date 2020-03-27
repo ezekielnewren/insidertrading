@@ -1,13 +1,17 @@
 package com.ezekielnewren.insidertrading.data;
 
+import com.ezekielnewren.insidertrading.JacksonHelper;
 import com.ezekielnewren.insidertrading.SessionManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -153,21 +157,17 @@ public class UserStore {
         User user = null;
         boolean insert = !exists(username);
         if (insert) {
-            user = new User(username, displayName, auth);
+            user = createUser(username, displayName);
         } else {
             user = getByUsername(username);
         }
         user.authenticator.add(auth);
-        if (insert) {
-            ctx.getCollectionUser().insertOne(user);
-        } else {
-            writeToDatabase(user);
-        }
+        writeToDatabase(user);
     }
 
-    public User createUser(String username, String displayName, Authenticator auth) {
+    public User createUser(String username, String displayName) {
         if (!exists(username)) {
-            User user = new User(username, displayName, auth);
+            User user = new User(username, displayName);
             writeToDatabase(user);
             return user;
         }
@@ -260,6 +260,6 @@ public class UserStore {
 
 
     public void writeToDatabase(User user) {
-        ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user);
+        ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user, new ReplaceOptions().upsert(true));
     }
 }

@@ -9,11 +9,15 @@ public class BankAPIException extends RuntimeException {
         NOT_LOGGED_IN,
         NOT_PERMITTED,
         NO_SUCH_FUNCTION,
+        LOGIN_NO_SUCH_USERNAME,
+        LOGIN_FAILED,
+        REGISTRATION_USERNAME_NOT_AVAILABLE,
+        REGISTRATION_FAILED,
         ILLEGAL_ACCESS;
 
         @Override
         public String toString() {
-            return "{\"code\": "+this.ordinal()+", \"msg\": \""+this.name()+"\"}";
+            return "{\"errorCode\": "+this.ordinal()+", \"message\": \""+this.name()+"\"}";
         }
     }
 

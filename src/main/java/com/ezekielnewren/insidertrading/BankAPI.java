@@ -128,12 +128,15 @@ public class BankAPI {
             Object result = m.invoke(this, args);
             response.put("error", (String) null);
             response.putPOJO("data", result);
-        } catch (BankAPIException e) {
-            response.put("error", e.getMessage());
-            response.putPOJO("data", null);
         } catch (IllegalAccessException|InvocationTargetException e) {
-            response.put("error", Reason.ILLEGAL_ACCESS.toString());
-            response.putPOJO("data", null);
+            if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof BankAPIException) {
+                BankAPIException apie = (BankAPIException) ((InvocationTargetException) e).getTargetException();
+                response.put("error", apie.getMessage());
+                response.putPOJO("data", null);
+            } else {
+                response.put("error", Reason.ILLEGAL_ACCESS.toString());
+                response.putPOJO("data", null);
+            }
         }
 
         return response;

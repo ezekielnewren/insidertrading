@@ -61,10 +61,6 @@ function login(username, requireResidentKey) {
 
     var payload = JSON.stringify({username, requireResidentKey});
     return new Promise(function (resolve, reject) {
-        if (window.username != null) {
-            reject("you are already logged in");
-            return;
-        }
         talk('login/start', payload).done(function (data) {
             if (data == null) {
                 reject("that username does not exist")

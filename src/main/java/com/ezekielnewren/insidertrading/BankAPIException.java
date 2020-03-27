@@ -11,6 +11,7 @@ public class BankAPIException extends RuntimeException {
         NO_SUCH_FUNCTION,
         LOGIN_NO_SUCH_USERNAME,
         LOGIN_FAILED,
+        LOGIN_ALREADY_LOGGED_IN,
         REGISTRATION_USERNAME_NOT_AVAILABLE,
         REGISTRATION_FAILED,
         ILLEGAL_ACCESS;

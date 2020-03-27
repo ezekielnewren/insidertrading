@@ -118,35 +118,8 @@ public class User {
         }
     }
 
-    /**
-     * {@code User} constructor for new users.
-     * @param _username user specified name.
-     * @param _displayName user specified name (optional).
-     * @param _email list of user specified email(s).
-     * @param _authenticator list of authenticator(s).
-     * @param _firstName user specified firstname.
-     * @param _lastName user specified lastame.
-     * @param _ssn user specified ssn.
-     * @param _accounts user specified accounts.
-     * @see java.lang.String
-     * @see java.util.List
-     */
-    public User(String _username, String _displayName, List<String> _email, List<Authenticator> _authenticator, String _firstName, String _lastName, int _ssn,
-                List<Account> _accounts) {
-        this(new ObjectId(), _username, _displayName, _email, _authenticator, _firstName, _lastName, _ssn, _accounts);
-    }
-
-    /**
-     * {@code User} constructor for login.
-     * @param _username user specified name.
-     * @param _displayName user specified name (optional).
-     * @param _email list of user specified email(s).
-     * @param _authenticator list of user specified authenticator(s).
-     * @see java.lang.String
-     * @see java.util.ArrayList
-     */
-    public User(String _username, String _displayName, ArrayList<String> _email, ArrayList<Authenticator> _authenticator) {
-        this(_username, _displayName, _email, _authenticator, null, null, 0, null);
+    public User(String _username, String _displayName, Authenticator _auth) {
+        this(new ObjectId(), _username, _displayName, new ArrayList<>(), Arrays.asList(_auth!=null?new Authenticator[]{_auth}:new Authenticator[0]), null, null, 0, new ArrayList<>());
     }
 
     /**

@@ -29,7 +29,12 @@ public class TestBankAPI {
         String username = api.getUsername(session);
 
         Assert.assertEquals(null, username);
+
+        ctx.getUserStore().createUser("testuser", "testuser", null);
+
     }
+
+ 
 
 
 

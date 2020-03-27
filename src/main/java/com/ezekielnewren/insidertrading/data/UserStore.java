@@ -2,11 +2,13 @@ package com.ezekielnewren.insidertrading.data;
 
 import com.ezekielnewren.insidertrading.SessionManager;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import javax.servlet.http.HttpSession;
@@ -151,7 +153,7 @@ public class UserStore {
         User user = null;
         boolean insert = !exists(username);
         if (insert) {
-            user = new User(username, displayName, new ArrayList<String>(), new ArrayList<Authenticator>(), firstName, lastName, ssn, new ArrayList<Account>());
+            user = new User(username, displayName, auth);
         } else {
             user = getByUsername(username);
         }
@@ -161,6 +163,15 @@ public class UserStore {
         } else {
             writeToDatabase(user);
         }
+    }
+
+    public User createUser(String username, String displayName, Authenticator auth) {
+        if (!exists(username)) {
+            User user = new User(username, displayName, auth);
+            writeToDatabase(user);
+            return user;
+        }
+        throw new RuntimeException("cannot create user "+username+"");
     }
 
     //may be incorrect

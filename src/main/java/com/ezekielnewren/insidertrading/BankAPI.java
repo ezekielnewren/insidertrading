@@ -1,5 +1,6 @@
 package com.ezekielnewren.insidertrading;
 
+import com.ezekielnewren.insidertrading.BankAPIException.*;
 import com.ezekielnewren.insidertrading.data.Account;
 import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
@@ -110,7 +111,7 @@ public class BankAPI {
 
         Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
         if (tuple == null) {
-            response.put("error", BankAPIException.Reason.NO_SUCH_FUNCTION.toString());
+            response.put("error", Reason.NO_SUCH_FUNCTION.toString());
             response.putPOJO("data", null);
             return response;
         }
@@ -131,7 +132,7 @@ public class BankAPI {
             response.put("error", e.getMessage());
             response.putPOJO("data", null);
         } catch (IllegalAccessException|InvocationTargetException e) {
-            response.put("error", BankAPIException.Reason.ILLEGAL_ACCESS.toString());
+            response.put("error", Reason.ILLEGAL_ACCESS.toString());
             response.putPOJO("data", null);
         }
 
@@ -145,7 +146,7 @@ public class BankAPI {
      * @see javax.servlet.http.HttpSession
      */
     public List<Account> getAccountList(HttpSession session) throws BankAPIException {
-        if (!ctx.isLoggedIn(session)) throw new BankAPIException(BankAPIException.Reason.NOT_LOGGED_IN);
+        if (!ctx.isLoggedIn(session)) throw new BankAPIException(Reason.NOT_LOGGED_IN);
         String username = ctx.getUsername(session);
 
         User user = ctx.getUserStore().getByUsername(username);

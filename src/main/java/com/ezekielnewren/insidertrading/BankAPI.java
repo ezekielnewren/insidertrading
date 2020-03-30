@@ -159,11 +159,11 @@ public class BankAPI {
         return true;
     }
 
+
     /**
      *
-     * @param aList
+     * @param session
      * @return
-     * @see java.util.List
      */
     public String getTransactionHistory(HttpSession session) {
 

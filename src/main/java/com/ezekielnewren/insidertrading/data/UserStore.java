@@ -248,6 +248,9 @@ public class UserStore {
     }
 
 
+    /**
+     * @param user
+     */
     public void writeToDatabase(User user) {
         ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user);
     }

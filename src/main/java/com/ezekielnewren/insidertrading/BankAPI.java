@@ -31,7 +31,29 @@ public class BankAPI {
      */
     SessionManager ctx;
 
-    Map<String, Pair<Method, JsonProperty[]>> call = new HashMap<>();
+    static final Map<String, Pair<Method, JsonProperty[]>> call = new LinkedHashMap<>();
+    static {
+        List<Method> methList = Arrays.asList(BankAPI.class.getMethods());
+        for (Method m: methList) {
+
+            if (m.getParameterCount() <= 0) continue;
+            if (m.getParameterTypes()[0] != HttpSession.class) continue;
+
+            Annotation[][] annmat = m.getParameterAnnotations();
+            JsonProperty[] prop = new JsonProperty[annmat.length-1];
+            boolean good = true;
+            for (int i=0; i<prop.length; i++) {
+                if (annmat[i+1].length != 1 || !(annmat[i+1][0] instanceof JsonProperty)) {
+                    good = false;
+                    break;
+                }
+                prop[i] = (JsonProperty) annmat[i+1][0];
+            }
+            if (!good) continue;
+
+            call.put(m.getName(), new ImmutablePair<>(m, prop));
+        }
+    }
 
     /**
      * Constructor for {@code BankAPI}.
@@ -40,6 +62,30 @@ public class BankAPI {
      */
     public BankAPI(SessionManager _ctx) {
         ctx = _ctx;
+    }
+
+    public static String generateJSFunction() {
+        StringBuilder sb = new StringBuilder();
+
+        for (String command: call.keySet()) {
+            JsonProperty[] prop = call.get(command).getRight();
+            String[] args = new String[prop.length];
+
+            for (int i=0; i<args.length; i++) {
+                args[i] = prop[i].value();
+            }
+
+            String view = Arrays.toString(args);
+            view = view.substring(1, view.length()-1);
+
+            sb.append("function "+command+"("+view+") {\n");
+            sb.append("    \"use strict\";\n");
+            sb.append("    return makeRequest(\""+command+"\", ["+view+"]);\n");
+            sb.append("}\n");
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -51,7 +97,7 @@ public class BankAPI {
      * @see javax.servlet.http.HttpSession
      * @see java.lang.String
      */
-    String onRequest(HttpSession session, String data) {
+    ObjectNode onRequest(HttpSession session, String data) {
         ObjectNode response = ctx.getObjectMapper().createObjectNode();
         JsonNode request;
         try {
@@ -59,7 +105,7 @@ public class BankAPI {
         } catch (JsonProcessingException e) {
             response.put("error", "cannot parse request");
             response.put("data", (String)null);
-            return response.toString();
+            return response;
         }
 
         Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
@@ -81,17 +127,7 @@ public class BankAPI {
             response.putPOJO("data", null);
         }
 
-        return response.toString();
-    }
-
-    /**
-     * Get username from the {@code session}.
-     * @param session current {@code session}.
-     * @return the username from the {@code session}.
-     * @see javax.servlet.http.HttpSession
-     */
-    public String getUsername(HttpSession session) {
-        return ctx.getUsername(session);
+        return response;
     }
 
     /**
@@ -106,6 +142,42 @@ public class BankAPI {
 
         User user = ctx.getUserStore().getByUsername(username);
         return user.getAccounts();
+    }
+
+    /**
+     * Get username from the {@code session}.
+     * @param session current {@code session}.
+     * @return the username from the {@code session}.
+     * @see javax.servlet.http.HttpSession
+     */
+    public String getUsername(HttpSession session) {
+        return ctx.getUsername(session);
+    }
+
+    /**
+     * @return
+     * @see java.util.List
+     */
+    public List<Transaction> getTransactionHistory(HttpSession session) {
+
+        String userN = getUsername(session);
+        User u = ctx.getUserStore().getByUsername(userN);
+        List<Account> aList = u.getAccounts();
+
+        List<Transaction> tList = new ArrayList<>();
+
+        for(Account a : aList){
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
+            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
+        }
+
+        return tList;
+    }
+
+    public String logout(HttpSession session) {
+        String username = ctx.getUsername(session);
+        ctx.clearLoggedIn(session);
+        return username;
     }
 
     /**
@@ -158,35 +230,4 @@ public class BankAPI {
         ctx.collectionTransaction.insertOne(t);
         return true;
     }
-
-
-    /**
-     *
-     * @param session
-     * @return
-     */
-    public String getTransactionHistory(HttpSession session) {
-
-        String userN = getUsername(session);
-        User u = ctx.getUserStore().getByUsername(userN);
-        List<Account> aList = u.getAccounts();
-
-        List<Transaction> tList = null;
-
-        for(Account a : aList){
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
-        }
-
-        try {
-            return ctx.getObjectMapper().writeValueAsString(tList);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-
-
 }

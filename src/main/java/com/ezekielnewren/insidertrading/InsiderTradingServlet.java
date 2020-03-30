@@ -6,6 +6,7 @@ import com.ezekielnewren.insidertrading.data.AssertionResponse;
 import com.ezekielnewren.insidertrading.data.RegistrationRequest;
 import com.ezekielnewren.insidertrading.data.RegistrationResponse;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -160,9 +161,13 @@ public class InsiderTradingServlet extends HttpServlet {
                     }
                 }
             } else if ("api".equals(args[0])) {
-                String json = ctx.getApi().onRequest(request.getSession(), data);
+                ObjectNode json = ctx.getApi().onRequest(request.getSession(), data);
 
-                out.println(json);
+                if (!json.get("error").isNull()) {
+                    response.sendError(400, json.get("error").asText());
+                } else {
+                    out.println(json.get("data").toString());
+                }
             }
             else {
                 errMsg.get();

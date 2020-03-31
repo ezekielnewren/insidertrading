@@ -40,6 +40,9 @@ public class WebAuthn /*implements Closeable*/ {
      */
     public static final int LENGTH_CREDENTIAL_ID = 16;
 
+    /**
+     * Constant variable total length of an assertion.
+     */
     public static final int LENGTH_ASSERTION_NONCE = 32;
 
     /**
@@ -286,7 +289,7 @@ public class WebAuthn /*implements Closeable*/ {
     /**
      * Checks to see if assertion is finished.
      * @param response response information from server.
-     * @return returns true if finished.
+     * @return returns {@code ImmutableTriple} with true on success.
      * @see com.ezekielnewren.insidertrading.data.AssertionResponse
      */
     public <T> Triple<Boolean, AssertionRequestWrapper<T>, AssertionResult> assertionFinish(AssertionResponse response) {
@@ -314,6 +317,12 @@ public class WebAuthn /*implements Closeable*/ {
         return new ImmutableTriple<>(true, request, result);
     }
 
+    /**
+     * Checks if a user exists in the database upon logging in, if not creates one.
+     * @param username user generated name.
+     * @return null if name exists in database, else {@code request} information via {@code assertionStart} method.
+     * @see java.lang.String
+     */
     public AssertionRequestWrapper loginStart(String username) {
         if (!ctx.getUserStore().exists(username)) return null;
         return ctx.getWebAuthn().assertionStart(username, null, null);
@@ -329,10 +338,20 @@ public class WebAuthn /*implements Closeable*/ {
         return null;
     }
 
+    /**
+     * @param username
+     * @param t
+     * @return
+     */
     public AssertionRequestWrapper signTransactionStart(String username, Transaction t) {
         return assertionStart(username, t.getBytesForSignature(ctx.getObjectMapper()), t);
     }
 
+    /**
+     * @param httpSession
+     * @param response
+     * @return
+     */
     public boolean signTransactionFinish(HttpSession httpSession, AssertionResponse response) {
         Triple<Boolean, AssertionRequestWrapper<Transaction>, AssertionResult> x = assertionFinish(response);
         if (x.getLeft()) {
@@ -349,6 +368,12 @@ public class WebAuthn /*implements Closeable*/ {
         return false;
     }
 
+    /**
+     * @param username
+     * @param t
+     * @return
+     * @throws AssertionFailedException
+     */
     public boolean verifyTransaction(String username, Transaction t) throws AssertionFailedException {
         ByteArray forsign = t.getBytesForSignature(ctx.getObjectMapper());
 

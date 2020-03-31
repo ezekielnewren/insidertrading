@@ -2,9 +2,7 @@ package com.ezekielnewren.insidertrading.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
@@ -16,7 +14,6 @@ import lombok.NonNull;
 import org.bson.types.ObjectId;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 
 /**
@@ -56,6 +53,10 @@ public class Transaction {
      */
     @JsonProperty long date;
 
+    /**
+     * Contains attributes returned to caller when credentials are created or an assertion is requested.
+     * @see com.yubico.webauthn.data.PublicKeyCredential
+     */
     @JsonProperty PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature;
 
     /**
@@ -90,6 +91,12 @@ public class Transaction {
         this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date);
     }
 
+    /**
+     *
+     * @param om
+     * @return
+     * @see com.fasterxml.jackson.databind
+     */
     public ByteArray getBytesForSignature(ObjectMapper om) {
         ObjectNode json = om.createObjectNode();
 
@@ -101,6 +108,11 @@ public class Transaction {
         return new ByteArray(json.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Setter for the {@code signature} attributes.
+     * @param signature attributes for credential creation and assertion requests.
+     * @see com.yubico.webauthn.data.PublicKeyCredential
+     */
     public void setSignature(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature) {
         this.signature = signature;
     }

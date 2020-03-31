@@ -259,11 +259,6 @@ public class UserStore {
     }
 
 
-    /**
-     * Writes the user information to the database.
-     * @param user user information.
-     * @see com.ezekielnewren.insidertrading.data.User
-     */
     public void writeToDatabase(User user) {
         ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user, new ReplaceOptions().upsert(true));
     }

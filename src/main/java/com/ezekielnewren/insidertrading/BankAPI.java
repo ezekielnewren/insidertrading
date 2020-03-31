@@ -32,11 +32,7 @@ public class BankAPI {
      */
     SessionManager ctx;
 
-    /**
-     *
-     */
     static final Map<String, Pair<Method, JsonProperty[]>> call = new LinkedHashMap<>();
-
     static {
         List<Method> methList = Arrays.asList(BankAPI.class.getMethods());
         for (Method m: methList) {
@@ -69,9 +65,6 @@ public class BankAPI {
         ctx = _ctx;
     }
 
-    /**
-     * @return
-     */
     public static String generateJSFunction() {
         StringBuilder sb = new StringBuilder();
 
@@ -173,7 +166,6 @@ public class BankAPI {
     }
 
     /**
-     *
      * @return
      * @see java.util.List
      */

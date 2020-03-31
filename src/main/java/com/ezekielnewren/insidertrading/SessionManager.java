@@ -34,20 +34,11 @@ public class SessionManager {
 
     /**
      * Creating a new constant object.
-     * @see java.lang.Object
+     * @see java.lang
      */
     final Object mutex = new Object();
 
-    /**
-     * Creating a new {@code HashMap} for session information.
-     * @see java.util.HashMap
-     */
     Map<String, String> sessionIdAndUsername = new HashMap<>();
-
-    /**
-     * Creating a new {@code HashMap} for session information
-     * @see java.util.HashMap
-     */
     Map<String, HttpSession> sessionIdAndHttpSession = new HashMap<>();
 
     /**
@@ -126,10 +117,6 @@ public class SessionManager {
      */
     UserStore userStore;
 
-    /**
-     * Object for {@code BankAPI}.
-     * @see com.ezekielnewren.insidertrading.BankAPI
-     */
     BankAPI api;
 
     /**
@@ -171,22 +158,7 @@ public class SessionManager {
         this.api = new BankAPI(this);
     }
 
-    /**
-     * Checks if user is logged in.
-     * @param httpSession current session.
-     * @return false using other {@code isLoggedIn} method.
-     * @see javax.servlet.http.HttpSession
-     */
     public boolean isLoggedIn(HttpSession httpSession) { return isLoggedIn(httpSession, null); }
-
-    /**
-     * Checks if user is logged in using session and username.
-     * @param httpSession current session.
-     * @param username name to identify user.
-     * @return true if {@code username} is null and the {@code sessionIdAndUsername} id is not null or if {@code username} equals {@code sessionIdAndUsername}.
-     * @see javax.servlet.http.HttpSession
-     * @see java.lang.String
-     */
     public boolean isLoggedIn(HttpSession httpSession, String username) {
         Objects.nonNull(httpSession);
 
@@ -198,13 +170,6 @@ public class SessionManager {
     }
 
 
-    /**
-     * Sets the log-in information for session.
-     * @param httpSession current session id.
-     * @param username name to identify user.
-     * @see javax.servlet.http.HttpSession
-     * @see java.lang.String
-     */
     public void setLoggedIn(HttpSession httpSession, String username) {
         Objects.nonNull(httpSession);
         Objects.nonNull(username);
@@ -213,32 +178,15 @@ public class SessionManager {
         sessionIdAndHttpSession.put(httpSession.getId(), httpSession);
     }
 
-    /**
-     * Clears the session.
-     * @param httpSession current session.
-     * @see javax.servlet.http.HttpSession
-     */
     public void clearLoggedIn(HttpSession httpSession) {
         sessionIdAndUsername.put(httpSession.getId(), null);
         sessionIdAndHttpSession.put(httpSession.getId(), null);
     }
 
-    /**
-     * Get the name identifying the session, separate from the id.
-     * @param httpSession current session.
-     * @return {@code sessionIdAndUsername} name.
-     * @see javax.servlet.http.HttpSession
-     */
     public String getUsername(HttpSession httpSession) {
         return sessionIdAndUsername.get(httpSession.getId());
     }
 
-    /**
-     * Gets all sessions for a user.
-     * @param _username name to identify user sessions.
-     * @return list of sessions for a user.
-     * @see java.lang.String
-     */
     public List<HttpSession> getEverySession(String _username) {
         Objects.nonNull(_username);
 

@@ -90,12 +90,6 @@ public class Util {
         return new ObjectId(generateRandom(12));
     }
 
-    /**
-     * @param rp
-     * @param startAssertionOptions
-     * @param challenge
-     * @return
-     */
     public static AssertionRequest startAssertion(RelyingParty rp, StartAssertionOptions startAssertionOptions, ByteArray challenge) {
         PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder pkcro = PublicKeyCredentialRequestOptions.builder()
                 .challenge(challenge)
@@ -123,11 +117,6 @@ public class Util {
                 .build();
     }
 
-    /**
-     * @param auth
-     * @param userHandle
-     * @return
-     */
     public static RegisteredCredential getRegisteredCredential(Authenticator auth, ByteArray userHandle) {
         if (auth == null) return null;
         return RegisteredCredential.builder()
@@ -138,10 +127,6 @@ public class Util {
             .build();
     }
 
-    /**
-     * @param pkc
-     * @return
-     */
     public static PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> copyPublicKeyCredential(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc) {
         PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> other = PublicKeyCredential.<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>builder()
                 .id(pkc.getId())
@@ -151,20 +136,10 @@ public class Util {
         return other;
     }
 
-    /**
-     * @param coll
-     * @param pred
-     * @param <T>
-     * @return
-     */
     public static <T> Optional<T> findOne(Collection<T> coll, Predicate<T> pred) {
         return coll.stream().filter(pred).findFirst();
     }
 
-    /**
-     * @param node
-     * @return
-     */
     public static Object asPOJO(JsonNode node) {
         switch (node.getNodeType()) {
             case NULL:

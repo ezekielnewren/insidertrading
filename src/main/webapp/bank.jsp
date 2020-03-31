@@ -12,14 +12,16 @@
     <div id="nav">
         <div class="nav-item"></div>
         <h1 class="nav-item">Insider Trading</h1>
-        <a  class="nav-item" href="./index.jsp">Login</a>
+        <!-- Login button set in bank.js after getUsername() -->
+        <!-- <a  class="nav-item" href="./index.jsp">Login</a> -->
     </div>
-    <div id="body">
+    <div id="body">`
         <div id="accounts">
             <h2>Accounts</h2>
             <div class="account-item">
                 <div class="title">Title</div>
                 <div class="balance">Account Total</div>
+                <div class="nav-item"></div>
             </div>
         </div>
         <div id="right">

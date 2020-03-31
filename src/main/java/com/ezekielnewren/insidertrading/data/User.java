@@ -65,7 +65,7 @@ public class User {
     @JsonProperty @NonNull String lastName;
 
     /**
-     * ssn for user
+     * SSN for user.
      */
     @JsonProperty int ssn;
 

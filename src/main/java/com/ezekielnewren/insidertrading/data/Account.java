@@ -78,6 +78,10 @@ public class Account {
         this(Util.generateRandomObjectId(), Util.getRandom().nextInt(Integer.MAX_VALUE), _title, _balance);
     }
 
+    /**
+     * Gets the account number.
+     * @return the account number.
+     */
     public long getNumber(){
         return this.number;
     }

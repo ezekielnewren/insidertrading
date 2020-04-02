@@ -1,5 +1,6 @@
 package com.ezekielnewren.insidertrading;
 
+import com.ezekielnewren.insidertrading.BankAPIException.*;
 import com.ezekielnewren.insidertrading.data.Account;
 import com.ezekielnewren.insidertrading.data.Transaction;
 import com.ezekielnewren.insidertrading.data.User;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -14,10 +16,9 @@ import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import com.mongodb.client.FindIterable;
+
 import com.mongodb.client.model.Filters;
 
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -83,12 +84,11 @@ public class BankAPI {
                 args[i] = prop[i].value();
             }
 
-            String view = Arrays.toString(args);
-            view = view.substring(1, view.length()-1);
+            String view = StringUtils.join(args, ", ");
 
             sb.append("function "+command+"("+view+") {\n");
             sb.append("    \"use strict\";\n");
-            sb.append("    return makeRequest(\""+command+"\", ["+view+"]);\n");
+            sb.append("    return makeRequest(\""+command+"\", {"+view+"});\n");
             sb.append("}\n");
             sb.append("\n");
         }
@@ -117,6 +117,11 @@ public class BankAPI {
         }
 
         Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
+        if (tuple == null) {
+            response.put("error", Reason.NO_SUCH_FUNCTION.toString());
+            response.putPOJO("data", null);
+            return response;
+        }
         Method m = tuple.getLeft();
         JsonProperty[] prop = tuple.getRight();
 
@@ -128,11 +133,17 @@ public class BankAPI {
 
         try {
             Object result = m.invoke(this, args);
-            response.put("error", (String)null);
+            response.put("error", (String) null);
             response.putPOJO("data", result);
         } catch (IllegalAccessException|InvocationTargetException e) {
-            response.put("error", e.getMessage());
-            response.putPOJO("data", null);
+            if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof BankAPIException) {
+                BankAPIException apie = (BankAPIException) ((InvocationTargetException) e).getTargetException();
+                response.put("error", apie.getMessage());
+                response.putPOJO("data", null);
+            } else {
+                response.put("error", Reason.ILLEGAL_ACCESS.toString());
+                response.putPOJO("data", null);
+            }
         }
 
         return response;
@@ -144,12 +155,12 @@ public class BankAPI {
      * @return if not logged in null else account for the user.
      * @see javax.servlet.http.HttpSession
      */
-    public List<Account> getAccountList(HttpSession session) {
-        if (!ctx.isLoggedIn(session)) return null;
+    public List<Account> getAccountList(HttpSession session) throws BankAPIException {
+        if (!ctx.isLoggedIn(session)) throw new BankAPIException(Reason.NOT_LOGGED_IN);
         String username = ctx.getUsername(session);
 
         User user = ctx.getUserStore().getByUsername(username);
-        return user.getAccounts();
+        return user.getAccount();
     }
 
     /**
@@ -158,7 +169,7 @@ public class BankAPI {
      * @return the username from the {@code session}.
      * @see javax.servlet.http.HttpSession
      */
-    public String getUsername(HttpSession session) {
+    public String getUsername(HttpSession session) throws BankAPIException {
         return ctx.getUsername(session);
     }
 
@@ -167,11 +178,11 @@ public class BankAPI {
      * @return
      * @see java.util.List
      */
-    public List<Transaction> getTransactionHistory(HttpSession session) {
+    public List<Transaction> getTransactionHistory(HttpSession session) throws BankAPIException {
 
         String userN = getUsername(session);
         User u = ctx.getUserStore().getByUsername(userN);
-        List<Account> aList = u.getAccounts();
+        List<Account> aList = u.getAccount();
 
         List<Transaction> tList = new ArrayList<>();
 
@@ -188,7 +199,7 @@ public class BankAPI {
      * @param session
      * @return
      */
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session) throws BankAPIException {
         String username = ctx.getUsername(session);
         ctx.clearLoggedIn(session);
         return username;
@@ -210,7 +221,7 @@ public class BankAPI {
                             @JsonProperty("accountTypeFrom") String accountTypeFrom,
                             @JsonProperty("accountTypeTo") String accountTypeTo,
                             @JsonProperty("amount") long amount
-    ) {
+    ) throws BankAPIException {
         // argument checking
         Objects.nonNull(recipient);
         Objects.nonNull(accountTypeFrom);

@@ -11,12 +11,13 @@
 }
 
 .nav-item{
+    display: flex;
     flex:1;
 }
 .nav-item h1{
     flex-grow:1;
 }
-a.nav-item{
+div.nav-item{
     padding: 10px;
     text-align: right;
     position: relative;

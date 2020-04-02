@@ -23,7 +23,13 @@
         }
         window.onload = onPageLoad();
 
-        function onSuccessfulLogin() {
+        function onSuccessfulRegistration(username) {
+            alert("the username \""+username+"\" has now been registered");
+            onSuccessfulLogin(username);
+        }
+
+        function onSuccessfulLogin(username) {
+            window.username = username;
             window.location.href = urlprefix+"/bank.jsp"
         }
 
@@ -32,108 +38,11 @@
             window.username = null;
         }
 
-        function register(username, displayName, nickname, requireResidentKey) {
-            var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
-
-            $.ajax({
-                type: 'POST',
-                url: urlprefix+'register/start',
-                contentType: 'application/json',
-                dataType: 'json',
-                data: payload,
-                success: function(data) {
-                    var request = data;
-                    console.log("got the request");
-                    if (request == null) {
-                        alert("that username has been taken");
-                        return;
-                    }
-                    webauthn.createCredential(request.publicKeyCredentialCreationOptions)
-                        .then(function (res) {
-                            // Send new credential info to server for verification and registration.
-                            var credential = webauthn.responseToObject(res);
-                            const body = {
-                                requestId: request.requestId,
-                                credential,
-                            };
-                            var json = JSON.stringify(body);
-                            // console.log("client signature: "+json);
-                            $.ajax({
-                                type: 'POST',
-                                url: urlprefix + 'register/finish',
-                                contentType: 'application/json',
-                                dataType: 'json',
-                                data: json,
-                                success: function(data) {
-                                    var response = data;
-                                    if ("good" == response) {
-                                        //alert("registration successful");
-                                        onSuccessfulLogin();
-                                    }
-                                },
-                                error: function(errMsg) {
-                                    console.log(errMsg);
-                                }
-                            })
-                        }).catch(function (err) {
-                        // No acceptable authenticator or user refused consent. Handle appropriately.
-                        console.log(err);
-                        alert("Failed to add Authenticator");
-                    });
-                    // console.log("got a signature");
-                },
-                error: function(errMsg) {
-                    console.log(errMsg);
-                }
-            });
-
-        }
-
-        function login(username, requireResidentKey) {
-            if (window.username != null) {
-                alert("you are already logged in");
-                return;
-            }
-
-            var payload = JSON.stringify({username, requireResidentKey});
-
-            talk('login/start', payload)
-                .done(function(data) {
-                    console.log(data);
-
-                    if (data == null) {
-                        alert("that username does not exist")
-                        return;
-                    }
-                    var pkcro = data.assertionRequest.publicKeyCredentialRequestOptions;
-
-                    return webauthn.getAssertion(pkcro).then(function(assertion) {
-                        var requestId = data.requestId;
-                        var publicKeyCredential = webauthn.responseToObject(assertion);
-
-                        var payload = JSON.stringify({
-                            requestId,
-                            publicKeyCredential
-                        });
-
-                        talk('login/finish', payload)
-                            .done(function(data) {
-                                console.log(data);
-                                if ("good" === data) {
-                                    // alert("you are now logged in, navigating to bank home page");
-                                    onSuccessfulLogin();
-                                }
-                            }).catch(function(err) {
-                            alert("uh oh, check the log");
-                            console.log(err);
-                        })
-                    }).catch(function(err) {
-                        console.log(err);
-                    })
-                }).catch(function(err) {
-                console.log(err);
-            })
-
+        function handleError(err) {
+            console.log(err);
+            var errorCode = err.responseJSON.errorCode;
+            var message = err.responseJSON.message;
+            alert(message+" error code: "+errorCode);
         }
 
         function onRegister() {
@@ -143,13 +52,21 @@
                     return;
                 }
                 var username = $('#username').val();
-                register(username, username, null, false);
+                register(username, username, null, false).then(function (username) {
+                    onSuccessfulRegistration(username);
+                }).catch(function (err) {
+                    handleError(err);
+                })
             });
         }
 
         function onLogin() {
             var username = $('#username').val();
-            login(username, false);
+            login(username, false).then(function (username) {
+                onSuccessfulLogin(username);
+            }).catch(function (err) {
+                handleError(err);
+            })
         }
 
         function onLogout() {
@@ -157,7 +74,15 @@
                 onSuccessfulLogout();
                 alert("goodbye "+username);
             }).catch(function(err) {
-                console.log(err);
+                handleError(err);
+            });
+        }
+
+        function onTest() {
+            getAccountList().then(function (list) {
+                console.log(list);
+            }).catch(function (err) {
+                handleError(err);
             });
         }
 
@@ -176,6 +101,7 @@
             <button onclick="onRegister()">Register</button>
             <button onclick="onLogin()">Login</button>
             <button onclick="onLogout()">Logout</button>
+            <button onclick="onTest()">test</button>
         </div>
     </div>
 </div>

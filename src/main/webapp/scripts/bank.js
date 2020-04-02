@@ -17,6 +17,9 @@ function insertTransactions(transactions){
     </div>`
     }
 }
+function onlogout(){
+    logout()
+}
 
 testAccounts = [
     {name: 'Savings', amount: 30.00},
@@ -36,6 +39,7 @@ getUsername().then(function(response) {
         var nav = document.getElementById('nav')
         if (username != null) {
             nav.innerHTML += '<div class="nav-item">' + username + '</div>'
+            nav.innerHTML += '<button onclick="logout()" class="nav-item">Log Out</button>'
         } else {
             nav += '<a  class="nav-item" href="./index.jsp">Login</a>'
         }

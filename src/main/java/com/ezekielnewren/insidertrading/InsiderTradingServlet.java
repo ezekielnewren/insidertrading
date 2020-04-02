@@ -7,6 +7,8 @@ import com.ezekielnewren.insidertrading.data.RegistrationRequest;
 import com.ezekielnewren.insidertrading.data.RegistrationResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yubico.webauthn.RegistrationResult;
+import org.apache.commons.lang3.tuple.Triple;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -79,6 +82,7 @@ public class InsiderTradingServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             response.setContentType("application/json");
+            response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             PrintWriter out = response.getWriter();
 
             URL url = new URL(request.getRequestURL().toString());
@@ -116,6 +120,10 @@ public class InsiderTradingServlet extends HttpServlet {
 
                         // webauthn registration start
                         RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, displayName, nickname, requireResidentKey);
+                        if (regRequest == null) {
+                            sendError(response, 400, BankAPIException.Reason.REGISTRATION_USERNAME_NOT_AVAILABLE.toString());
+                            return;
+                        }
 
                         // encode registration request and send it to the client
                         String json = ctx.getObjectMapper().writeValueAsString(regRequest);
@@ -125,13 +133,16 @@ public class InsiderTradingServlet extends HttpServlet {
                         RegistrationResponse regResponse = ctx.getObjectMapper().readValue(data, RegistrationResponse.class);
 
                         // finish webauthn registration
-                        boolean result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
+                        Triple<Boolean, RegistrationRequest, RegistrationResult> result = ctx.getWebAuthn().registerFinish(request.getSession(), regResponse);
 
                         // respond to client
-                        String json = result?"\"good\"":"\"bad\"";
-                        out.println(json);
+                        if (result.getLeft()) {
+                            out.println(ctx.getObjectMapper().writeValueAsString(result.getMiddle().getUsername()));
+                        } else {
+                            sendError(response, 400, BankAPIException.Reason.REGISTRATION_FAILED.toString());
+                        }
                     } else {
-                        errMsg.get();
+                        sendError(response, 400, BankAPIException.Reason.GENERAL_ERROR.toString());
                     }
                 } else if ("login".equals(args[0])) {
                     if ("start".equals(args[1])) {
@@ -143,34 +154,38 @@ public class InsiderTradingServlet extends HttpServlet {
                         String json;
                         if (!ctx.isLoggedIn(request.getSession(), username)) {
                             AssertionRequestWrapper arw = ctx.getWebAuthn().loginStart(username);
-                            json = ctx.getObjectMapper().writeValueAsString(arw);
+                            if (arw == null) {
+                                sendError(response, 400, BankAPIException.Reason.LOGIN_NO_SUCH_USERNAME.toString());
+                                return;
+                            }
+                            out.println(ctx.getObjectMapper().writeValueAsString(arw));
                         } else {
-                            json = ctx.getObjectMapper().writeValueAsString(null);
+                            sendError(response, 400, BankAPIException.Reason.LOGIN_ALREADY_LOGGED_IN.toString());
                         }
-
-                        out.println(json);
                     } else if ("finish".equals(args[1])) {
                         AssertionResponse ar = ctx.getObjectMapper().readValue(data, AssertionResponse.class);
 
-                        boolean result = ctx.getWebAuthn().loginFinish(request.getSession(), ar);
-
-                        String json = result?"\"good\"":"\"bad\"";
-                        out.println(json);
+                        String result = ctx.getWebAuthn().loginFinish(request.getSession(), ar);
+                        if (result != null) {
+                            out.println(ctx.getObjectMapper().writeValueAsString(result));
+                        } else {
+                            sendError(response, 400, BankAPIException.Reason.LOGIN_FAILED.toString());
+                        }
                     } else {
-                        errMsg.get();
+                        sendError(response, 400, BankAPIException.Reason.GENERAL_ERROR.toString());
                     }
                 }
             } else if ("api".equals(args[0])) {
                 ObjectNode json = ctx.getApi().onRequest(request.getSession(), data);
 
                 if (!json.get("error").isNull()) {
-                    response.sendError(400, json.get("error").asText());
+                    sendError(response, 400, json.get("error").asText());
                 } else {
                     out.println(json.get("data").toString());
                 }
             }
             else {
-                errMsg.get();
+                sendError(response, 400, BankAPIException.Reason.GENERAL_ERROR.toString());
             }
         } catch (IOException e) {
             throw e;
@@ -179,6 +194,13 @@ public class InsiderTradingServlet extends HttpServlet {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public void sendError(HttpServletResponse response, int code, String message) throws IOException {
+        PrintWriter out = response.getWriter();
+
+        response.setStatus(code);
+        out.println(message);
     }
 
 }

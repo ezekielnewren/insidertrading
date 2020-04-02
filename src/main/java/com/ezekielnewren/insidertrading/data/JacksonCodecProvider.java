@@ -3,6 +3,8 @@
  */
 package com.ezekielnewren.insidertrading.data;
 
+import com.ezekielnewren.insidertrading.JacksonHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.*;
 import org.bson.codecs.Codec;
@@ -135,15 +137,7 @@ public class JacksonCodecProvider implements CodecProvider {
         @Override
         public void encode(BsonWriter writer, Object value, EncoderContext encoderContext) {
             try {
-                String json = objectMapper.writeValueAsString(value);
-                BsonDocument raw = BsonDocument.parse(json);
-
-                // treat _id specially
-                BsonValue _id = raw.get("_id");
-                String tmp = null;
-                if (_id != null && ObjectId.isValid(tmp = _id.asString().getValue())) {
-                    raw.put("_id", new BsonObjectId(new ObjectId(tmp)));
-                }
+                BsonDocument raw = JacksonHelper.toBsonDocument(objectMapper, value);
 
                 codecRegistry.get(BsonDocument.class).encode(writer, raw, encoderContext);
 

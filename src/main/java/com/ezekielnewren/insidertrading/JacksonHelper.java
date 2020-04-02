@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import org.bson.BsonDocument;
+import org.bson.BsonObjectId;
+import org.bson.BsonValue;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
@@ -100,6 +103,20 @@ public class JacksonHelper {
         om.registerModule(module);
 
         return om;
+    }
+
+    public static BsonDocument toBsonDocument(ObjectMapper om, Object o) throws JsonProcessingException {
+        String json = om.writeValueAsString(o);
+        BsonDocument raw = BsonDocument.parse(json);
+
+        // treat _id specially
+        BsonValue _id = raw.get("_id");
+        String tmp = null;
+        if (_id != null && ObjectId.isValid(tmp = _id.asString().getValue())) {
+            raw.put("_id", new BsonObjectId(new ObjectId(tmp)));
+        }
+
+        return raw;
     }
 
 

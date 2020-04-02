@@ -20,10 +20,14 @@ public class DummyHttpSession implements HttpSession {
     Map<String, Object> attribute = new LinkedHashMap<>();
     Map<String, Object> value = new LinkedHashMap<>();
 
+    public DummyHttpSession(ByteArray _id, long _creationTime, long _lastAccessedTime) {
+        id = _id;
+        creationTime = _creationTime;
+        lastAccessedTime = _lastAccessedTime;
+    }
+
     public DummyHttpSession() {
-        id = Util.generateRandomByteArray(16);
-        creationTime = System.currentTimeMillis();
-        lastAccessedTime = System.currentTimeMillis();
+        this(Util.generateRandomByteArray(16), System.currentTimeMillis(), System.currentTimeMillis());
     }
 
     @Override

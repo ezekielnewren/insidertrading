@@ -9,10 +9,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.IndexOptions;
 import lombok.Getter;
 import lombok.Value;
@@ -42,31 +39,33 @@ public class SessionManager {
      * Creating a new {@code HashMap} for session information.
      * @see java.util.HashMap
      */
-    Map<String, String> sessionIdAndUsername = new HashMap<>();
+    public Map<String, String> sessionIdAndUsername = new HashMap<>();
 
     /**
      * Creating a new {@code HashMap} for session information
      * @see java.util.HashMap
      */
-    Map<String, HttpSession> sessionIdAndHttpSession = new HashMap<>();
+    public Map<String, HttpSession> sessionIdAndHttpSession = new HashMap<>();
 
     /**
      * Object for {@code ObjectMapper}.
      * @see com.fasterxml.jackson.databind.ObjectMapper
      */
-    ObjectMapper objectMapper;
+    public ObjectMapper objectMapper;
 
     /**
      * Object for a {@code Mongo Client}
      * @see com.mongodb.client.MongoClient
      */
-    MongoClient client;
+    public MongoClient client;
+
+    // public ClientSession clientSession;
 
     /**
      * Object for mongo database
      * @see com.mongodb.client.MongoDatabase
      */
-    MongoDatabase database;
+    public MongoDatabase database;
 
 
     /**
@@ -132,6 +131,7 @@ public class SessionManager {
      */
     BankAPI api;
 
+
     /**
      * Method creates the connection to the {@code Mongo Server}
      * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
@@ -167,6 +167,8 @@ public class SessionManager {
         // apply a unique constraint on user.username and transaction.number
         collectionUser.createIndex(new BasicDBObject("username", 1), new IndexOptions().unique(true));
         // collectionTransaction.createIndex(new BasicDBObject("number", 1), new IndexOptions().unique(true));
+
+        // this.clientSession = this.client.startSession();
 
         this.api = new BankAPI(this);
     }

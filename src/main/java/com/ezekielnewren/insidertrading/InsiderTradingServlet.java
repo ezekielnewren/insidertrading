@@ -160,7 +160,7 @@ public class InsiderTradingServlet extends HttpServlet {
                             }
                             out.println(ctx.getObjectMapper().writeValueAsString(arw));
                         } else {
-                            sendError(response, 400, BankAPIException.Reason.LOGIN_ALREADY_LOGGED_IN.toString());
+                            sendError(response, 400, BankAPIException.Reason.ALREADY_LOGGED_IN.toString());
                         }
                     } else if ("finish".equals(args[1])) {
                         AssertionResponse ar = ctx.getObjectMapper().readValue(data, AssertionResponse.class);

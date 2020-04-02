@@ -3,6 +3,7 @@ package com.ezekielnewren.insidertrading.data;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
@@ -72,12 +73,15 @@ public class Transaction {
                        @JsonProperty("sendingAccount") long _sendingAccount,
                        @JsonProperty("receivingAccount") long _receivingAccount,
                        @JsonProperty("amount") long _amount,
-                       @JsonProperty("date") long _date){
+                       @JsonProperty("date") long _date,
+                       @JsonProperty("signature") PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> _signature
+    ) {
         this._id = _id;
         this.sendingAccount = _sendingAccount;
         this.receivingAccount = _receivingAccount;
         this.amount = _amount;
         this.date = _date;
+        this.signature = _signature;
     }
 
     /**
@@ -87,8 +91,8 @@ public class Transaction {
      * @param _amount amount of the transaction.
      * @param _date date of the transaction
      */
-    public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date){
-        this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date);
+    public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date, PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> _signature) {
+        this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date, _signature);
     }
 
     /**
@@ -116,6 +120,16 @@ public class Transaction {
     public void setSignature(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature) {
         this.signature = signature;
     }
+
+    public String toString(ObjectMapper om) {
+        try {
+            return om.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
 
 

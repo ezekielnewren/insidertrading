@@ -13,13 +13,12 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.IndexOptions;
 import lombok.Getter;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 import java.util.*;
 
 /**
@@ -210,6 +209,8 @@ public class SessionManager {
     public void setLoggedIn(HttpSession httpSession, String username) {
         Objects.nonNull(httpSession);
         Objects.nonNull(username);
+
+        if (isLoggedIn(httpSession) && !StringUtils.equals(username, getUsername(httpSession))) throw new BankAPIException(BankAPIException.Reason.ALREADY_LOGGED_IN);
 
         sessionIdAndUsername.put(httpSession.getId(), username);
         sessionIdAndHttpSession.put(httpSession.getId(), httpSession);

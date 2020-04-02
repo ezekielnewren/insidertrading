@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.client.FindIterable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -106,47 +107,50 @@ public class BankAPI {
      * @see java.lang.String
      */
     ObjectNode onRequest(HttpSession session, String data) {
-        ObjectNode response = ctx.getObjectMapper().createObjectNode();
-        JsonNode request;
-        try {
-            request = ctx.getObjectMapper().readTree(data);
-        } catch (JsonProcessingException e) {
-            response.put("error", "cannot parse request");
-            response.put("data", (String)null);
-            return response;
-        }
-
-        Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
-        if (tuple == null) {
-            response.put("error", Reason.NO_SUCH_FUNCTION.toString());
-            response.putPOJO("data", null);
-            return response;
-        }
-        Method m = tuple.getLeft();
-        JsonProperty[] prop = tuple.getRight();
-
-        Object[] args = new Object[m.getParameterCount()];
-        args[0] = session;
-        for (int i=0; i<prop.length; i++) {
-            args[i+1] = Util.asPOJO(request.get("args").get(prop[i].value()));
-        }
-
-        try {
-            Object result = m.invoke(this, args);
-            response.put("error", (String) null);
-            response.putPOJO("data", result);
-        } catch (IllegalAccessException|InvocationTargetException e) {
-            if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof BankAPIException) {
-                BankAPIException apie = (BankAPIException) ((InvocationTargetException) e).getTargetException();
-                response.put("error", apie.getMessage());
-                response.putPOJO("data", null);
-            } else {
-                response.put("error", Reason.ILLEGAL_ACCESS.toString());
-                response.putPOJO("data", null);
+        // lock on the mutex to ensure transactions are atomic
+        synchronized(ctx.getMutex()) {
+            ObjectNode response = ctx.getObjectMapper().createObjectNode();
+            JsonNode request;
+            try {
+                request = ctx.getObjectMapper().readTree(data);
+            } catch (JsonProcessingException e) {
+                response.put("error", "cannot parse request");
+                response.put("data", (String)null);
+                return response;
             }
-        }
 
-        return response;
+            Pair<Method, JsonProperty[]> tuple = call.get(request.get("cmd").asText());
+            if (tuple == null) {
+                response.put("error", Reason.NO_SUCH_FUNCTION.toString());
+                response.putPOJO("data", null);
+                return response;
+            }
+            Method m = tuple.getLeft();
+            JsonProperty[] prop = tuple.getRight();
+
+            Object[] args = new Object[m.getParameterCount()];
+            args[0] = session;
+            for (int i=0; i<prop.length; i++) {
+                args[i+1] = Util.asPOJO(request.get("args").get(prop[i].value()));
+            }
+
+            try {
+                Object result = m.invoke(this, args);
+                response.put("error", (String) null);
+                response.putPOJO("data", result);
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof BankAPIException) {
+                    BankAPIException apie = (BankAPIException) ((InvocationTargetException) e).getTargetException();
+                    response.put("error", apie.getMessage());
+                    response.putPOJO("data", null);
+                } else {
+                    response.put("error", Reason.ILLEGAL_ACCESS.toString());
+                    response.putPOJO("data", null);
+                }
+            }
+
+            return response;
+        }
     }
 
     /**
@@ -186,9 +190,11 @@ public class BankAPI {
 
         List<Transaction> tList = new ArrayList<>();
 
-        for(Account a : aList){
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())));
-            tList.add((Transaction)ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())));
+        for(Account a : aList) {
+            Transaction send = ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())).first();
+            Transaction recv = ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())).first();
+            if (send != null) tList.add(send);
+            if (recv != null) tList.add(recv);
         }
 
         return tList;
@@ -231,27 +237,24 @@ public class BankAPI {
         String from = getUsername(session);
         if (from == null) return false; // not logged in
         String to = recipient; // do they exist? if not return false
+        if (!ctx.getUserStore().exists(to)) throw new BankAPIException(Reason.NO_SUCH_USERNAME);
 
         User userFrom = ctx.getUserStore().getByUsername(from);
-
         User userTo = ctx.getUserStore().getByUsername(to);
-        if(userTo == null) return false;
 
         Account acctFrom = userFrom.getAccount(accountTypeFrom.toString());
         Account acctTo = userTo.getAccount(accountTypeTo.toString());
 
-        // transfer the money only if it makes sense e.g. the from account has at least the amount being transferred
-        // your code here ...
-        if(acctFrom.balance < amount){
-            return false;
-            //maybe return exception instead.
+        if(acctFrom.balance < amount) {
+            throw new BankAPIException(Reason.NOT_ENOUGH_MONEY);
         }
         acctFrom.balance = acctFrom.balance - amount;
         acctTo.balance = acctTo.balance + amount;
 
+        Transaction t = new Transaction(acctFrom.getNumber(), acctTo.getNumber(), amount, System.currentTimeMillis(), null);
+
         ctx.getUserStore().writeToDatabase(userFrom);
         ctx.getUserStore().writeToDatabase(userTo);
-        Transaction t = new Transaction(acctFrom.getNumber(), acctTo.getNumber(), amount, System.currentTimeMillis());
         ctx.collectionTransaction.insertOne(t);
         return true;
     }

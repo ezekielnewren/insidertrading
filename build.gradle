@@ -34,7 +34,7 @@ dependencies {
 
     // SERIALIZATION AND DATA STORAGE
     // https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver
-    implementation 'org.mongodb:mongo-java-driver:3.12.1'
+    implementation 'org.mongodb:mongo-java-driver:3.12.2' // https://docs.mongodb.com/ecosystem/drivers/java/
     // https://projectlombok.org/setup/gradle
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'

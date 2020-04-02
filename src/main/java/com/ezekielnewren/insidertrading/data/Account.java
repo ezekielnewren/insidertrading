@@ -4,6 +4,8 @@ package com.ezekielnewren.insidertrading.data;
 import com.ezekielnewren.insidertrading.Util;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 
@@ -36,6 +38,14 @@ public class Account {
      * Instance variable that holds the amount of money in an account.
      */
     public long balance;
+
+    public String toString(ObjectMapper om) {
+        try {
+            return om.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Object that holds Default account types for an account.

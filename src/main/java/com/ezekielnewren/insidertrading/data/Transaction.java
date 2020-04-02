@@ -92,9 +92,9 @@ public class Transaction {
     }
 
     /**
-     *
-     * @param om
-     * @return
+     * Converts an {@code ObjectMapper} containing transaction data to an equivalent {@code ByteArray}
+     * @param om {@code ObjectMapper} containing transaction data.
+     * @return new {@code ByteArray} of transaction data.
      * @see com.fasterxml.jackson.databind
      */
     public ByteArray getBytesForSignature(ObjectMapper om) {

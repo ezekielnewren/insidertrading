@@ -70,6 +70,7 @@ public class BankAPI {
     }
 
     /**
+     *
      * @return
      */
     public static String generateJSFunction() {
@@ -193,6 +194,11 @@ public class BankAPI {
         return tList;
     }
 
+    /**
+     *
+     * @param session
+     * @return
+     */
     public String logout(HttpSession session) throws BankAPIException {
         String username = ctx.getUsername(session);
         ctx.clearLoggedIn(session);

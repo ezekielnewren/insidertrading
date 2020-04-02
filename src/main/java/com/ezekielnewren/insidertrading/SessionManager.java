@@ -133,7 +133,7 @@ public class SessionManager {
 
 
     /**
-     * Method creates the connection to the {@code Mongo Server}
+     * Method creates the connection to the {@code Mongo Server}.
      * @param _om object mapper from {@link com.ezekielnewren.insidertrading.JacksonHelper}
      * @param connectionString details of how to connect to {@code MongoDB}
      * @param _cred credentials for the {@code Mongo Server}.

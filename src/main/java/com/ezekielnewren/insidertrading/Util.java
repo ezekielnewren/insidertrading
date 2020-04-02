@@ -72,7 +72,7 @@ public class Util {
     }
 
     /**
-     * Generate a new byte array using a random byte array.
+     * Generate a new byte array using a pseudo-random byte array.
      * @param amount the number of bytes you would like.
      * @return new byte array with the randomized bytes
      * @see com.yubico.webauthn.data.ByteArray
@@ -82,8 +82,8 @@ public class Util {
     }
 
     /**
-     * Generates an ObjectId using a random byte array.
-     * @return new mongo ObjectId.
+     * Generates an ObjectId using a pseudo-random byte array.
+     * @return new {@code MongoDB} ObjectId.
      * @see org.bson.types.ObjectId
      */
     public static ObjectId generateRandomObjectId() {
@@ -91,6 +91,7 @@ public class Util {
     }
 
     /**
+     *
      * @param rp
      * @param startAssertionOptions
      * @param challenge
@@ -124,6 +125,7 @@ public class Util {
     }
 
     /**
+     *
      * @param auth
      * @param userHandle
      * @return
@@ -139,6 +141,7 @@ public class Util {
     }
 
     /**
+     *
      * @param pkc
      * @return
      */
@@ -152,6 +155,7 @@ public class Util {
     }
 
     /**
+     *
      * @param coll
      * @param pred
      * @param <T>
@@ -162,6 +166,7 @@ public class Util {
     }
 
     /**
+     *
      * @param node
      * @return
      */

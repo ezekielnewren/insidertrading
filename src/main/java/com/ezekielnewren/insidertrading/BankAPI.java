@@ -69,6 +69,7 @@ public class BankAPI {
     }
 
     /**
+     *
      * @return
      */
     public static String generateJSFunction() {
@@ -183,6 +184,7 @@ public class BankAPI {
     }
 
     /**
+     *
      * @param session
      * @return
      */

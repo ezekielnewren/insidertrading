@@ -42,7 +42,7 @@ public class JacksonHelper {
          * @param _id generated user id.
          * @param jgen generator used for writing {@code JSON}.
          * @param provider the 'blueprint' for how to serialize.
-         * @throws IOException throws, never caught.
+         * @throws IOException stream is interrupted or data is corrupt.
          * @throws JsonProcessingException throws when parsing or generating {@code JSON}, never caught.
          * @see org.bson.types.ObjectId
          * @see com.fasterxml.jackson.core.JsonGenerator
@@ -74,8 +74,8 @@ public class JacksonHelper {
          * @param p data to be parsed.
          * @param ctxt value to be deserialized.
          * @return string of {@code ObjectId}.
-         * @throws IOException throws, never caught.
-         * @throws JsonProcessingException throws when parsing or generating {@code JSON}, never caught.
+         * @throws IOException stream is interrupted or data is corrupt.
+         * @throws JsonProcessingException throws when parsing or generating {@code JSON}.
          * @see org.bson.types.ObjectId
          * @see com.fasterxml.jackson.core.JsonParser
          * @see com.fasterxml.jackson.databind.DeserializationContext
@@ -87,7 +87,7 @@ public class JacksonHelper {
     }
 
     /**
-     * Method that used to create an {@code ObjectMapper} that will work with {@code Jackson} and {@code MongoDB}
+     * Used to create an {@code ObjectMapper} that will work with {@code Jackson} and {@code MongoDB}
      * @return {@code ObjectMapper} that works with {@code MongoDB}.
      * @see com.fasterxml.jackson.databind.ObjectMapper
      */
@@ -105,6 +105,13 @@ public class JacksonHelper {
         return om;
     }
 
+    /**
+     * Converts the serialized {@code JSON} to {@code BSON}.
+     * @param om {@code ObjectMapper} containing data from {@code MongoDB}.
+     * @param o value to be encoded.
+     * @return generated {@code BSON} data.
+     * @throws JsonProcessingException when parsing {@code JSON}.
+     */
     public static BsonDocument toBsonDocument(ObjectMapper om, Object o) throws JsonProcessingException {
         String json = om.writeValueAsString(o);
         BsonDocument raw = BsonDocument.parse(json);

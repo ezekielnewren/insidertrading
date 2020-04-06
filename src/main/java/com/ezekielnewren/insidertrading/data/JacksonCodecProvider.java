@@ -126,7 +126,7 @@ public class JacksonCodecProvider implements CodecProvider {
         }
 
         /**
-         * Method for encoding {@code JSON} to {@code BSON}
+         * Method for encoding {@code JSON} to {@code BSON}.
          * @param writer the {@code BSON} writer to encode into.
          * @param value the value to encode.
          * @param encoderContext the encoder context.

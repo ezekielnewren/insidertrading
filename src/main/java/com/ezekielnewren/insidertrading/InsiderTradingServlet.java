@@ -74,7 +74,7 @@ public class InsiderTradingServlet extends HttpServlet {
      * Displays correct webpage on {@code POST}, handles login and registration by error checking and deserializing values.
      * @param request contains the client request information.
      * @param response contains all server response information.
-     * @throws IOException  {@code POST} fails.
+     * @throws IOException corrupt stream or data corruption.
      * @see javax.servlet.http.HttpServletRequest
      * @see javax.servlet.http.HttpServletResponse
      */
@@ -196,6 +196,13 @@ public class InsiderTradingServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Method to send the the error code to client with appropriate code and message.
+     * @param response server {@code response} information.
+     * @param code the number based on the server {@code response}; e.g. (400, 404, 200, etc.)
+     * @param message reason for the {@code response} and code.
+     * @throws IOException corrupt stream or data corruption.
+     */
     public void sendError(HttpServletResponse response, int code, String message) throws IOException {
         PrintWriter out = response.getWriter();
 

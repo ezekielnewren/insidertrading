@@ -328,6 +328,11 @@ public class WebAuthn /*implements Closeable*/ {
         return ctx.getWebAuthn().assertionStart(username, null, null);
     }
 
+    /**
+     * @param httpSession
+     * @param response
+     * @return
+     */
     public String loginFinish(HttpSession httpSession, AssertionResponse response) {
         Triple<Boolean, AssertionRequestWrapper<Object>, AssertionResult> tuple = assertionFinish(response);
         if (tuple.getLeft()) {

@@ -50,7 +50,7 @@ public class User {
     @JsonProperty @NonNull List<String> email;
 
     /**
-     * list of authenticators for user
+     * List of authenticators for user.
      */
     @JsonProperty @NonNull List<Authenticator> authenticator;
 
@@ -118,6 +118,10 @@ public class User {
         }
     }
 
+    /**
+     * Creates a new {@code List} and adds the two default account types.
+     * @return the new {@code List}.
+     */
     static List<Account> createEmptyAccountList() {
         List<Account> list = new ArrayList<>();
 
@@ -127,6 +131,11 @@ public class User {
         return list;
     }
 
+    /**
+     * Constructs a {@code User} object.
+     * @param _username user provided name.
+     * @param _displayName optional parameter, username if user did not specify.
+     */
     public User(String _username, String _displayName) {
         this(new ObjectId(), _username, _displayName, null, null, null, null, 0, createEmptyAccountList());
     }
@@ -205,6 +214,10 @@ public class User {
         account.put(_title, new Account(_title, 0));
     }
 
+    /**
+     * Sets the {@code username}.
+     * @param _username username.
+     */
     public void setUsername(String _username) {
         this.username = _username;
     }

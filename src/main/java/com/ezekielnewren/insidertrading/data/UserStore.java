@@ -52,8 +52,8 @@ public class UserStore {
         repo = new CredentialRepository() {
 
             /**
-             * Creates a unique collection, then adds and id for each item of the
-             * {@link com.ezekielnewren.insidertrading.data.Authenticator} to it.
+             * <p>Creates a unique collection, then adds and id for each item of the
+             * {@link com.ezekielnewren.insidertrading.data.Authenticator} to it.</p>
              * @param username specified name.
              * @return the unique collection.
              * @see java.util.Set
@@ -118,8 +118,8 @@ public class UserStore {
             }
 
             /**
-             * Creates a unique collection, then adds all registered users in
-             * {@link com.yubico.webauthn.RegisteredCredential} to it.
+             * <p>Creates a unique collection, then adds all registered users in
+             * {@link com.yubico.webauthn.RegisteredCredential} to it.</p>
              * @param credentialId id used for assertion.
              * @return the unique collection.
              * @see java.util.Set
@@ -165,6 +165,13 @@ public class UserStore {
         writeToDatabase(user);
     }
 
+    /**
+     * <p>Checks if user exist in the database, if it doesn't creates the {@code User} object
+     * and writes it to the database.</p>
+     * @param username the {@code username}.
+     * @param displayName optional name, {@code username} if none is specified.
+     * @return a new {@code User} object.
+     */
     public User createUser(String username, String displayName) {
         if (!exists(username)) {
             User user = new User(username, displayName);

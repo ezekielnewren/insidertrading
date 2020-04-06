@@ -67,6 +67,7 @@ public class Transaction {
      * @param _receivingAccount information about the receiving account.
      * @param _amount amount of the transaction.
      * @param _date date of the transaction.
+     * @param _signature contains attributes generated on credential creation or assertion request.
      */
     @JsonCreator
     public Transaction(@JsonProperty("_id") final ObjectId _id,
@@ -89,7 +90,8 @@ public class Transaction {
      * @param _sendingAccount information about the sending account.
      * @param _receivingAccount information about the receiving account.
      * @param _amount amount of the transaction.
-     * @param _date date of the transaction
+     * @param _date date of the transaction.
+     * @param _signature contains attributes generated on credential creation or assertion request.
      */
     public Transaction(long _sendingAccount, long _receivingAccount, long _amount, long _date, PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> _signature) {
         this(new ObjectId(), _sendingAccount, _receivingAccount, _amount, _date, _signature);
@@ -114,7 +116,7 @@ public class Transaction {
 
     /**
      * Setter for the {@code signature} attributes.
-     * @param signature attributes for credential creation and assertion requests.
+     * @param signature contains attributes for credential creation and assertion requests.
      * @see com.yubico.webauthn.data.PublicKeyCredential
      */
     public void setSignature(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> signature) {

@@ -289,7 +289,7 @@ public class WebAuthn /*implements Closeable*/ {
     /**
      * Checks to see if assertion is finished.
      * @param response response information from server.
-     * @return returns {@code ImmutableTriple} with true on success.
+     * @return returns {@code ImmutableTriple} containing the request, result and true on success.
      * @see com.ezekielnewren.insidertrading.data.AssertionResponse
      */
     public <T> Triple<Boolean, AssertionRequestWrapper<T>, AssertionResult> assertionFinish(AssertionResponse response) {
@@ -329,9 +329,10 @@ public class WebAuthn /*implements Closeable*/ {
     }
 
     /**
-     * @param httpSession
-     * @param response
-     * @return
+     * Checks to see if the login process is finished and {@code setLoggedIn}.
+     * @param httpSession current session.
+     * @param response assertion for the session.
+     * @return the username if the left value of the {@code Triple} is true, else null.
      */
     public String loginFinish(HttpSession httpSession, AssertionResponse response) {
         Triple<Boolean, AssertionRequestWrapper<Object>, AssertionResult> tuple = assertionFinish(response);
@@ -344,18 +345,20 @@ public class WebAuthn /*implements Closeable*/ {
     }
 
     /**
-     * @param username
-     * @param t
-     * @return
+     * Used when user request to make a transaction.
+     * @param username {@code username} who starts the transaction.
+     * @param t generic {@code Transaction} type.
+     * @return request from {@code assertionStart}.
      */
     public AssertionRequestWrapper signTransactionStart(String username, Transaction t) {
         return assertionStart(username, t.getBytesForSignature(ctx.getObjectMapper()), t);
     }
 
     /**
-     * @param httpSession
-     * @param response
-     * @return
+     * Used when the transaction request finishes.
+     * @param httpSession the current session.
+     * @param response the server response.
+     * @return returns true if the left {@code Triple} is true, else false.
      */
     public boolean signTransactionFinish(HttpSession httpSession, AssertionResponse response) {
         Triple<Boolean, AssertionRequestWrapper<Transaction>, AssertionResult> x = assertionFinish(response);
@@ -374,10 +377,11 @@ public class WebAuthn /*implements Closeable*/ {
     }
 
     /**
-     * @param username
-     * @param t
-     * @return
-     * @throws AssertionFailedException
+     * Used to verify that the transaction was successful, with error checking.
+     * @param username user who starts the transaction.
+     * @param t generic for {@code Transaction}
+     * @return true if the transaction is successful, else false.
+     * @throws AssertionFailedException failed assertion.
      */
     public boolean verifyTransaction(String username, Transaction t) throws AssertionFailedException {
         ByteArray forsign = t.getBytesForSignature(ctx.getObjectMapper());

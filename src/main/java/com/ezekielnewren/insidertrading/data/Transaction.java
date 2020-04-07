@@ -123,6 +123,11 @@ public class Transaction {
         this.signature = signature;
     }
 
+    /**
+     * Serializes {@code ObjectMapper} to {@code String}
+     * @param om {@code JSON} data.
+     * @return {@code ObjectMapper} values as {@code String}
+     */
     public String toString(ObjectMapper om) {
         try {
             return om.writeValueAsString(this);

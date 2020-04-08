@@ -49,7 +49,7 @@ function onTransfer(){
     from = document.getElementById("transfer-from").value
     to = document.getElementById("transfer-to").value
     amount = document.getElementById('amount').value
-    recipient = document.getElementById('transfer-recipient').value
+    recipient = Number(document.getElementById('transfer-recipient').value)
     transfer(recipient, from, to, amount).then((resp)=>{
         if(resp){
             init()
@@ -62,7 +62,7 @@ function onTransfer(){
     })
 }
 
-function init(){
+function initOther(){
     getAccountList().then((accountList)=>{
         console.log(accountList)
         insertAccounts(accountList)
@@ -77,18 +77,28 @@ function init(){
     })
 }
 
+// if you are logged in then you can initialize everything else
+function init(){
+    getUsername().then((username) => {
+        if (username == null) {
+            window.location.replace("index.jsp")
+            return
+        }
+        var nav = document.getElementById('right-side-nav')
+        if (username != null) {
+            nav.innerHTML += '<button onclick="onLogout()">Log Out</button>'
+            nav.innerHTML += '<div>' + username + ' </div>'
+        } else {
+            nav.innerHTML = '<a href="./index.jsp">Login</a>'
+        }
+        initOther()
+    }).catch(function(err) {
+        console.log(err);
+    });
+}
+
 // On page load
 
 init()
 
-getUsername().then((username) => {
-    var nav = document.getElementById('right-side-nav')
-    if (username != null) {
-        nav.innerHTML += '<button onclick="onLogout()">Log Out</button>'
-        nav.innerHTML += '<div>' + username + ' </div>'
-    } else {
-        nav.innerHTML = '<a href="./index.jsp">Login</a>'
-    }
-}).catch(function(err) {
-    console.log(err);
-});
+

@@ -43,9 +43,11 @@
 
         function handleError(err) {
             console.log(err);
-            var errorCode = err.responseJSON.errorCode;
-            var message = err.responseJSON.message;
-            alert(message+" error code: "+errorCode);
+            if (err.responseJSON) {
+                var errorCode = err.responseJSON.errorCode;
+                var message = err.responseJSON.message;
+                alert(message+" error code: "+errorCode);
+            }
         }
 
         function onRegister() {

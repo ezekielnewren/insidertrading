@@ -267,4 +267,8 @@ public class UserStore {
     public void writeToDatabase(User user) {
         ctx.getCollectionUser().replaceOne(Filters.eq("_id", user._id), user, new ReplaceOptions().upsert(true));
     }
+
+    public User getByAccountNumber(long accountNumber) {
+        return ctx.getCollectionUser().find(Filters.eq("account.number", accountNumber)).first();
+    }
 }

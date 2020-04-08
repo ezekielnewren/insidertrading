@@ -3,6 +3,7 @@ package com.ezekielnewren.insidertrading;
 import com.ezekielnewren.insidertrading.BankAPIException.*;
 import com.ezekielnewren.insidertrading.data.Account;
 import com.ezekielnewren.insidertrading.data.Transaction;
+import com.ezekielnewren.insidertrading.data.Transfer;
 import com.ezekielnewren.insidertrading.data.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ import java.lang.reflect.Method;
 import com.mongodb.client.model.Filters;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * This class is used by the front end for interfacing with the back.
@@ -182,19 +184,25 @@ public class BankAPI {
      * @return
      * @see java.util.List
      */
-    public List<Transaction> getTransactionHistory(HttpSession session) throws BankAPIException {
+    public List<Transfer> getTransactionHistory(HttpSession session) throws BankAPIException {
+        User u = ctx.getUserStore().getByUsername(getUsername(session));
 
-        String userN = getUsername(session);
-        User u = ctx.getUserStore().getByUsername(userN);
         List<Account> aList = u.getAccount();
+        List<Transfer> tList = new ArrayList<>();
 
-        List<Transaction> tList = new ArrayList<>();
-
-        for(Account a : aList) {
-            Transaction send = ctx.collectionTransaction.find(Filters.eq("sendingAccount", a.getNumber())).first();
-            Transaction recv = ctx.collectionTransaction.find(Filters.eq("receivingAccount", a.getNumber())).first();
-            if (send != null) tList.add(send);
-            if (recv != null) tList.add(recv);
+        for (Transaction t: ctx.collectionTransaction.find()) {
+            User fromUser = ctx.getUserStore().getByAccountNumber(t.getSendingAccount());
+            User toUser = ctx.getUserStore().getByAccountNumber(t.getReceivingAccount());
+            // either or both the fromUser or toUser has to be the current user
+            if (fromUser == null || toUser == null || !(fromUser.getUsername().equals(u.getUsername()) || toUser.getUsername().equals(u.getUsername()))) {
+                continue;
+            }
+            String fromAccountType = fromUser.getAccount(t.getSendingAccount()).title;
+            String toAccountType = toUser.getAccount(t.getReceivingAccount()).title;
+            long amount = t.getAmount();
+            long date = t.getDate();
+            Transfer transfer = new Transfer(fromUser.getUsername(), fromAccountType, toUser.getUsername(), toAccountType, amount, date);
+            tList.add(transfer);
         }
 
         return tList;

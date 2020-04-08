@@ -208,4 +208,8 @@ public class User {
     public void setUsername(String _username) {
         this.username = _username;
     }
+
+    public Account getAccount(long sendingAccount) {
+        return account.values().stream().filter((e)-> e.getNumber() == sendingAccount).findFirst().orElseThrow();
+    }
 }

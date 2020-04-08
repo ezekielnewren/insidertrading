@@ -14,6 +14,7 @@ build/
 run/
 doc/
 *.class
+.project
 
 ## generated files or temporary code
 src/main/resources/build.info

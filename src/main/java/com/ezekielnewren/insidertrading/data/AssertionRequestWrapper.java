@@ -31,7 +31,7 @@ public class AssertionRequestWrapper<T> {
     @JsonProperty @NonNull AssertionRequest assertionRequest;
 
     /**
-     * Java generic to store data
+     * Java generic to store data.
      */
     @JsonIgnore public T attachment;
 

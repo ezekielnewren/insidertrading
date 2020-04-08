@@ -8,7 +8,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import java.util.*;
 
 /**
- *
+ * Contains methods to lookup and find information about users.
  */
 public class MemoryCredentialRepository implements CredentialRepository {
 
@@ -33,7 +33,7 @@ public class MemoryCredentialRepository implements CredentialRepository {
     }
 
     /**
-     * Get the userhandle for their username.
+     * Get the userhandle for their {@code username}.
      * @param username users specified name.
      * @return an empty {@code Optional}
      * @see java.util.Optional

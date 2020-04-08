@@ -44,8 +44,8 @@ public class RegistrationResponse {
     private final ByteArray requestId;
 
     /**
-     * Constant object that contains attributes that are returned to the caller when a new credential is created, or a new assertion is
-     * requested
+     * <p>Constant object that contains attributes that are returned to the caller
+     * when a new credential is created, or a new assertion is requested.</p>
      * @see com.yubico.webauthn.data.AuthenticatorAssertionResponse
      * @see com.yubico.webauthn.data.ClientRegistrationExtensionOutputs
      */

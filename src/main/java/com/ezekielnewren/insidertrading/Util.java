@@ -91,11 +91,11 @@ public class Util {
     }
 
     /**
-     *
-     * @param rp
-     * @param startAssertionOptions
-     * @param challenge
-     * @return
+     * Starts the assertion and builds the options for the public key credential request.
+     * @param rp {@code RelyingParty} information.
+     * @param startAssertionOptions contains the parameters for the public key credential request options (pkcro.
+     * @param challenge challenge.
+     * @return an {@code AssertionRequest} containing the pckro, and the username.
      */
     public static AssertionRequest startAssertion(RelyingParty rp, StartAssertionOptions startAssertionOptions, ByteArray challenge) {
         PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder pkcro = PublicKeyCredentialRequestOptions.builder()
@@ -125,10 +125,10 @@ public class Util {
     }
 
     /**
-     *
-     * @param auth
-     * @param userHandle
-     * @return
+     * Used to get the registered credential id .
+     * @param auth {@code Authenticator} data.
+     * @param userHandle handle for authenticator.
+     * @return {@code RegisterCredential} or null if the {@code auth} is null.
      */
     public static RegisteredCredential getRegisteredCredential(Authenticator auth, ByteArray userHandle) {
         if (auth == null) return null;
@@ -141,9 +141,9 @@ public class Util {
     }
 
     /**
-     *
-     * @param pkc
-     * @return
+     * Used to create a copy of the public key credentials.
+     * @param pkc original public key credential.
+     * @return public key credential copy.
      */
     public static PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> copyPublicKeyCredential(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc) {
         PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> other = PublicKeyCredential.<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>builder()
@@ -155,20 +155,20 @@ public class Util {
     }
 
     /**
-     *
-     * @param coll
-     * @param pred
-     * @param <T>
-     * @return
+     * Used to find the first object in a collection that matches the specified parameters.
+     * @param coll collection to be searched.
+     * @param pred specified filter parameter.
+     * @param <T> object type.
+     * @return object that matched the given parameter.
      */
     public static <T> Optional<T> findOne(Collection<T> coll, Predicate<T> pred) {
         return coll.stream().filter(pred).findFirst();
     }
 
     /**
-     *
-     * @param node
-     * @return
+     * Used to specify the datatype when converting {@code JSON} to {@code POJO}
+     * @param node {@code JSON} objects.
+     * @return {@code JSON} as the correct {@code Java} datatype.
      */
     public static Object asPOJO(JsonNode node) {
         switch (node.getNodeType()) {

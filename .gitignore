@@ -21,3 +21,8 @@ src/main/resources/build.info
 src/main/java/ignore/
 src/test/java/ignore/
 
+## Zach's tmp file.
+src/main/tmp
+.classpath
+#Not that I use eclipse its just here so I am ignoring it.
+.settings/org.eclipse.buildship.core.prefs

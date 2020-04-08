@@ -30,7 +30,10 @@
 
         function onSuccessfulLogin(username) {
             window.username = username;
-            window.location.href = urlprefix+"/bank.jsp"
+            urlList = window.location.href.split("/")
+            urlList[urlList.length - 1] = "bank.jsp"
+            bankUrl = urlList.join("/")
+            window.location.assign(bankUrl)
         }
 
         function onSuccessfulLogout() {

@@ -1,50 +1,93 @@
 function insertAccounts(accounts){
-    var accounts_elm = document.getElementById('accounts') 
+    console.log("Before Clear Accounts")
+    clearAccounts()
+    var accountsElement = document.getElementById('account-list')
+    var fromAccountElmement = document.getElementById('transfer-from')
+    var toAccountElmement = document.getElementById('transfer-to')
     for(var account of accounts){
-        accounts_elm.innerHTML += `<div class="account-item">
-                <div class="title">${account.name}</div>
-                <div class="balance">\$${account.amount}</div>
+        console.log("Foor loop for account " + account.title)
+        accountsElement.innerHTML += `<div class="account-item">
+        <div class="title">${account.title}</div>
+        <div class="balance">\$${account.balance}</div>
         </div>`
+        fromAccountElmement.innerHTML += `<option value="${account.id}">${account.title} - \$${account.balance}</option>`
+        toAccountElmement.innerHTML += `<option value="${account.id}">${account.title} - \$${account.balance}</option>`
     }
+    console.log("End of function")
 }
+
+function clearAccounts(){
+    document.getElementById('account-list').innerHTML = ''
+    document.getElementById('transfer-from').innerHTML = ''
+    document.getElementById('transfer-to').innerHTML = ''
+}
+
 function insertTransactions(transactions){
-    var transactions_elm = document.getElementById('history');
+    clearTransactions()
+    var transactions_elm = document.getElementById('transaction-history');
     for(var transaction of transactions){
         transactions_elm.innerHTML += `<div class="history-item">
-        <div class="history-authorized">${transaction.authorized}</div>
         <div class="history-text">From: ${transaction.from} To: ${transaction.to}</div>
         <div class="history-amount">\$${transaction.amount}</div>
     </div>`
     }
 }
-function onlogout(){
-    logout()
+
+function clearTransactions(){
+    document.getElementById('transaction-history').innerHTML = '';
 }
 
-testAccounts = [
-    {name: 'Savings', amount: 30.00},
-    {name: 'Checking', amount: 105.00},
-]
-testHistory = [
-    {authorized: true, from: 'Savings', to:'Checking', amount: 100.00},
-    {authorized: false, from: 'Checking', to:'Savings', amount: 5.00},
-]
+function onLogout(){
+    urlList = window.location.href.split("/")
+    urlList[urlList.length - 1] = "index.jsp"
+    indexUrl = urlList.join("/")
+    logout()
+    window.location.assign(indexUrl)
+}
 
-insertAccounts(testAccounts);
-insertTransactions(testHistory);
-
-getUsername().then(function(response) {
-    if (response.error === null) {
-        var username = response.data;
-        var nav = document.getElementById('nav')
-        if (username != null) {
-            nav.innerHTML += '<div class="nav-item">' + username + '</div>'
-            nav.innerHTML += '<button onclick="logout()" class="nav-item">Log Out</button>'
-        } else {
-            nav += '<a  class="nav-item" href="./index.jsp">Login</a>'
+function onTransfer(){
+    from = document.getElementById("transfer-from").value
+    to = document.getElementById("transfer-to").value
+    amount = document.getElementById('amount').value
+    recipient = document.getElementById('transfer-recipient').value
+    transfer(recipient, from, to, amount).then((resp)=>{
+        if(resp){
+            init()
         }
+        else{
+            alert("Transfer Failed")
+        }
+    }).catch((error)=>{
+        console.log(error)
+    })
+}
+
+function init(){
+    getAccountList().then((accountList)=>{
+        console.log(accountList)
+        insertAccounts(accountList)
+    }).catch((error)=>{
+        console.log(error)
+    })
+
+    getTransactionHistory().then((transactionHistory)=>{
+        insertTransactions(transactionHistory)
+    }).catch((error)=>{
+        console.log(error)
+    })
+}
+
+// On page load
+
+init()
+
+getUsername().then((username) => {
+    var nav = document.getElementById('right-side-nav')
+    if (username != null) {
+        nav.innerHTML += '<button onclick="onLogout()">Log Out</button>'
+        nav.innerHTML += '<div>' + username + ' </div>'
     } else {
-        console.log(response.error);
+        nav.innerHTML = '<a href="./index.jsp">Login</a>'
     }
 }).catch(function(err) {
     console.log(err);

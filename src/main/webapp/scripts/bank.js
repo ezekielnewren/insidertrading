@@ -10,8 +10,8 @@ function insertAccounts(accounts){
         <div class="title">${account.title}</div>
         <div class="balance">\$${account.balance}</div>
         </div>`
-        fromAccountElmement.innerHTML += `<option value="${account.id}">${account.title} - \$${account.balance}</option>`
-        toAccountElmement.innerHTML += `<option value="${account.id}">${account.title} - \$${account.balance}</option>`
+        fromAccountElmement.innerHTML += `<option value="${account.title}">${account.title} - \$${account.balance}</option>`
+        toAccountElmement.innerHTML += `<option value="${account.title}">${account.title} - \$${account.balance}</option>`
     }
     console.log("End of function")
 }
@@ -46,13 +46,13 @@ function onLogout(){
 }
 
 function onTransfer(){
-    from = document.getElementById("transfer-from").value
-    to = document.getElementById("transfer-to").value
-    amount = document.getElementById('amount').value
-    recipient = Number(document.getElementById('transfer-recipient').value)
+    var recipient = document.getElementById('transfer-recipient').value
+    var from = document.getElementById("transfer-from").value
+    var to = document.getElementById("transfer-to").value
+    var amount = Number(document.getElementById('amount').value)
     transfer(recipient, from, to, amount).then((resp)=>{
         if(resp){
-            init()
+            initOther()
         }
         else{
             alert("Transfer Failed")

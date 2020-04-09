@@ -17,7 +17,7 @@
             <!-- Login or Username + logout -->
         </div>
     </div>
-    <div id="body">`
+    <div id="body">
         <div id="accounts">
             <h2>Accounts</h2>
             <div class="account-item">
@@ -46,7 +46,8 @@
             <div id="history">
                 <h2>Transactions</h2>
                 <div class="history-item">
-                    <div class="history-text">From: To:</div>
+                    <div class="history-text from">From:</div>
+                    <div class="history-text to">To:</div>
                     <div class="history-amount">$ Transfered</div>
                 </div>
                 <div id="transaction-history">

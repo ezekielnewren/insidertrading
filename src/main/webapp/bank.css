@@ -34,7 +34,7 @@ div.nav-item{
 #body{
     margin: 120px auto;
     max-width: 1000px;
-    min-height: 500px;
+    height: 500px;
     display: flex;
     border: dotted lightgrey 1px;
     border-radius: 20px;
@@ -85,6 +85,7 @@ h2{
     display:flex;
     flex-direction: column;
     min-height: 200px;
+    padding-bottom: 10px;
     border-bottom: dotted lightgray 1px;
 }
 
@@ -123,11 +124,15 @@ h2{
 #history{
     display:flex;
     flex-direction: column;
+    height:55%;
+}
+#history>h2{
+    margin-top: 10px;
 }
 
 .history-item{
     display: flex;
-    padding: 5px 25px;
+    padding: 5px 10px;
     min-height: 25px;
     align-items: center;
     border-top: dotted lightgrey 1px;
@@ -142,14 +147,24 @@ h2{
     border-right: dotted lightgrey   1px;
 }
 .history-text{
-    flex:2;
-    flex-grow:1;
+    /* flex-grow:1; */
     text-align: left;
     padding-left:10px;
+    white-space: nowrap;
+    overflow:hidden;
+}
+.history-text.from{
+    flex: 2;
+}
+.history-text.to{
+    flex: 3;
 }
 .history-amount{
     flex:1;
-    flex-shrink: 1;
-
+    /* flex-shrink: 1; */
     text-align: right;
+}
+#transaction-history{
+    overflow-y: scroll;
+    height:100%;
 }

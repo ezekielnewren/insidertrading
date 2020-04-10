@@ -190,4 +190,8 @@ public class Util {
     public static long getRegistrationTimeout() {
         return 1000*60;
     }
+
+    public static long getAssertionTimeout() {
+        return getRegistrationTimeout();
+    }
 }

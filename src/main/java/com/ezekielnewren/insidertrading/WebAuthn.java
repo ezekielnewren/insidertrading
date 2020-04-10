@@ -279,6 +279,7 @@ public class WebAuthn /*implements Closeable*/ {
         AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
                 Util.startAssertion(rp, StartAssertionOptions.builder()
                         .username(username)
+                        .timeout(Util.getAssertionTimeout())
                         .build(),
                         challenge
                         ),

@@ -30,7 +30,9 @@ public class TestBankAPI {
 
         Assert.assertEquals(null, username);
 
-        ctx.getUserStore().createUser("testuser", "testuser");
+        if (!ctx.getUserStore().exists("testuser")) {
+            ctx.getUserStore().createUser("testuser", "testuser");
+        }
 
     }
 

@@ -185,6 +185,12 @@ public class WebAuthn /*implements Closeable*/ {
                         .id(Util.generateRandomByteArray(LENGTH_USER_HANDLE))
                         .build();
 
+                AuthenticatorSelectionCriteria asc = AuthenticatorSelectionCriteria.builder()
+                        .requireResidentKey(requireResidentKey)
+                        .userVerification(UserVerificationRequirement.DISCOURAGED)
+                        .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                        .build();
+
                 RegistrationRequest request = new RegistrationRequest(
                         username,
                         Optional.ofNullable(nickname),
@@ -192,10 +198,8 @@ public class WebAuthn /*implements Closeable*/ {
                         rp.startRegistration(
                                 StartRegistrationOptions.builder()
                                         .user(userIdentity)
-                                        .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-                                                .requireResidentKey(requireResidentKey)
-                                                .build()
-                                        )
+                                        .authenticatorSelection(asc)
+                                        .timeout(Util.getRegistrationTimeout())
                                         .build()
                         )
                 );

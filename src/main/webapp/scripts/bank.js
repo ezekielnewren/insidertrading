@@ -55,13 +55,14 @@ function onTransfer(){
         return
     }
     transfer(recipient, from, to, amount).then((resp)=>{
-        if(resp){
-            initOther()
-        }
-        else{
+        initOther()
+    }).catch((error)=>{
+
+        if (typeof error.responseJSON.errorCode !== 'undefined' && typeof error.responseJSON.message !== 'undefined') {
+            var errorCode = error.responseJSON.errorCode;
+            var message = error.responseJSON.message;
             alert("%cTransfer Failed", 'background: #FFBABA; color: ##D8000C;')
         }
-    }).catch((error)=>{
         console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
     })
 }

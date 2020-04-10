@@ -16,7 +16,8 @@ public class BankAPIException extends RuntimeException {
         REGISTRATION_USERNAME_NOT_AVAILABLE,
         REGISTRATION_FAILED,
         NOT_ENOUGH_MONEY,
-        ILLEGAL_ACCESS;
+        ILLEGAL_ACCESS,
+        CANNOT_TRANSFER_SAME_FINANCIAL_ACCOUNT;
 
         @Override
         public String toString() {

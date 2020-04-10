@@ -230,7 +230,7 @@ public class BankAPI {
      * @see javax.servlet.http.HttpSession
      * @see java.lang.String
      */
-    public boolean transfer(HttpSession session,
+    public void transfer(HttpSession session,
                             @JsonProperty("recipient") String recipient,
                             @JsonProperty("accountTypeFrom") String accountTypeFrom,
                             @JsonProperty("accountTypeTo") String accountTypeTo,
@@ -242,13 +242,18 @@ public class BankAPI {
         Objects.nonNull(accountTypeTo);
         if (amount < 0) throw new IllegalArgumentException();
 
+
         String from = getUsername(session);
-        if (from == null) return false; // not logged in
+        if (from == null) throw new BankAPIException(Reason.NOT_LOGGED_IN);
         String to = recipient; // do they exist? if not return false
         if (!ctx.getUserStore().exists(to)) throw new BankAPIException(Reason.NO_SUCH_USERNAME);
 
         User userFrom = ctx.getUserStore().getByUsername(from);
-        User userTo = ctx.getUserStore().getByUsername(to);
+        User userTo = to.equals(from) ? userFrom : ctx.getUserStore().getByUsername(to);
+
+        if (userFrom == userTo && accountTypeFrom.equals(accountTypeTo)) {
+            throw new BankAPIException(Reason.CANNOT_TRANSFER_SAME_FINANCIAL_ACCOUNT);
+        }
 
         Account acctFrom = userFrom.getAccount(accountTypeFrom.toString());
         Account acctTo = userTo.getAccount(accountTypeTo.toString());
@@ -262,8 +267,7 @@ public class BankAPI {
         Transaction t = new Transaction(acctFrom.getNumber(), acctTo.getNumber(), amount, System.currentTimeMillis(), null);
 
         ctx.getUserStore().writeToDatabase(userFrom);
-        ctx.getUserStore().writeToDatabase(userTo);
+        if (userFrom != userTo) ctx.getUserStore().writeToDatabase(userTo);
         ctx.collectionTransaction.insertOne(t);
-        return true;
     }
 }

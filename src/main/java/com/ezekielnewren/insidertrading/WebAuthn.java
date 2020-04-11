@@ -2,6 +2,8 @@ package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.*;
 import com.yubico.webauthn.*;
+import com.yubico.webauthn.attestation.Attestation;
+import com.yubico.webauthn.attestation.MetadataService;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
@@ -85,6 +87,8 @@ public class WebAuthn /*implements Closeable*/ {
      * @param title client user name.
      */
     public WebAuthn(final SessionManager _ctx, String fqdn, String title) {
+        // yubikey metadata
+        // https://developers.yubico.com/U2F/yubico-metadata.json
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
         synchronized (mutex) {
@@ -95,16 +99,22 @@ public class WebAuthn /*implements Closeable*/ {
                     .id(fqdn)
                     .name(title)
                     .build();
+
             rp = RelyingParty.builder()
                     .identity(rpi)
                     .credentialRepository(ctx.getUserStore().getCredentialRepository())
                     .allowOriginPort(true)
                     .allowOriginSubdomain(false)
+//                    .allowUntrustedAttestation(false)
+//                    .allowUnrequestedExtensions(true)
+//                    .metadataService((certificateList)->{
+//                        Attestation a = Attestation.builder()
+//                                .trusted(false)
+//                                .build();
+//                        return a;
+//                    })
+//                    .attestationConveyancePreference(AttestationConveyancePreference.INDIRECT)
                     .build();
-//            om = new ObjectMapper()
-//                    .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-//                    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-//                    .registerModule(new Jdk8Module());
         }
     }
 
@@ -132,20 +142,6 @@ public class WebAuthn /*implements Closeable*/ {
         return Util.generateRandomByteArray(LENGTH_CREDENTIAL_ID);
     }
 
-
-//    public ObjectMapper getObjectMapper() {
-//        synchronized (mutex) {
-//            return om;
-//        }
-//    }
-
-//    public static ByteArray generateRandom() {return generateRandom(32);}
-//    public static ByteArray generateRandom(int size) {
-//        if (size <= 0) throw new IllegalArgumentException();
-//        byte[] tmp = new byte[size];
-//        new SecureRandom().nextBytes(tmp);
-//        return new ByteArray(tmp);
-//    }
 
     /**
      * <p>Contains the information necessary to build a {@code RegistrationRequest}: on success, userIdentity and request.
@@ -241,6 +237,8 @@ public class WebAuthn /*implements Closeable*/ {
             } catch (RegistrationFailedException e) {
                 return new ImmutableTriple<>(false, request, null);
             }
+
+            boolean attestationTrusted = result.isAttestationTrusted();
 
             Authenticator auth = new Authenticator(
                     System.currentTimeMillis(),

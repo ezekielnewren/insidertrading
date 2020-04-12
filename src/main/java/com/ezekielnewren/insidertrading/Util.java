@@ -8,10 +8,21 @@ import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.*;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.MiscPEMGenerator;
+import org.bouncycastle.openssl.PKCS8Generator;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemObjectGenerator;
+import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.bson.types.ObjectId;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.io.*;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -39,6 +50,8 @@ public class Util {
         boolean envDebug = "true".equals(System.getenv("debug"));
 
         DEBUG = ASSERT_ON || envDebug;
+
+        Security.addProvider(new BouncyCastleProvider());
 
         SecureRandom strong;
         try {strong = SecureRandom.getInstanceStrong();} catch (NoSuchAlgorithmException e) { throw new RuntimeException(e); }
@@ -194,4 +207,64 @@ public class Util {
     public static long getAssertionTimeout() {
         return getRegistrationTimeout();
     }
+
+    public static X509Certificate createX509CertificateFromEncoded(ByteArray binary) {
+        try {
+            return (X509Certificate) CertificateFactory.getInstance("X.509", "BC")
+                    .generateCertificate(new ByteArrayInputStream(binary.getBytes()));
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static X509Certificate createX509CertificateFromPem(ByteArray input) {
+        return createX509CertificateFromEncoded(pemDecode(input));
+    }
+
+    public static String createPemFromX509Certificate(X509Certificate cert) {
+        StringWriter sw = new StringWriter();
+        try (JcaPEMWriter jpw = new JcaPEMWriter(sw)) {
+            jpw.writeObject(cert);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return sw.toString();
+    }
+
+    public static ByteArray pemDecode(ByteArray input) {
+        Reader r = new InputStreamReader(new ByteArrayInputStream(input.getBytes()));
+        try (PemReader pr = new PemReader(r)) {
+            return new ByteArray(pr.readPemObject().getContent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String pemEncode(ByteArray input) {
+        StringWriter sw = new StringWriter();
+        try (PemWriter pw = new PemWriter(sw)) {
+            pw.writeObject(new MiscPEMGenerator(input.getBytes()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return sw.toString();
+    }
+
+    public static boolean verify(X509Certificate subject, X509Certificate issuer) {
+        try {
+            subject.verify(issuer.getPublicKey(), Security.getProvider("BC"));
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (SignatureException e) {
+            return false;
+        }
+        return true;
+    }
+
 }

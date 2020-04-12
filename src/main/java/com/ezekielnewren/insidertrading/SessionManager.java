@@ -130,6 +130,8 @@ public class SessionManager {
      */
     BankAPI api;
 
+    MetadataServiceProvider metadataService;
+
 
     /**
      * Method creates the connection to the {@code Mongo Server}.
@@ -161,6 +163,8 @@ public class SessionManager {
         this.collectionTransaction = database.getCollection("transaction", Transaction.class);
 
         this.userStore = new UserStore(this);
+        this.metadataService = new MetadataServiceProvider();
+        this.metadataService.addMetadataService(new MetadataServiceYubico(this));
         this.webAuthn = new WebAuthn(this, fqdn, title);
 
         // apply a unique constraint on user.username and transaction.number

@@ -27,6 +27,12 @@ dependencies {
 
     compile 'javax:javaee-api:7.0'
 
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.62'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.62:sources'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.62:javadoc'
+
+
     // webauthn server library
     // https://developers.yubico.com/java-webauthn-server/
     // https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/1.6.0

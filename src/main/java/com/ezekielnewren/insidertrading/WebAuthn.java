@@ -12,10 +12,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.bouncycastle.util.io.pem.PemObjectGenerator;
+import org.bouncycastle.util.io.pem.PemWriter;
 
 import javax.servlet.http.HttpSession;
 import java.io.Closeable;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
@@ -100,6 +103,19 @@ public class WebAuthn /*implements Closeable*/ {
                     .name(title)
                     .build();
 
+//            ctx.getMetadataService().addMetadataService((certificateList)->{
+//                    X509Certificate cert = certificateList.get(0);
+//                    String name = cert.getClass().toGenericString();
+//
+//                    String pem = Util.createPemFromX509Certificate(cert);
+//
+//                    Attestation a = Attestation.builder()
+//                            .trusted(false)
+//                            .build();
+//                    return a;
+//                }
+//            );
+
             rp = RelyingParty.builder()
                     .identity(rpi)
                     .credentialRepository(ctx.getUserStore().getCredentialRepository())
@@ -107,13 +123,8 @@ public class WebAuthn /*implements Closeable*/ {
                     .allowOriginSubdomain(false)
 //                    .allowUntrustedAttestation(false)
 //                    .allowUnrequestedExtensions(true)
-//                    .metadataService((certificateList)->{
-//                        Attestation a = Attestation.builder()
-//                                .trusted(false)
-//                                .build();
-//                        return a;
-//                    })
-//                    .attestationConveyancePreference(AttestationConveyancePreference.INDIRECT)
+                    .metadataService(ctx.getMetadataService())
+                    .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
                     .build();
         }
     }

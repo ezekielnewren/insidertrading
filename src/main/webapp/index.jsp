@@ -62,6 +62,8 @@
                 }).catch(function (err) {
                     handleError(err);
                 })
+            }).catch((err)=> {
+                console.log(err);
             });
         }
 

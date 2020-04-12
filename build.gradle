@@ -37,6 +37,8 @@ dependencies {
     // https://developers.yubico.com/java-webauthn-server/
     // https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/1.6.0
     implementation 'com.yubico:webauthn-server-core:1.6.0'
+    implementation 'com.yubico:webauthn-server-core:1.6.0:sources'
+    implementation 'com.yubico:webauthn-server-core:1.6.0:javadoc'
 
     // SERIALIZATION AND DATA STORAGE
     // https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver

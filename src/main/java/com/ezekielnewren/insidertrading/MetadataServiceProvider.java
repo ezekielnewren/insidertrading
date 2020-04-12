@@ -6,17 +6,15 @@ import com.yubico.webauthn.attestation.Transport;
 
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MetadataServiceProvider implements MetadataService {
 
-    List<MetadataService> list = new ArrayList<>();
+    Map<Class<? extends MetadataService>, MetadataService> list = new LinkedHashMap<>();
 
     @Override
     public Attestation getAttestation(List<X509Certificate> attestationCertificateChain) throws CertificateEncodingException {
-        for (MetadataService ser: list) {
+        for (MetadataService ser: list.values()) {
             Attestation att = ser.getAttestation(attestationCertificateChain);
             if (att.isTrusted()) return att;
         }
@@ -24,8 +22,11 @@ public class MetadataServiceProvider implements MetadataService {
     }
 
     public void addMetadataService(MetadataService _md) {
-        list.add(_md);
+        list.put(_md.getClass(), _md);
     }
 
+    public <T extends MetadataService> T get(Class<T> cls) {
+        return (T) list.get(cls);
+    }
 
 }

@@ -29,6 +29,30 @@ public class WebAuthn /*implements Closeable*/ {
     // https://developers.yubico.com/WebAuthn/Libraries/Using_a_library.html
     // https://developers.yubico.com/java-webauthn-server/
 
+    // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-extensions
+    public static final String OID_ID_FIDO = "1.3.6.1.4.1.45724";
+    public static final String OID_ID_YUBICO = "1.3.6.1.4.1.41482";
+
+
+    /**
+     * X509 Certificate extension OID for id-fido-u2f-ce-transports
+     * @see <a href="https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-extensions">id-fido-u2f-ce-transports</a>
+     */
+    public static final String OID_ID_FIDO_U2F_CE_TRANSPORTS = OID_ID_FIDO+".2.1.1";
+
+    /**
+     * X509 Certificate extension OID for id-fido-gen-ce-aaguid
+     * @see <a href="https://www.w3.org/TR/webauthn/#packed-attestation-cert-requirements">id-fido-gen-ce-aaguid</a>
+     */
+    public static final String OID_ID_FIDO_GEN_CE_AAGUID = OID_ID_FIDO+".1.1.4";
+
+    /**
+     * This seems to be the class identification.
+     * @see <a href="https://oidref.com/1.3.6.1.4.1.41482">oid of yubico</a>
+     *
+     */
+    public static final String OID_DEVICE_ID = OID_ID_YUBICO+".2";
+
 
     /**
      * Constant variable total length of user name.
@@ -103,18 +127,19 @@ public class WebAuthn /*implements Closeable*/ {
                     .name(title)
                     .build();
 
-//            ctx.getMetadataService().addMetadataService((certificateList)->{
-//                    X509Certificate cert = certificateList.get(0);
-//                    String name = cert.getClass().toGenericString();
-//
-//                    String pem = Util.createPemFromX509Certificate(cert);
-//
-//                    Attestation a = Attestation.builder()
-//                            .trusted(false)
-//                            .build();
-//                    return a;
-//                }
-//            );
+            MetadataService ms = (certificateList)-> {
+                X509Certificate cert = certificateList.get(0);
+                String name = cert.getClass().toGenericString();
+
+                String pem = Util.createPemFromX509Certificate(cert);
+
+                Attestation a = Attestation.builder()
+                        .trusted(false)
+                        .build();
+                return a;
+            };
+
+            // ms = ctx.getMetadataService();
 
             rp = RelyingParty.builder()
                     .identity(rpi)
@@ -123,7 +148,7 @@ public class WebAuthn /*implements Closeable*/ {
                     .allowOriginSubdomain(false)
 //                    .allowUntrustedAttestation(false)
 //                    .allowUnrequestedExtensions(true)
-                    .metadataService(ctx.getMetadataService())
+                    .metadataService(ms)
                     .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
                     .build();
         }
@@ -236,6 +261,12 @@ public class WebAuthn /*implements Closeable*/ {
         synchronized(mutex) {
             ByteArray reqId = response.getRequestId();
             RegistrationRequest request = requestMap.remove(reqId);
+
+            PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> x = response.getCredential();
+            AttestationObject ao = x.getResponse().getAttestation();
+            AuthenticatorData ad = ao.getAuthenticatorData();
+            AttestedCredentialData acd = ad.getAttestedCredentialData().orElseThrow();
+            acd.getCredentialPublicKey();
 
             RegistrationResult result;
             try {

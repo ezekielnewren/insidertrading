@@ -164,6 +164,7 @@ public class SessionManager {
 
         this.userStore = new UserStore(this);
         this.metadataService = new MetadataServiceProvider();
+        this.metadataService.addMetadataService(new MetadataServiceFido(this));
         this.metadataService.addMetadataService(new MetadataServiceYubico(this));
         this.webAuthn = new WebAuthn(this, fqdn, title);
 

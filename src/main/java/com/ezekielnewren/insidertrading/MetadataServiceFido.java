@@ -1,5 +1,6 @@
 package com.ezekielnewren.insidertrading;
 
+import com.ezekielnewren.Build;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,7 +15,11 @@ import jdk.jshell.spi.ExecutionControl;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Key;
+import java.security.KeyStore;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -36,19 +42,33 @@ public class MetadataServiceFido implements MetadataService {
     final SessionManager ctx;
     public static final String FIDO_API_KEY_PATH = "FIDO_API_KEY_PATH";
 
-    static final URL urlTOC;
-    static {
-        try {
-            urlTOC = new URL("https://mds2.fidoalliance.org/?token="+getFidoApiKey());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    final URL urlTOC;
+    X509Certificate root;
+    X509TrustManager tm;
+    KeyStore keyStore;
 
-
+    @SneakyThrows
     public MetadataServiceFido(SessionManager _ctx) {
         this.ctx = _ctx;
 
+        urlTOC = new URL("https://mds2.fidoalliance.org/?token="+getFidoApiKey());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (InputStream is = Build.class.getClassLoader().getResourceAsStream("fidoalliance_root.pem")) {
+            IOUtils.copy(is, baos);
+        }
+        root = Util.createX509CertificateFromPem(new ByteArray(baos.toByteArray()));
+
+        keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(null, null);
+        keyStore.setCertificateEntry(root.getSubjectDN().getName(), root);
+
+
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(keyStore);
+
+        TrustManager[] tma = tmf.getTrustManagers();
+        tm = (X509TrustManager) tma[0];
     }
 
     @Override
@@ -64,7 +84,7 @@ public class MetadataServiceFido implements MetadataService {
     }
 
     @SneakyThrows
-    public static JsonNode unpackJwt(String raw, X509Certificate root, ObjectMapper om) {
+    public JsonNode unpackJwt(String raw, X509Certificate root, ObjectMapper om) {
         // follow this for reading the jwt
         // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html#metadata-toc
 
@@ -118,12 +138,20 @@ public class MetadataServiceFido implements MetadataService {
     }
 
     @SneakyThrows
-    public static String downloadToc() {
+    public String downloadToc() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (InputStream is = urlTOC.openStream()) {
             IOUtils.copy(is, baos);
         }
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    public X509Certificate getX509Certificate() {
+        return root;
+    }
+
+    public X509TrustManager getX509TrustManager() {
+        return tm;
     }
 
 }

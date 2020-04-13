@@ -1,6 +1,8 @@
 package com.ezekielnewren.insidertrading;
 
 import com.ezekielnewren.insidertrading.data.*;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.attestation.MetadataService;
@@ -131,10 +133,18 @@ public class WebAuthn /*implements Closeable*/ {
                 X509Certificate cert = certificateList.get(0);
                 String name = cert.getClass().toGenericString();
 
-                String pem = Util.createPemFromX509Certificate(cert);
+                ArrayNode certificateListAsJsonPemArray = ctx.getObjectMapper().createArrayNode();
+                for (X509Certificate item: certificateList) {
+                    String value = Util.createPemFromX509Certificate(item);
+                    certificateListAsJsonPemArray.add(value);
+                }
+
+                Map<String, String> deviceProperties = new LinkedHashMap<>();
+                deviceProperties.put("attestationCertificateChain", certificateListAsJsonPemArray.toString());
 
                 Attestation a = Attestation.builder()
                         .trusted(false)
+                        .deviceProperties(deviceProperties)
                         .build();
                 return a;
             };

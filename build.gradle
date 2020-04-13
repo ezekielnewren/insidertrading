@@ -27,6 +27,12 @@ dependencies {
 
     compile 'javax:javaee-api:7.0'
 
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1:sources'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1:javadoc'
+
+
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.62'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.62:sources'

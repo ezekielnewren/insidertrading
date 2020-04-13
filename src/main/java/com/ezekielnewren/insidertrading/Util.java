@@ -8,6 +8,8 @@ import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.*;
+import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.MiscPEMGenerator;
 import org.bouncycastle.openssl.PKCS8Generator;
@@ -19,6 +21,7 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import org.bson.types.ObjectId;
 
 import java.io.*;
+import java.net.URL;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -265,6 +268,15 @@ public class Util {
             return false;
         }
         return true;
+    }
+
+    @SneakyThrows
+    public static ByteArray download(URL url) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (InputStream is = url.openStream()) {
+            IOUtils.copy(is, baos);
+        }
+        return new ByteArray(baos.toByteArray());
     }
 
 }

@@ -67,20 +67,30 @@
 
         function onLogin() {
             var username = $('#username').val();
-            login(username, false).then(function (username) {
-                onSuccessfulLogin(username);
-            }).catch(function (err) {
-                handleError(err);
-            })
+            if(username != null && username != ''){
+                login(username, false).then(function (username) {
+                    onSuccessfulLogin(username);
+                }).catch(function (err) {
+                    handleError(err);
+                })
+            }
+            else{
+                alert("Please enter a username")
+            }
         }
 
         function onLogout() {
-            logout().then(function(username) {
-                onSuccessfulLogout();
-                alert("goodbye "+username);
-            }).catch(function(err) {
-                handleError(err);
-            });
+            if(window.username != null){
+                logout().then(function(username) {
+                    onSuccessfulLogout();
+                    alert("goodbye "+username);
+                }).catch(function(err) {
+                    handleError(err);
+                });
+            }
+            else{
+                alert("You are not logged in.")
+            }
         }
 
         function onTest() {

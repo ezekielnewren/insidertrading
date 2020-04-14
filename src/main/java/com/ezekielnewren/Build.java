@@ -1,9 +1,13 @@
 package com.ezekielnewren;
 
 import com.google.common.collect.ImmutableMap;
+import com.yubico.webauthn.data.ByteArray;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
@@ -50,6 +54,25 @@ public class Build {
      */
     public static String get(String key) {
         return info().get(key);
+    }
+
+    public static InputStream getResource(String fileName) {
+        return Build.class.getClassLoader().getResourceAsStream(fileName);
+    }
+
+    public static ByteArray getResourceAsByteArray(String fileName) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (InputStream is = getResource(fileName)) {
+            IOUtils.copy(is, baos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new ByteArray(baos.toByteArray());
+    }
+
+    public static String getResourceAsStringUTF8(String fileName) {
+        return new String(getResourceAsByteArray(fileName).getBytes(), StandardCharsets.UTF_8);
     }
 
 }

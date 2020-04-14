@@ -14,6 +14,8 @@ import io.jsonwebtoken.SigningKeyResolver;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.bouncycastle.util.Arrays;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -43,7 +45,6 @@ public class MetadataServiceFido implements MetadataService {
     public static final String FIDO_API_KEY_PATH = "FIDO_API_KEY_PATH";
 
     final URL urlTOC;
-    X509Certificate root;
     X509TrustManager tm;
     KeyStore keyStore;
 
@@ -53,16 +54,8 @@ public class MetadataServiceFido implements MetadataService {
 
         urlTOC = new URL("https://mds2.fidoalliance.org/?token="+getFidoApiKey());
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (InputStream is = Build.class.getClassLoader().getResourceAsStream("fidoalliance_root.pem")) {
-            IOUtils.copy(is, baos);
-        }
-        root = Util.createX509CertificateFromPem(new ByteArray(baos.toByteArray()));
-
         keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry(root.getSubjectDN().getName(), root);
-
+        keyStore.load(Build.getResource("truststore.jks"), null);
 
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
@@ -79,12 +72,13 @@ public class MetadataServiceFido implements MetadataService {
     @SneakyThrows
     public static String getFidoApiKey() {
         String raw = System.getenv(MetadataServiceFido.FIDO_API_KEY_PATH);
+        if (raw == null) throw new RuntimeException("environment variable FIDO_API_KEY_PATH not set");
         Path pathApiKey = Paths.get(raw);
         return Files.readString(pathApiKey).substring(0, 48);
     }
 
     @SneakyThrows
-    public JsonNode unpackJwt(String raw, X509Certificate root, ObjectMapper om) {
+    public JsonNode unpackJwt(String raw, ObjectMapper om) {
         // follow this for reading the jwt
         // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html#metadata-toc
 
@@ -97,24 +91,22 @@ public class MetadataServiceFido implements MetadataService {
                 // https://tools.ietf.org/html/rfc7515#section-4.1.6
                 if (header.get("x5c") == null) return null;
 
-                List<X509Certificate> certChain = new ArrayList<>();
-                for (String item: (List<String>) header.get("x5c")) {
-                    ByteArray der = ByteArray.fromBase64(item);
+                // construct certificate chain from the x5c field and add the root ca
+                List<String> value = (List<String>) header.get("x5c");
+                X509Certificate[] certChain = new X509Certificate[value.size()+1];
+                for (int i=0; i<value.size(); i++) {
+                    ByteArray der = ByteArray.fromBase64(value.get(i));
                     X509Certificate tmp = Util.createX509CertificateFromEncoded(der);
-                    certChain.add(tmp);
+                    certChain[i] = tmp;
                 }
-                X509Certificate signingCert = certChain.get(0);
-                Collections.reverse(certChain);
+                X509Certificate sigCert = certChain[0];
+                ArrayUtils.reverse(certChain);
+                certChain[0] = (X509Certificate) keyStore.getCertificate("fidoalliance_root");
 
-                X509Certificate prev = root;
-                for (X509Certificate cur: certChain) {
-                    if (!Util.verify(cur, prev)) {
-                        throw new CertificateException("Invalid certificate chain");
-                    }
-                    prev = cur;
-                }
+                // let the java implementation check the certificate chain
+                getX509TrustManager().checkClientTrusted(certChain, sigCert.getPublicKey().getAlgorithm());
 
-                return signingCert.getPublicKey();
+                return sigCert.getPublicKey();
             }
 
             @Override
@@ -146,8 +138,8 @@ public class MetadataServiceFido implements MetadataService {
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    public X509Certificate getX509Certificate() {
-        return root;
+    public KeyStore getKeyStore() {
+        return keyStore;
     }
 
     public X509TrustManager getX509TrustManager() {

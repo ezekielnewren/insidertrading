@@ -32,50 +32,64 @@ public class MetadataServiceYubico implements MetadataService {
 
     final SessionManager ctx;
     final JsonNode metadata;
-    final X509Certificate[] trusted;
+    final CryptoManager cm = CryptoManager.getInstance();
 
     public MetadataServiceYubico(SessionManager _ctx) {
         this.ctx = _ctx;
         ObjectMapper om = ctx.getObjectMapper();
+
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("yubico-metadata.json")) {
             metadata = om.readTree(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        JsonNode array = metadata.get("trustedCertificates");
-        trusted = new X509Certificate[array.size()];
-        for (int i=0; i<array.size(); i++) {
-            String pem = array.get(i).asText();
-            ByteArray binary = new ByteArray(pem.getBytes(StandardCharsets.UTF_8));
-            trusted[i] = Util.createX509CertificateFromPem(binary);
-        }
+//        JsonNode array = metadata.get("trustedCertificates");
+//        trusted = new X509Certificate[array.size()];
+//        for (int i=0; i<array.size(); i++) {
+//            String pem = array.get(i).asText();
+//            ByteArray binary = new ByteArray(pem.getBytes(StandardCharsets.UTF_8));
+//            trusted[i] = Util.createX509CertificateFromPem(binary);
+//        }
     }
 
     @Override
-    public Attestation getAttestation(List<X509Certificate> attestationCertificateChain) throws CertificateEncodingException {
-        if (attestationCertificateChain.size() > 0) {
-            X509Certificate cur = attestationCertificateChain.get(0);
-            X509Certificate rootCert = null;
-            for (X509Certificate root: trusted) {
-                if (Util.verify(cur, root)) {
-                    rootCert = root;
-                    break;
-                }
-            }
-            if (rootCert != null) {
-                for (int i=1; i<attestationCertificateChain.size(); i++) {
-                    X509Certificate next = attestationCertificateChain.get(i);
-                    if (!Util.verify(next, cur)) break;
-                    cur = next;
-                }
-                return Attestation.builder()
-                        .trusted(true)
-                        .metadataIdentifier((String) null)
-                        .vendorProperties((Map<String, String>) null)
-                        .deviceProperties((Map<String, String>) null)
-                        .build();
-            }
+    public Attestation getAttestation(List<X509Certificate> attestationCertificateChain) {
+        X509Certificate root = cm.getX509Certificate("yubico_root");
+
+        attestationCertificateChain.add(0, root);
+        X509Certificate sigCert = attestationCertificateChain.get(attestationCertificateChain.size()-1);
+
+        X509Certificate[] chain = attestationCertificateChain.stream().toArray(X509Certificate[]::new);
+
+        try {
+            cm.getX509TrustManager().checkClientTrusted(chain, sigCert.getPublicKey().getAlgorithm());
+        } catch (CertificateException e) {
+            return Attestation.builder().trusted(false).build();
         }
+
+//        if (attestationCertificateChain.size() > 0) {
+//            X509Certificate cur = attestationCertificateChain.get(0);
+//            X509Certificate rootCert = null;
+//            for (X509Certificate root: trusted) {
+//                if (Util.verify(cur, root)) {
+//                    rootCert = root;
+//                    break;
+//                }
+//            }
+//            if (rootCert != null) {
+//                for (int i=1; i<attestationCertificateChain.size(); i++) {
+//                    X509Certificate next = attestationCertificateChain.get(i);
+//                    if (!Util.verify(next, cur)) break;
+//                    cur = next;
+//                }
+//                return Attestation.builder()
+//                        .trusted(true)
+//                        .metadataIdentifier((String) null)
+//                        .vendorProperties((Map<String, String>) null)
+//                        .deviceProperties((Map<String, String>) null)
+//                        .build();
+//            }
+//        }
 
 
         return Attestation.builder().trusted(false).build();

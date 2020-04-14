@@ -45,23 +45,17 @@ public class MetadataServiceFido implements MetadataService {
     public static final String FIDO_API_KEY_PATH = "FIDO_API_KEY_PATH";
 
     final URL urlTOC;
-    X509TrustManager tm;
-    KeyStore keyStore;
+    final X509Certificate root;
+    final X509TrustManager tm;
 
     @SneakyThrows
     public MetadataServiceFido(SessionManager _ctx) {
         this.ctx = _ctx;
 
         urlTOC = new URL("https://mds2.fidoalliance.org/?token="+getFidoApiKey());
-
-        keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(Build.getResource("truststore.jks"), null);
-
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(keyStore);
-
-        TrustManager[] tma = tmf.getTrustManagers();
-        tm = (X509TrustManager) tma[0];
+        CryptoManager cm = CryptoManager.getInstance();
+        root = cm.getX509Certificate("fidoalliance_root");
+        tm = cm.createX509TrustManager(root);
     }
 
     @Override
@@ -101,10 +95,10 @@ public class MetadataServiceFido implements MetadataService {
                 }
                 X509Certificate sigCert = certChain[0];
                 ArrayUtils.reverse(certChain);
-                certChain[0] = (X509Certificate) keyStore.getCertificate("fidoalliance_root");
+                certChain[0] = root;
 
                 // let the java implementation check the certificate chain
-                getX509TrustManager().checkClientTrusted(certChain, sigCert.getPublicKey().getAlgorithm());
+                tm.checkClientTrusted(certChain, sigCert.getPublicKey().getAlgorithm());
 
                 return sigCert.getPublicKey();
             }
@@ -136,14 +130,6 @@ public class MetadataServiceFido implements MetadataService {
             IOUtils.copy(is, baos);
         }
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
-    }
-
-    public KeyStore getKeyStore() {
-        return keyStore;
-    }
-
-    public X509TrustManager getX509TrustManager() {
-        return tm;
     }
 
 }

@@ -31,11 +31,11 @@
         <div id="right">
             <div id="transfer">
                 <h2>Transfers</h2>
-                <select name="From" id="transfer-from" class="select-account">
+                <select name="From" id="transfer-from" class="select-account" onchange="transferSelect(this)">
                     <!-- Accounts -->
                 </select>
                 <div id="To"><label>To User - </label>&nbsp;<input id="transfer-recipient" placeholder="User id - Leave blank for internal transfers" type="text"></div>
-                <select name="To" id="transfer-to" class="select-account">
+                <select name="To" id="transfer-to" class="select-account" onchange="transferSelect(this)">
                     <!-- Accounts -->
                 </select>
                 <div id="transfer-footer">

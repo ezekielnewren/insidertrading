@@ -11,6 +11,8 @@ function insertAccounts(accounts){
         fromAccountElmement.innerHTML += `<option value="${account.title}">${account.title} - \$${CentStringToDollarString(account.balance)}</option>`
         toAccountElmement.innerHTML += `<option value="${account.title}">${account.title}</option>`
     }
+    fromAccountElmement.value = window.localStorage.getItem(fromAccountElmement.id)
+    toAccountElmement.value = window.localStorage.getItem(toAccountElmement.id)
 }
 
 function clearAccounts(){
@@ -24,7 +26,7 @@ function insertTransactions(transactions){
     var transactions_elm = document.getElementById('transaction-history');
     for(var transaction of transactions.reverse()){
         transactions_elm.innerHTML += `<div class="history-item">
-        <div class="history-text from">From: ${transaction.fromAccountType}</div>
+        <div class="history-text from">From: ${transaction.fromUser} - ${transaction.fromAccountType}</div>
         <div class="history-text to">To: ${transaction.toUser} - ${transaction.toAccountType}</div>
         <div class="history-amount">\$${CentStringToDollarString(transaction.amount)}</div>
     </div>`
@@ -42,6 +44,10 @@ function onLogout(){
     logout().then((something)=>{
         window.location.assign(indexUrl)
     })
+}
+
+function transferSelect(caller){
+    window.localStorage.setItem(caller.id, caller.value)
 }
 
 function onTransfer(){
@@ -78,7 +84,6 @@ function DollarStringToCent(amount){
 
 function initOther(){
     getAccountList().then((accountList)=>{
-        console.log(accountList)
         insertAccounts(accountList)
     }).catch((error)=>{
         console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
@@ -115,6 +120,12 @@ function init(){
 }
 
 // On page load
+
+document.getElementById('amount').addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        onTransfer()
+    }
+});
 
 init()
 

@@ -10,6 +10,7 @@ import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.*;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.MiscPEMGenerator;
 import org.bouncycastle.openssl.PKCS8Generator;
@@ -277,6 +278,14 @@ public class Util {
             IOUtils.copy(is, baos);
         }
         return new ByteArray(baos.toByteArray());
+    }
+
+    public static ByteArray doSHA256Digest(ByteArray input) {
+        SHA256Digest d = new SHA256Digest();
+        byte[] hashCalc = new byte[d.getDigestSize()];
+        d.update(input.getBytes(), 0, input.size());
+        d.doFinal(hashCalc, 0);
+        return new ByteArray(hashCalc);
     }
 
 }

@@ -12,9 +12,12 @@ import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolver;
 import jdk.jshell.spi.ExecutionControl;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.jcajce.provider.digest.SHA256;
 import org.bouncycastle.util.Arrays;
 
 import javax.net.ssl.TrustManager;
@@ -36,6 +39,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class MetadataServiceFido implements MetadataService {
     final SessionManager ctx;
     public static final String FIDO_API_KEY_PATH = "FIDO_API_KEY_PATH";
 
+    @NonNull final String FIDO_API_KEY;
     final URL urlTOC;
     final X509Certificate root;
     final X509TrustManager tm;
@@ -51,6 +56,11 @@ public class MetadataServiceFido implements MetadataService {
     @SneakyThrows
     public MetadataServiceFido(SessionManager _ctx) {
         this.ctx = _ctx;
+
+        String raw = System.getenv(MetadataServiceFido.FIDO_API_KEY_PATH);
+        if (raw == null) throw new RuntimeException("environment variable FIDO_API_KEY_PATH not set");
+        Path pathApiKey = Paths.get(raw);
+        FIDO_API_KEY = Files.readString(pathApiKey).substring(0, 48);
 
         urlTOC = new URL("https://mds2.fidoalliance.org/?token="+getFidoApiKey());
         CryptoManager cm = CryptoManager.getInstance();
@@ -64,15 +74,12 @@ public class MetadataServiceFido implements MetadataService {
     }
 
     @SneakyThrows
-    public static String getFidoApiKey() {
-        String raw = System.getenv(MetadataServiceFido.FIDO_API_KEY_PATH);
-        if (raw == null) throw new RuntimeException("environment variable FIDO_API_KEY_PATH not set");
-        Path pathApiKey = Paths.get(raw);
-        return Files.readString(pathApiKey).substring(0, 48);
+    public String getFidoApiKey() {
+        return FIDO_API_KEY;
     }
 
     @SneakyThrows
-    public JsonNode unpackJwt(String raw, ObjectMapper om) {
+    public ObjectNode unpackJwt(String raw) {
         // follow this for reading the jwt
         // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html#metadata-toc
 
@@ -82,7 +89,7 @@ public class MetadataServiceFido implements MetadataService {
 
             @SneakyThrows
             public PublicKey resolveSigningKey(JwsHeader header) {
-                // https://tools.ietf.org/html/rfc7515#section-4.1.6
+                // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html#h4_metadata-toc-object-processing-rules
                 if (header.get("x5c") == null) return null;
 
                 // construct certificate chain from the x5c field and add the root ca
@@ -114,6 +121,7 @@ public class MetadataServiceFido implements MetadataService {
             }
         }).parse(raw);
 
+        ObjectMapper om = ctx.getObjectMapper();
         String[] section = raw.split("\\.");
         ObjectNode json = om.createObjectNode();
 
@@ -125,11 +133,34 @@ public class MetadataServiceFido implements MetadataService {
 
     @SneakyThrows
     public String downloadToc() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (InputStream is = urlTOC.openStream()) {
-            IOUtils.copy(is, baos);
-        }
-        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        return new String(Util.download(urlTOC).getBytes(), StandardCharsets.UTF_8);
     }
+
+    @SneakyThrows
+    public JsonNode download(URL url, ByteArray hash) {
+        ByteArray entry = Util.download(url);
+        ByteArray digest = Util.doSHA256Digest(entry);
+        if (!hash.equals(digest)) return null;
+        byte[] raw = Base64.getUrlDecoder().decode(entry.getBytes());
+        return ctx.getObjectMapper().readTree(raw);
+    }
+
+    @SneakyThrows
+    public ObjectNode downloadMetadata() {
+        ObjectNode toc = unpackJwt(downloadToc());
+        for (JsonNode entry: toc.get("body").get("entries")) {
+            URL entryUrl = new URL(entry.get("url").asText()+"/?token="+getFidoApiKey());
+            ByteArray entryHash = new ByteArray(Base64.getUrlDecoder().decode(entry.get("hash").asText()));
+            JsonNode entryJson = download(entryUrl, entryHash);
+            if (entryJson == null) continue;
+            ((ObjectNode) entry).set("data", entryJson);
+        }
+        return toc;
+    }
+
+    public ObjectNode getMetadata() {
+        return downloadMetadata();
+    }
+
 
 }

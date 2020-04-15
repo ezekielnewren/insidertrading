@@ -322,26 +322,28 @@ public class WebAuthn /*implements Closeable*/ {
      * @see java.lang.String
      */
     public <T> AssertionRequestWrapper<T> assertionStart(String username, ByteArray aad, T attachment) {
-        if (aad == null) aad = new ByteArray(new byte[0]);
+        synchronized(mutex) {
+            if (aad == null) aad = new ByteArray(new byte[0]);
 
-        ByteArray nonce = Util.generateRandomByteArray(LENGTH_ASSERTION_NONCE);
-        ByteArray challenge = aad.concat(nonce);
+            ByteArray nonce = Util.generateRandomByteArray(LENGTH_ASSERTION_NONCE);
+            ByteArray challenge = aad.concat(nonce);
 
-        ByteArray requestId = generateRequestId();
-        AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
-                Util.startAssertion(rp, StartAssertionOptions.builder()
-                        .username(username)
-                        .userVerification(UserVerificationRequirement.DISCOURAGED)
-                        .timeout(Util.getAssertionTimeout())
-                        .build(),
-                        challenge
-                        ),
-                attachment
-        );
+            ByteArray requestId = generateRequestId();
+            AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
+                    Util.startAssertion(rp, StartAssertionOptions.builder()
+                            .username(username)
+                            .userVerification(UserVerificationRequirement.DISCOURAGED)
+                            .timeout(Util.getAssertionTimeout())
+                            .build(),
+                            challenge
+                            ),
+                    attachment
+            );
 
-        assertMap.put(requestId, request);
+            assertMap.put(requestId, request);
 
-        return request;
+            return request;
+        }
     }
 
     /**
@@ -351,28 +353,29 @@ public class WebAuthn /*implements Closeable*/ {
      * @see com.ezekielnewren.insidertrading.data.AssertionResponse
      */
     public <T> Triple<Boolean, AssertionRequestWrapper<T>, AssertionResult> assertionFinish(AssertionResponse response) {
+        synchronized(mutex) {
+            AssertionRequestWrapper request = assertMap.remove(response.getRequestId());
 
-        AssertionRequestWrapper request = assertMap.remove(response.getRequestId());
+            AssertionResult result = null;
+            try {
+                 result = rp.finishAssertion(
+                        FinishAssertionOptions.builder()
+                        .request(request.getAssertionRequest())
+                        .response(response.getPublicKeyCredential())
+                        .build()
+                );
 
-        AssertionResult result = null;
-        try {
-             result = rp.finishAssertion(
-                    FinishAssertionOptions.builder()
-                    .request(request.getAssertionRequest())
-                    .response(response.getPublicKeyCredential())
-                    .build()
-            );
+                if (!(result.isSuccess() && result.isSignatureCounterValid())) {
+                    return new ImmutableTriple<>(false, request, result);
+                }
 
-            if (!(result.isSuccess() && result.isSignatureCounterValid())) {
-                return new ImmutableTriple<>(false, request, result);
+                ctx.getUserStore().updateSignatureCount(result);
+            } catch (AssertionFailedException e) {
+                return new ImmutableTriple<>(false, request, null);
             }
 
-            ctx.getUserStore().updateSignatureCount(result);
-        } catch (AssertionFailedException e) {
-            return new ImmutableTriple<>(false, request, null);
+            return new ImmutableTriple<>(true, request, result);
         }
-
-        return new ImmutableTriple<>(true, request, result);
     }
 
     /**
@@ -382,18 +385,22 @@ public class WebAuthn /*implements Closeable*/ {
      * @see java.lang.String
      */
     public AssertionRequestWrapper loginStart(String username) {
-        if (!ctx.getUserStore().exists(username)) return null;
-        return ctx.getWebAuthn().assertionStart(username, null, null);
+        synchronized(mutex) {
+            if (!ctx.getUserStore().exists(username)) return null;
+            return ctx.getWebAuthn().assertionStart(username, null, null);
+        }
     }
 
     public String loginFinish(HttpSession httpSession, AssertionResponse response) {
-        Triple<Boolean, AssertionRequestWrapper<Object>, AssertionResult> tuple = assertionFinish(response);
-        if (tuple.getLeft()) {
-            String username = tuple.getMiddle().getAssertionRequest().getUsername().get();
-            ctx.setLoggedIn(httpSession, username);
-            return username;
+        synchronized(mutex) {
+            Triple<Boolean, AssertionRequestWrapper<Object>, AssertionResult> tuple = assertionFinish(response);
+            if (tuple.getLeft()) {
+                String username = tuple.getMiddle().getAssertionRequest().getUsername().get();
+                ctx.setLoggedIn(httpSession, username);
+                return username;
+            }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -402,7 +409,9 @@ public class WebAuthn /*implements Closeable*/ {
      * @return
      */
     public AssertionRequestWrapper signTransactionStart(String username, Transaction t) {
-        return assertionStart(username, t.getBytesForSignature(ctx.getObjectMapper()), t);
+        synchronized(mutex) {
+            return assertionStart(username, t.getBytesForSignature(ctx.getObjectMapper()), t);
+        }
     }
 
     /**
@@ -411,19 +420,21 @@ public class WebAuthn /*implements Closeable*/ {
      * @return
      */
     public boolean signTransactionFinish(HttpSession httpSession, AssertionResponse response) {
-        Triple<Boolean, AssertionRequestWrapper<Transaction>, AssertionResult> x = assertionFinish(response);
-        if (x.getLeft()) {
-            // unpack
-            Transaction t = x.getMiddle().getAttachment();
-            AssertionResult result = x.getRight();
+        synchronized(mutex) {
+            Triple<Boolean, AssertionRequestWrapper<Transaction>, AssertionResult> x = assertionFinish(response);
+            if (x.getLeft()) {
+                // unpack
+                Transaction t = x.getMiddle().getAttachment();
+                AssertionResult result = x.getRight();
 
-            t.setSignature(response.getPublicKeyCredential());
+                t.setSignature(response.getPublicKeyCredential());
 
-            // continue with the transaction
-            return true;
+                // continue with the transaction
+                return true;
+            }
+
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -433,29 +444,31 @@ public class WebAuthn /*implements Closeable*/ {
      * @throws AssertionFailedException
      */
     public boolean verifyTransaction(String username, Transaction t) throws AssertionFailedException {
-        ByteArray forsign = t.getBytesForSignature(ctx.getObjectMapper());
+        synchronized(mutex) {
+            ByteArray forsign = t.getBytesForSignature(ctx.getObjectMapper());
 
 
-        PublicKeyCredential pkc = t.getSignature();
-        ByteArray challenge = pkc.getResponse().getClientData().getChallenge();
-        AssertionRequest request = Util.startAssertion(rp, StartAssertionOptions.builder().username(username).build(), challenge);
+            PublicKeyCredential pkc = t.getSignature();
+            ByteArray challenge = pkc.getResponse().getClientData().getChallenge();
+            AssertionRequest request = Util.startAssertion(rp, StartAssertionOptions.builder().username(username).build(), challenge);
 
-        if (!Arrays.equals(challenge.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE, forsign.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE)) return false;
+            if (!Arrays.equals(challenge.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE, forsign.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE)) return false;
 
 
-        AssertionResult result;
-        try {
-            result = rp.finishAssertion(
-                    FinishAssertionOptions.builder()
-                            .request(request)
-                            .response(pkc)
-                            .build()
-                );
-        } catch (AssertionFailedException e) {
-            return false;
+            AssertionResult result;
+            try {
+                result = rp.finishAssertion(
+                        FinishAssertionOptions.builder()
+                                .request(request)
+                                .response(pkc)
+                                .build()
+                    );
+            } catch (AssertionFailedException e) {
+                return false;
+            }
+
+            return result.isSuccess();
         }
-
-        return result.isSuccess();
     }
 
 }

@@ -3,6 +3,7 @@ package com.ezekielnewren.insidertrading;
 import com.ezekielnewren.insidertrading.data.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.lang.Nullable;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.attestation.Attestation;
 import com.yubico.webauthn.attestation.MetadataService;
@@ -140,24 +141,24 @@ public class WebAuthn /*implements Closeable*/ {
     /**
      * <p>Contains the information necessary to build a {@code RegistrationRequest}: on success, userIdentity and request.
      * Maps request to the request map.</p>
-     * @param session currently not in use.
-     * @param username clients name.
-     * @param displayName clients display name.
-     * @param nickname optional client name field.
+     * @param session HttpSession to identify the user.
+     * @param username client's name.
+     * @param attestationType NONE, INDIRECT, DIRECT
+     * @param authenticatorType null, CROSS_PLATFORM, PLATFORM
+     * @param userVerification DISCOURAGED, PREFERRED, REQUIRED
      * @param requireResidentKey specify requirements regarding authenticator.
      * @return RegistrationRequest, request, containing necessary information.
      */
     public RegistrationRequest registerStart(
             @NonNull HttpSession session,
             @NonNull String username,
-            String displayName,
-            String nickname,
+            @NonNull AttestationConveyancePreference attestationType,
+            @Nullable AuthenticatorAttachment authenticatorType,
+            @NonNull UserVerificationRequirement userVerification,
             boolean requireResidentKey
-
     ) {
         synchronized (mutex) {
             try {
-                //Optional<User> user = Optional.ofNullable((User) session.getAttribute(username));
 
                 // that username has been taken
                 if (ctx.getUserStore().exists(username)) {
@@ -171,21 +172,20 @@ public class WebAuthn /*implements Closeable*/ {
 
                 UserIdentity userIdentity = UserIdentity.builder()
                         .name(username)
-                        .displayName(displayName)
+                        .displayName(username)
                         .id(Util.generateRandomByteArray(LENGTH_USER_HANDLE))
                         .build();
 
                 AuthenticatorSelectionCriteria asc = AuthenticatorSelectionCriteria.builder()
                         .requireResidentKey(requireResidentKey)
-                        .userVerification(UserVerificationRequirement.DISCOURAGED)
-                        .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                        .userVerification(userVerification)
+                        .authenticatorAttachment(authenticatorType)
                         .build();
 
                 RegistrationRequest request = new RegistrationRequest(
                         username,
-                        Optional.ofNullable(nickname),
                         Util.generateRandomByteArray(LENGTH_REQUEST_ID),
-                        getRelyingParty().startRegistration(
+                        getRelyingParty(attestationType).startRegistration(
                                 StartRegistrationOptions.builder()
                                         .user(userIdentity)
                                         .authenticatorSelection(asc)
@@ -238,7 +238,8 @@ public class WebAuthn /*implements Closeable*/ {
                 return new ImmutableTriple<>(false, request, null);
             }
 
-            boolean attestationTrusted = result.isAttestationTrusted();
+            Attestation a = result.getAttestationMetadata().orElseThrow();
+            String nickname = a.getDeviceProperties().orElseThrow().get("nickname");
 
             long now = System.currentTimeMillis();
             Authenticator auth = new Authenticator(
@@ -247,7 +248,7 @@ public class WebAuthn /*implements Closeable*/ {
                     result.getKeyId().getId(),
                     result.getPublicKeyCose(),
                     0,
-                    request.getNickname(),
+                    Optional.ofNullable(nickname),
                     result.getAttestationMetadata(),
                     result.getAttestationType()
             );

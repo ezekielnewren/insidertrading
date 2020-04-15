@@ -49,13 +49,6 @@ public class RegistrationRequest {
 
 
     /**
-     * Object that holds optional user provided data.
-     * @see java.util.Optional
-     */
-    public Optional<String> nickname;
-
-
-    /**
      * Object that holds a unique id used for requests.
      * @see com.yubico.webauthn.data.ByteArray
      */

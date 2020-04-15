@@ -8,6 +8,9 @@ import com.ezekielnewren.insidertrading.data.RegistrationResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.RegistrationResult;
+import com.yubico.webauthn.data.AttestationConveyancePreference;
+import com.yubico.webauthn.data.AuthenticatorAttachment;
+import com.yubico.webauthn.data.UserVerificationRequirement;
 import org.apache.commons.lang3.tuple.Triple;
 
 import javax.servlet.ServletException;
@@ -114,12 +117,13 @@ public class InsiderTradingServlet extends HttpServlet {
 
                         JsonNode jsonTmp = ctx.getObjectMapper().readTree(data);
                         String username = jsonTmp.get("username").asText();
-                        String displayName = jsonTmp.get("displayName").asText();
-                        String nickname = jsonTmp.asText(null);
+                        AttestationConveyancePreference attestationType = AttestationConveyancePreference.valueOf(jsonTmp.get("attestationType").asText());
+                        AuthenticatorAttachment authenticatorType = AuthenticatorAttachment.valueOf(jsonTmp.get("authenticatorType").asText());
+                        UserVerificationRequirement userVerification = UserVerificationRequirement.valueOf(jsonTmp.get("userVerification").asText());
                         boolean requireResidentKey = jsonTmp.get("requireResidentKey").asBoolean();
 
                         // webauthn registration start
-                        RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, displayName, nickname, requireResidentKey);
+                        RegistrationRequest regRequest = ctx.getWebAuthn().registerStart(request.getSession(), username, attestationType, authenticatorType, userVerification, requireResidentKey);
                         if (regRequest == null) {
                             sendError(response, 400, BankAPIException.Reason.REGISTRATION_USERNAME_NOT_AVAILABLE.toString());
                             return;

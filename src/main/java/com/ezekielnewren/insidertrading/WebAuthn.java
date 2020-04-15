@@ -67,13 +67,6 @@ public class WebAuthn /*implements Closeable*/ {
     RelyingPartyIdentity rpi;
 
     /**
-     * Variable {@code RelayingParty} information.
-     */
-    RelyingParty rp;
-    //ObjectMapper om;
-    //CredentialRepository credStore;
-
-    /**
      * Object that holds a {@code Map} for registration request information.
      */
     Map<ByteArray, RegistrationRequest> requestMap = new HashMap<>();
@@ -96,45 +89,9 @@ public class WebAuthn /*implements Closeable*/ {
         this.ctx = _ctx;
         this.mutex = ctx.getMutex();
         synchronized (mutex) {
-            //credRepo = new MemoryCredentialRepository();
-            //credStore = new InMemoryRegistrationStorage();
-            //credStore = new MemoryCredentialRepository();
             rpi = RelyingPartyIdentity.builder()
                     .id(fqdn)
                     .name(title)
-                    .build();
-
-            MetadataService ms = (certificateList)-> {
-                X509Certificate cert = certificateList.get(0);
-                String name = cert.getClass().toGenericString();
-
-                ArrayNode certificateListAsJsonPemArray = ctx.getObjectMapper().createArrayNode();
-                for (X509Certificate item: certificateList) {
-                    String value = Util.createPemFromX509Certificate(item);
-                    certificateListAsJsonPemArray.add(value);
-                }
-
-                Map<String, String> deviceProperties = new LinkedHashMap<>();
-                deviceProperties.put("attestationCertificateChain", certificateListAsJsonPemArray.toString());
-
-                Attestation a = Attestation.builder()
-                        .trusted(false)
-                        .deviceProperties(deviceProperties)
-                        .build();
-                return a;
-            };
-
-            // ms = ctx.getMetadataService();
-
-            rp = RelyingParty.builder()
-                    .identity(rpi)
-                    .credentialRepository(ctx.getUserStore().getCredentialRepository())
-                    .allowOriginPort(true)
-                    .allowOriginSubdomain(false)
-//                    .allowUntrustedAttestation(false)
-//                    .allowUnrequestedExtensions(true)
-                    .metadataService(ms)
-                    .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
                     .build();
         }
     }
@@ -161,6 +118,22 @@ public class WebAuthn /*implements Closeable*/ {
      */
     public static ByteArray generateCredentialId() {
         return Util.generateRandomByteArray(LENGTH_CREDENTIAL_ID);
+    }
+
+    public RelyingParty getRelyingParty(AttestationConveyancePreference pref) {
+        return RelyingParty.builder()
+                .identity(rpi)
+                .credentialRepository(ctx.getUserStore().getCredentialRepository())
+                .allowOriginPort(true)
+                .allowOriginSubdomain(false)
+//              .allowUntrustedAttestation(false)
+//              .allowUnrequestedExtensions(true)
+                .metadataService(ctx.getMetadataService())
+                .attestationConveyancePreference(pref)
+                .build();
+    }
+    public RelyingParty getRelyingParty() {
+        return getRelyingParty(AttestationConveyancePreference.DIRECT);
     }
 
 
@@ -212,7 +185,7 @@ public class WebAuthn /*implements Closeable*/ {
                         username,
                         Optional.ofNullable(nickname),
                         Util.generateRandomByteArray(LENGTH_REQUEST_ID),
-                        rp.startRegistration(
+                        getRelyingParty().startRegistration(
                                 StartRegistrationOptions.builder()
                                         .user(userIdentity)
                                         .authenticatorSelection(asc)
@@ -255,7 +228,7 @@ public class WebAuthn /*implements Closeable*/ {
 
             RegistrationResult result;
             try {
-                result = rp.finishRegistration(
+                result = getRelyingParty().finishRegistration(
                         FinishRegistrationOptions.builder()
                                 .request(request.getPublicKeyCredentialCreationOptions())
                                 .response(response.getCredential())
@@ -305,13 +278,13 @@ public class WebAuthn /*implements Closeable*/ {
 
             ByteArray requestId = generateRequestId();
             AssertionRequestWrapper request = new AssertionRequestWrapper(requestId,
-                    Util.startAssertion(rp, StartAssertionOptions.builder()
-                            .username(username)
-                            .userVerification(UserVerificationRequirement.DISCOURAGED)
-                            .timeout(Util.getAssertionTimeout())
-                            .build(),
+                    Util.startAssertion(getRelyingParty(), StartAssertionOptions.builder()
+                                    .username(username)
+                                    .userVerification(UserVerificationRequirement.DISCOURAGED)
+                                    .timeout(Util.getAssertionTimeout())
+                                    .build(),
                             challenge
-                            ),
+                    ),
                     attachment
             );
 
@@ -333,11 +306,11 @@ public class WebAuthn /*implements Closeable*/ {
 
             AssertionResult result = null;
             try {
-                 result = rp.finishAssertion(
+                result = getRelyingParty().finishAssertion(
                         FinishAssertionOptions.builder()
-                        .request(request.getAssertionRequest())
-                        .response(response.getPublicKeyCredential())
-                        .build()
+                                .request(request.getAssertionRequest())
+                                .response(response.getPublicKeyCredential())
+                                .build()
                 );
 
                 if (!(result.isSuccess() && result.isSignatureCounterValid())) {
@@ -425,19 +398,19 @@ public class WebAuthn /*implements Closeable*/ {
 
             PublicKeyCredential pkc = t.getSignature();
             ByteArray challenge = pkc.getResponse().getClientData().getChallenge();
-            AssertionRequest request = Util.startAssertion(rp, StartAssertionOptions.builder().username(username).build(), challenge);
+            AssertionRequest request = Util.startAssertion(getRelyingParty(), StartAssertionOptions.builder().username(username).build(), challenge);
 
             if (!Arrays.equals(challenge.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE, forsign.getBytes(), 0, forsign.size()-LENGTH_ASSERTION_NONCE)) return false;
 
 
             AssertionResult result;
             try {
-                result = rp.finishAssertion(
+                result = getRelyingParty().finishAssertion(
                         FinishAssertionOptions.builder()
                                 .request(request)
                                 .response(pkc)
                                 .build()
-                    );
+                );
             } catch (AssertionFailedException e) {
                 return false;
             }

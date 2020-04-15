@@ -164,8 +164,8 @@ public class SessionManager {
 
         this.userStore = new UserStore(this);
         this.metadataService = new MetadataServiceProvider();
-        this.metadataService.addMetadataService(new MetadataServiceFido(this));
-        this.metadataService.addMetadataService(new MetadataServiceYubico(this));
+        try { this.metadataService.addMetadataService(new MetadataServiceFido(this)); } catch (Throwable t) { t.printStackTrace(); }
+        try { this.metadataService.addMetadataService(new MetadataServiceYubico(this)); } catch (Throwable t) { t.printStackTrace(); }
         this.webAuthn = new WebAuthn(this, fqdn, title);
 
         // apply a unique constraint on user.username and transaction.number

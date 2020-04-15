@@ -8,6 +8,7 @@ import com.yubico.webauthn.attestation.MetadataService;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.exception.HexException;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -33,12 +34,15 @@ public class MetadataServiceYubico implements MetadataService {
     final SessionManager ctx;
     final JsonNode metadata;
     final CryptoManager cm = CryptoManager.getInstance();
+    final X509TrustManager tm;
 
     public MetadataServiceYubico(SessionManager _ctx) {
         this.ctx = _ctx;
         ObjectMapper om = ctx.getObjectMapper();
 
-        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("yubico-metadata.json")) {
+        tm = cm.createX509TrustManager(cm.getX509Certificate("yubico_root"));
+
+        try (InputStream is = Build.getResource("yubico-metadata.json")) {
             metadata = om.readTree(is);
         } catch (IOException e) {
             throw new RuntimeException(e);

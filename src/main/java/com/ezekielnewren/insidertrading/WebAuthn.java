@@ -292,8 +292,10 @@ public class WebAuthn /*implements Closeable*/ {
 
             boolean attestationTrusted = result.isAttestationTrusted();
 
+            long now = System.currentTimeMillis();
             Authenticator auth = new Authenticator(
-                    System.currentTimeMillis(),
+                    now,
+                    now,
                     result.getKeyId().getId(),
                     result.getPublicKeyCose(),
                     0,

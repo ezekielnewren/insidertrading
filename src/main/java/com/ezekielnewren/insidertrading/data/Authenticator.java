@@ -25,6 +25,11 @@ public class Authenticator {
     @JsonProperty long registrationTime;
 
     /**
+     * Date of last use.
+     */
+    @JsonProperty long lastUse;
+
+    /**
      * id used for assertions.
      */
     @JsonProperty ByteArray credentialId;
@@ -70,6 +75,7 @@ public class Authenticator {
     @JsonIgnore
     public void setSignatureCount(long signatureCount) {
         this.signatureCount = signatureCount;
+        this.lastUse = System.currentTimeMillis();
     }
 
 }

@@ -17,6 +17,7 @@ doc/
 .project
 
 ## generated files or temporary code
+/ignore/
 src/main/resources/build.info
 src/main/java/ignore/
 src/test/java/ignore/

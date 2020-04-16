@@ -1,3 +1,23 @@
+var menuShowing = false
+var menu = document.getElementById('dialog-menu')
+function showMenuToggle(){
+    if(menuShowing){
+        menu.style.display = 'none'
+        menuShowing = false
+    }
+    else{
+        menu.style.display = 'flex'
+        menuShowing = true
+    }
+}
+
+function closeMenu(){
+    if(menuShowing){
+        menu.style.display = 'none'
+        menuShowing = false
+    }
+}
+
 function insertAccounts(accounts){
     clearAccounts()
     var accountsElement = document.getElementById('account-list')
@@ -105,11 +125,13 @@ function init(){
             window.location.assign("./index.jsp")
             return
         }
-        var nav = document.getElementById('right-side-nav')
+        var nav = document.getElementById('dialog-menu')
         if (_username != null) {
             username = _username
-            nav.innerHTML += '<button onclick="onLogout()">Log Out</button>'
-            nav.innerHTML += '<div>' + _username + ' </div>'
+            nav.innerHTML = `
+            <div class="dialog-menu-item">${username}</div>
+            <div class="dialog-menu-item clickable bottom" onclick="onLogout()">Logout</div>
+            `
         } else {
             nav.innerHTML = '<a href="./index.jsp">Login</a>'
         }

@@ -57,7 +57,7 @@
                     return;
                 }
                 var username = $('#username').val();
-                register(username, username, null, false).then(function (username) {
+                register(username).then(function (username) {
                     onSuccessfulRegistration(username);
                 }).catch(function (err) {
                     handleError(err);

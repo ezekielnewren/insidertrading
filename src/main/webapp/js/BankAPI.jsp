@@ -28,9 +28,15 @@ function makeRequest(cmd, args) {
     });
 }
 
-function register(username, displayName, nickname, requireResidentKey) {
+function register(username, attestationType, authenticatorType, userVerification, requireResidentKey) {
     "use strict";
-    var payload = JSON.stringify({username, displayName, nickname, requireResidentKey});
+    attestationType = typeof attestationType !== "undefined" ? attestationType : "DIRECT";
+    authenticatorType = typeof authenticatorType !== "undefined" ? authenticatorType : "CROSS_PLATFORM";
+    userVerification = typeof userVerification !== "undefined" ? userVerification : "DISCOURAGED";
+    requireResidentKey = typeof requireResidentKey !== "undefined" ? requireResidentKey : false;
+
+
+    var payload = JSON.stringify({username, attestationType, authenticatorType, userVerification, requireResidentKey});
 
     return new Promise(function (resolve, reject) {
         talk('register/start', payload).done(function (request) {

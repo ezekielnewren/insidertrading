@@ -153,7 +153,7 @@ public class WebAuthn /*implements Closeable*/ {
             @NonNull HttpSession session,
             @NonNull String username,
             @NonNull AttestationConveyancePreference attestationType,
-            @Nullable AuthenticatorAttachment authenticatorType,
+            @NonNull AuthenticatorAttachment authenticatorType,
             @NonNull UserVerificationRequirement userVerification,
             boolean requireResidentKey
     ) {

@@ -50,6 +50,11 @@
             }
         }
 
+        function getSelection(byId) {
+            var e = document.getElementById(byId);
+            return e.options[e.selectedIndex].value;
+        }
+
         function onRegister() {
             getUsername().then(function(username) {
                 if (username != null) {
@@ -57,7 +62,12 @@
                     return;
                 }
                 var username = $('#username').val();
-                register(username).then(function (username) {
+                var attestationType = getSelection("attestationType");
+                var authenticatorType = getSelection("authenticatorType");
+                var userVerification = getSelection("userVerification");
+                var requireResidentKey = document.getElementById("requireResidentKey").checked;
+
+                register(username, attestationType, authenticatorType, userVerification, requireResidentKey).then(function (username) {
                     onSuccessfulRegistration(username);
                 }).catch(function (err) {
                     handleError(err);
@@ -122,5 +132,88 @@
         </div>
     </div>
 </div>
+<div>
+    <span>attestation type</span>
+    <select id="attestationType">
+        <option value="NONE">NONE</option>
+        <option value="INDIRECT">INDIRECT</option>
+        <option value="DIRECT" selected>DIRECT</option>
+    </select>
+    <br/>
+
+    <span>authenticator type</span>
+    <select id="authenticatorType">
+        <option value="CROSS_PLATFORM" selected>CROSS_PLATFORM</option>
+        <option value="PLATFORM">PLATFORM</option>
+    </select>
+    <br/>
+
+    <span>user verification</span>
+    <select id="userVerification">
+        <option value="DISCOURAGED" selected>DISCOURAGED</option>
+        <option value="PREFERRED">PREFERRED</option>
+        <option value="REQUIRED">REQUIRED</option>
+    </select>
+    <br/>
+
+    <span>require resident key</span><input type="checkbox" id="requireResidentKey"></input>
+
+    <div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

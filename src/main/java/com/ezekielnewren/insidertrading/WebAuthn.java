@@ -191,7 +191,8 @@ public class WebAuthn /*implements Closeable*/ {
                                         .authenticatorSelection(asc)
                                         .timeout(Util.getRegistrationTimeout())
                                         .build()
-                        )
+                        ),
+                        attestationType
                 );
 
                 requestMap.put(request.getRequestId(), request);
@@ -228,7 +229,7 @@ public class WebAuthn /*implements Closeable*/ {
 
             RegistrationResult result;
             try {
-                result = getRelyingParty().finishRegistration(
+                result = getRelyingParty(request.getAttestationType()).finishRegistration(
                         FinishRegistrationOptions.builder()
                                 .request(request.getPublicKeyCredentialCreationOptions())
                                 .response(response.getCredential())

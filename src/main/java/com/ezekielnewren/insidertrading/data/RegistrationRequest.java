@@ -25,6 +25,8 @@
 package com.ezekielnewren.insidertrading.data;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import java.util.Optional;
@@ -61,4 +63,5 @@ public class RegistrationRequest {
      */
     public PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 
+    @JsonIgnore AttestationConveyancePreference attestationType;
 }

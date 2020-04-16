@@ -8,7 +8,6 @@
     padding: 20px 40px;
     border-radius: 15px;;
     justify-content: center;
-
 }
 
 h2{
@@ -58,4 +57,40 @@ h2{
     display:flex;
     justify-content: space-between;
     padding-bottom: 2px;
+}
+
+@media only screen and (max-width: 1000px) {
+    .wrapper{
+        max-width: 80vw;
+        max-height: 50vh;
+        font-size: 40px;
+    }
+    h2{
+        font-size: 60px;
+        padding-bottom: 10px;
+    }
+    #login-utils input{
+        font-size: 50px;
+    }
+    button.std-button{
+        width:20vw;
+        height: 4.5vh;
+        font-size: 30px;
+    }
+    #advanced-toggle{
+        padding-bottom: 1vh;
+    }
+    #advanced .advanced-item{
+        line-height: 40px;
+        height: 3vh;
+        padding-bottom: 1vh;
+    }
+    .advanced-item select{
+        font-size:30px
+    }
+    .advanced-item input#requireResidentKey{
+        height: 4vw;
+        width: 4vw;
+    }
+
 }

@@ -6,7 +6,7 @@
     <title><%=request.getServletContext().getServerInfo() %></title>
     <script src="js/BankAPI.jsp" type="application/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link href="bank.css" rel="stylesheet" type="text/css" />
+    <link href="./styles/bank.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -63,6 +63,7 @@
             </div>
         </div>
     </div>
+    <script src="./scripts/errors.js"></script>
     <script src="scripts/bank.js"></script>
 </body>
 

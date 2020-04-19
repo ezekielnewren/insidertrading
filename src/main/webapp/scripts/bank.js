@@ -77,7 +77,7 @@ function onTransfer(){
     var amount = DollarStringToCent(document.getElementById('amount').value)
     if(recipient == '' || recipient == null) recipient = username
     if(amount == null || amount == ''){
-        console.log("%cERROR: Amount cannot be null", 'background: #FFBABA; color: ##D8000C;')
+        showError(error)
         return
     }
     transfer(recipient, from, to, amount).then((resp)=>{
@@ -87,9 +87,9 @@ function onTransfer(){
         if (typeof error.responseJSON.errorCode !== 'undefined' && typeof error.responseJSON.message !== 'undefined') {
             var errorCode = error.responseJSON.errorCode;
             var message = error.responseJSON.message;
-            alert("%cTransfer Failed", 'background: #FFBABA; color: ##D8000C;')
+            showError('Transfer Failed')
         }
-        console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
+        showError(error)
     })
 }
 
@@ -106,13 +106,13 @@ function initOther(){
     getAccountList().then((accountList)=>{
         insertAccounts(accountList)
     }).catch((error)=>{
-        console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
+        showError(error)
     })
 
     getTransactionHistory().then((transactionHistory)=>{
         insertTransactions(transactionHistory)
     }).catch((error)=>{
-        console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
+        showError(error)
     })
 }
 
@@ -137,7 +137,7 @@ function init(){
         }
         initOther()
     }).catch(function(error) {
-        console.log(`%c${error}`, 'background: #FFBABA; color: ##D8000C;')
+        showError(error)
     });
 }
 

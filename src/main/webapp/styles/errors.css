@@ -1,0 +1,41 @@
+#errors{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    font-size: 15px;
+}
+
+.error{
+    background-color: #d77;
+    color: #740000;
+    padding: 5px 30px;
+    border-bottom: 1px dotted #944;
+}
+
+.fade-in {
+    animation: comefrombottom 0.35s;
+    transition: all .5s ease;
+}
+
+@-webkit-keyframes comefrombottom {
+    0%   { -webkit-transform: translateY(26px); }/* height of error */
+    100% { -webkit-transform: translateY(0px);   }
+}
+
+@media only screen and (max-width: 1000px) {
+    #errors{
+        font-size: 38px;
+    }
+    .error{
+        padding: 8px 40px;
+    }
+    @-webkit-keyframes comefrombottom { 
+        0%   { -webkit-transform: translateY(61px); }/* height of error */
+        100% { -webkit-transform: translateY(0px);   }
+    }
+}
